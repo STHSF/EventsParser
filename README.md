@@ -1,2 +1,2 @@
-# event_paser
+# event_parser
 
