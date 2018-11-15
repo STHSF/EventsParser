@@ -111,3 +111,5 @@ venv.bak/
 /src/discussParser/hs_err_pid40588.log
 /src/cluster/c2.txt
 requirements.txt
+/src/text.txt
+/src/model/

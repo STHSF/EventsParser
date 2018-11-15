@@ -10,7 +10,6 @@
 训练用的编码格式要与使用model时的编码格式一致。
 """
 
-# coding:utf-8
 import sys
 sys.path.append("../")
 import multiprocessing
@@ -62,6 +61,9 @@ class word2vec(object):
 
     def save(self, model, model_path):
         model.save(model_path)
+
+    def load_model(self, model, model_path):
+        return model.load(model_path)
 
 
 class doc2vec(object):

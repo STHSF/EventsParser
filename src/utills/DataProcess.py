@@ -28,8 +28,8 @@ class DataPressing(object):
         :param text:
         :return:
         """
-        # result = re.sub(self.pattern_word, "", text.decode('utf8'))
-        result = re.sub(self.pattern_word, "", text)
+        result = re.sub(self.pattern_word, "", text.decode('utf8'))
+        # result = re.sub(self.pattern_word, "", text)
         return result
 
     def useless_remove(self, content):

@@ -22,22 +22,28 @@ global _stopwords
 
 
 def list_all_flies(root_path):
+    # 遍历文件夹下的所有文件，包含子目录里面的文件
     pass
 
 
 def get_news_data():
-    data_path = ''
+    data_path = '/Users/li/PycharmProjects/event_parser/src/text.txt'
     with open(data_path, 'r') as news:
-        pass
+        data = news.readlines()
+    train_data = []
+    for i, text in enumerate(data):
+        text_list = text.decode("utf8").split(",")
+        train_data.append(text_list)
+    return train_data
 
 
 def get_datasest():
-    with open("/Users/li/PycharmProjects/huihongcaihui/src/corpus/体育", 'r') as cf:
+    with open("/Users/li/PycharmProjects/event_parser/src/corpus/体育", 'r') as cf:
         docs = cf.readlines()
     x_train = []
     # y = np.concatenate(np.ones(len(docs)))
     for i, text in enumerate(docs):
-        word_list = text.split(' ')
+        word_list = text.decode("utf8").split(' ')
         # l = len(word_list)
         # word_list[l - 1] = word_list[l - 1].strip()
         # document = TaggededDocument(word_list, tags=[i])
@@ -64,7 +70,7 @@ for s in sentences:
 '''
 
 
-if __name__ == '__main__':
+def load_data_test():
     tk = Tokenization.Tokenizer()
     dp = DataProcess.DataPressing()
 
@@ -91,16 +97,20 @@ if __name__ == '__main__':
             if not dp.useless_filter(content, dicts.stock_dict):
                 content_list = tk.token(content)
                 res_lists.append(content_list)
-    file = open("text.txt", "w")
-
+    file_out = open("text.txt", "w")
     for index in res_lists:
-        file.write(str(index) + "\n")
+        item = ",".join(item for item in index)
+        file_out.write(item.encode("utf8") + "\n")
+    file_out.close()
 
-        # str = ""
-        # for item in index:
-        #     str += item + "\n"
-        # str
-    file.close()
-    # print np.shape(res_lists[0])
-    # for i in res_lists[0]:
-    #     print i
+
+if __name__ == '__main__':
+    # load_data_test()
+    a1 = get_news_data()
+    a2 = get_datasest()
+
+    print np.shape(a1[0])
+    print np.shape(a2[0])
+
+    print a1[0]
+    print a2[0]

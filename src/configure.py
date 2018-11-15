@@ -11,5 +11,6 @@
 
 
 class Configure(object):
-    stop_words_path = '/Users/li/PycharmProjects/huihongcaihui/src/corpus/stop_words_CN'
+    # 停用词目录
+    stop_words_path = '/Users/li/PycharmProjects/event_parser/src/corpus/stop_words_CN'
 

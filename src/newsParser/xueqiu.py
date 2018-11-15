@@ -8,7 +8,7 @@
 @time: 2018/10/30 2:31 PM
 """
 import sys
-sys.path.append("..")
+sys.path.append("../")
 
 from pyhanlp import *
 from dataReader import get_full_data
