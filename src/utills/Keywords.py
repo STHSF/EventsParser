@@ -9,11 +9,17 @@
 关键词提取程序
 """
 import sys
+import logging
 sys.path.append("../")
-from configure  import Configure
+from configure import Configure
 from pyhanlp import *
 from jieba import analyse
 from Tokenization import Tokenizer
+
+logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
+logging.root.setLevel(level=logging.INFO)
+logger.info("running %s" % ' '.join(sys.argv))
 
 
 class keywordsExtractor(object):
@@ -23,6 +29,7 @@ class keywordsExtractor(object):
         self.persent = 0.1
 
     def run(self, document):
+
         # tk = Tokenizer()
         # document = tk.token(document)
         # 基于Hanlp库的关键词提取

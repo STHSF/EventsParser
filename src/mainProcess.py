@@ -56,7 +56,7 @@ class mainProcess(object):
         wd_configure = {"size": 300,
                         "window": 2,
                         "min_count": 1}
-        wd = Vector.word2vec(wd_configure)
+        wd = Vector.word2vecs(wd_configure)
         model_wd = wd.train(x_train)
         print("[Info] word2vec模型训练结束")
         print model_wd.wv[u'食品饮料']
@@ -69,8 +69,22 @@ class mainProcess(object):
         else:
             print("[Exception] word2vec的保存路径已经存在。")
 
+    def word2vec_load(self):
+        # word2vec 训练测试
+        wd_conf = {"size": 300,
+                   "window": 5,
+                   "min_count": 1}
+        model_wd = Vector.word2vecs(wd_conf)
+        model_path = "/Users/li/PycharmProjects/event_parser/src/model/model_300_2_1"
+
+        model_wd = model_wd.load_model(model_path)
+        print model_wd.wv[u'食品饮料']
+
+        return model_wd
+
 
 if __name__ == '__main__':
     mp = mainProcess()
-    mp.data_save()
-    mp.word2vec_train()
+    # mp.data_save()
+    # mp.word2vec_train()
+    mp.word2vec_load()

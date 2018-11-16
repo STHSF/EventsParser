@@ -12,18 +12,26 @@
 
 import sys
 sys.path.append("../")
+import logging
 import multiprocessing
 from gensim.models.word2vec import Word2Vec
 from gensim.models.doc2vec import Doc2Vec, LabeledSentence
 import dataReader
 
 
-class word2vec(object):
+logger = logging.getLogger()
+logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
+logging.root.setLevel(level=logging.INFO)
+logger.info("running %s" % ' '.join(sys.argv))
+
+
+class word2vecs(object):
     def __init__(self, wd_configure):
         """
         参数初始化
         :param wd_configure: 模型的参数
         """
+
         if "size" in wd_configure.keys():
             # 训练时词向量维度，默认为100
             self.size = wd_configure["size"]
@@ -53,17 +61,17 @@ class word2vec(object):
         模型训练
         :param sentences:每行为一个list 如sentences = [['A1', 'A2'], ['A1', 'A2'], ['A1', 'A2', 'A1', 'A2']]
         :return: word2vec 模型
-        """
-        model_wd = Word2Vec(size=self.size, window=self.window, min_count=self.min_count, workers=self.worker)
-        model_wd.build_vocab(sentences)
-        model_wd.train(sentences, total_examples=model_wd.corpus_count, epochs=model_wd.iter)
-        return model_wd
+        # """
+        model_w2d = Word2Vec(size=self.size, window=self.window, min_count=self.min_count, workers=self.worker)
+        model_w2d.build_vocab(sentences)
+        model_w2d.train(sentences, total_examples=model_w2d.corpus_count, epochs=model_w2d.iter)
+        return model_w2d
 
     def save(self, model, model_path):
         model.save(model_path)
 
-    def load_model(self, model, model_path):
-        return model.load(model_path)
+    def load_model(self, model_path):
+        return Word2Vec.load(model_path)
 
 
 class doc2vec(object):
@@ -120,15 +128,16 @@ class doc2vec(object):
 
 
 if __name__ == '__main__':
+    model_path = "/Users/li/PycharmProjects/event_parser/src/model/model_300_2_1"
 
     # word2vec 训练测试
-    wd_configure = {"size": 300,
-                    "window": 5,
-                    "min_count": 1}
+    wd_conf = {"size": 300,
+               "window": 5,
+               "min_count": 1}
     x_train = dataReader.get_datasest()
-    wd = word2vec(wd_configure)
+    wd = word2vecs(wd_conf)
     model_wd = wd.train(x_train)
-    print model_wd.wv['球员']
+    print model_wd.wv[u'球员']
 
     # doc2vec 训练测试
     # cluster_centers = cluster(x_train)
