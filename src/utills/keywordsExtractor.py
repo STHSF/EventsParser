@@ -13,7 +13,7 @@ import logging.handlers
 import numpy as np
 import Tokenization
 
-LOG_FILE = '../log/tokenization.log'
+LOG_FILE = '../log/keywordsExtractor.log'
 my_utils.check_path(LOG_FILE)
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
 fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
