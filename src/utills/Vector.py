@@ -12,16 +12,24 @@
 
 import sys
 sys.path.append("../")
-import logging
+import logging.handlers
+import my_utils
 import multiprocessing
 from gensim.models.word2vec import Word2Vec
 from gensim.models.doc2vec import Doc2Vec, LabeledSentence
 import dataReader
 
-
+LOG_FILE = '../log/vectors.log'
+my_utils.check_path(LOG_FILE)
+handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
+fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
+# logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
+formatter = logging.Formatter(fmt)
+handler.setFormatter(formatter)
 logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
-logging.root.setLevel(level=logging.INFO)
+logger.addHandler(handler)
+logger.setLevel(level=logging.INFO)
+# logger.setLevel(level=logging.DEBUG)
 logger.info("running %s" % ' '.join(sys.argv))
 
 

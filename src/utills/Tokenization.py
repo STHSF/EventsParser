@@ -13,9 +13,26 @@ import sys
 sys.path.append("../")
 import dicts
 import codecs
+import my_utils
+import logging.handlers
 import jieba.posseg as pseg
 from DataProcess import DataPressing
 from configure import Configure
+
+
+LOG_FILE = '../log/tokenization.log'
+my_utils.check_path(LOG_FILE)
+handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
+fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
+# logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
+formatter = logging.Formatter(fmt)
+handler.setFormatter(formatter)
+logger = logging.getLogger()
+logger.addHandler(handler)
+logger.setLevel(level=logging.INFO)
+# logger.setLevel(level=logging.DEBUG)
+logger.info("running %s" % ' '.join(sys.argv))
+
 
 stopwords = globals()
 
@@ -25,8 +42,9 @@ class Tokenizer(object):
         self.data_precessing = DataPressing()
         self.dicts = dicts.init()  # 初始化人工词典
         # 按照词性去停用词
-        self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f',
-                          'r']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’、数词、方位词、代词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
+        self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't',
+                          'uj', 'm', 'f', 'r', 'a', 'v']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
+
         # 停用词库准备, 构建停用词表
         conf = Configure()
         stop_words_path = conf.stop_words_path
