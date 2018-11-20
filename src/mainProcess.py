@@ -82,6 +82,10 @@ class mainProcess(object):
 
         return model_wd
 
+    def word_vector(self, word):
+        pass
+
+
 
 if __name__ == '__main__':
     mp = mainProcess()
