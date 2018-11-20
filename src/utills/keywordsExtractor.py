@@ -6,11 +6,13 @@
 @author: li
 @file: keywordsExtractor.py
 @time: 2018/11/19 10:19 AM
+基于textrank的关键词提取
 """
 import sys
 import my_utils
 import logging.handlers
 import numpy as np
+from operator import itemgetter
 import Tokenization
 
 LOG_FILE = '../log/keywordsExtractor.log'
@@ -28,14 +30,16 @@ logger.info("running %s" % ' '.join(sys.argv))
 
 
 class TextRank(object):
-    def __init__(self, sentence, window, alpha, iternum):
+    def __init__(self, sentence, topK=20, withWeight=False, window=5, alpha=0.85, iter_num=1000):
         self.sentence = sentence
         self.window = window
         self.alpha = alpha
         self.edge_dict = {}  # 记录节点的边连接字典
-        self.iternum = iternum  # 迭代次数
+        self.iter_num = iter_num  # 迭代次数
+        self.topK = topK  # 提取关键词的个数
+        self.withWeight = withWeight
 
-    def cutSentence(self):
+    def _cut_sentence(self):
         """
         # 对句子进行分词
         :return:
@@ -49,7 +53,7 @@ class TextRank(object):
         # self.word_list = [s.word for s in seg_result if s.flag in tag_filter]
         # print(self.word_list)
 
-    def createNodes(self):
+    def _create_nodes(self):
         """
         # 根据窗口，构建每个节点的相邻节点,返回边的集合
         :return:
@@ -70,7 +74,7 @@ class TextRank(object):
                     tmp_set.add(self.word_list[i])
                 self.edge_dict[word] = tmp_set
 
-    def createMatrix(self):
+    def _create_matrix(self):
         """
         # 根据边的相连关系，构建矩阵
         :return:
@@ -94,16 +98,16 @@ class TextRank(object):
             for i in range(self.matrix.shape[0]):
                 self.matrix[i][j] /= sum
 
-    def calPR(self):
+    def _cal_PR(self):
         """
         # 根据textrank公式计算权重
         :return:
         """
         self.PR = np.ones([len(set(self.word_list)), 1])
-        for i in range(self.iternum):
+        for i in range(self.iter_num):
             self.PR = (1 - self.alpha) + self.alpha * np.dot(self.matrix, self.PR)
 
-    def printResult(self):
+    def _print_result(self):
         """
         # 输出词和相应的权重
         :return:
@@ -111,29 +115,52 @@ class TextRank(object):
         word_pr = {}
         for i in range(len(self.PR)):
             word_pr[self.index_dict[i]] = self.PR[i][0]
-        res = sorted(word_pr.items(), key=lambda x: x[1], reverse=True)
-        return res
+        if self.withWeight:
+            tags = sorted(word_pr.items(), key=lambda x: x[1], reverse=True)
+            # tags = sorted(word_pr.items(), key=itemgetter(1), reverse=True)
+        else:
+            tags = sorted(word_pr, key=word_pr.__getitem__, reverse=True)
+
+        if self.topK:
+            return tags[:self.topK]
+        else:
+            return tags
 
     def run(self):
         if type(self.sentence) is not list:
-            self.cutSentence()
+            self._cut_sentence()
         else:
             self.word_list = self.sentence
-        self.createNodes()
-        self.createMatrix()
-        self.calPR()
-        result = self.printResult()
+        self._create_nodes()
+        self._create_matrix()
+        self._cal_PR()
+        result = self._print_result()
         return result
 
 
-if __name__ == '__main__':
-    # s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
-    s = '【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。'
+def test():
+    s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。' \
+        '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
+        '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
+    # s = '【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。'
+
+    # s = u"水利部水资源司司长陈明忠9月29日在国务院新闻办举行的新闻发布会上透露，" \
+    #     u"根据刚刚完成了水资源管理制度的考核，有部分省接近了红线的指标，\n" \
+    #     u"有部分省超过红线的指标。对一些超过红线的地方，\n陈明忠表示，对一些取用水项目进行区域的限批，" \
+    #     u"严格地进行水资源论证和取水许可的批准。"
+
     tk = Tokenization.Tokenizer()
     s_list = tk.token(s)
-    tr = TextRank(s_list, 2, 0.85, 700)
+    tr = TextRank(s_list, 15, withWeight=True)
     res = tr.run()
-    for i in res:
-        print "keyword\tweight"
-        print(str(i[0]) + "\t" + str(i[1]))
-        # print "keyword: %s, weight: %s" % (i[0], i[1])
+    print("提取的%s个关键词: "% len(res))
+    print ",".join(item[0] for item in res)
+
+    # # 权重
+    # for i in res:
+    #     print "keyword\tweight"
+    #     print(str(i[0]) + "\t" + str(i[1]))
+
+
+if __name__ == '__main__':
+    test()

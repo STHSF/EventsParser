@@ -60,4 +60,17 @@ class DataPressing(object):
         else:
             return False
 
+    def find_keywords(self, content, key1, key2):
+        """
+        获取一大段文本之间两个关键字之间的内容
+        :param content:
+        :param key1:
+        :param key2:
+        :return:
+        """
+        form = re.compile(key1 + '(.*?)' + key2, re.S)
+        result = form.findall(content)
+        return result
+
+
 
