@@ -6,13 +6,13 @@
 @author: li
 @file: keywordsExtractor.py
 @time: 2018/11/19 10:19 AM
-基于textrank的关键词提取
+基于textRank的关键词提取
 """
 import sys
 import my_utils
 import logging.handlers
 import numpy as np
-from operator import itemgetter
+# from operator import itemgetter
 import Tokenization
 
 LOG_FILE = '../log/keywordsExtractor.log'
@@ -30,22 +30,32 @@ logger.info("running %s" % ' '.join(sys.argv))
 
 
 class TextRank(object):
-    def __init__(self, sentence, topK=20, withWeight=False, window=5, alpha=0.85, iter_num=1000):
-        self.sentence = sentence
+    def __init__(self, top_k=20, with_weight=False, window=5, alpha=0.85, iter_num=1000):
+        """
+        :param sentence:
+        :param top_k: return how many top keywords. `None` for all possible words.
+        :param with_weight: if True, return a list of (word, weight);
+                            if False, return a list of words.
+        :param window:
+        :param alpha:
+        :param iter_num:
+        """
+        # self.sentence = sentence
+        self.word_list = ""
         self.window = window
         self.alpha = alpha
         self.edge_dict = {}  # 记录节点的边连接字典
         self.iter_num = iter_num  # 迭代次数
-        self.topK = topK  # 提取关键词的个数
-        self.withWeight = withWeight
+        self.topK = top_k  # 提取关键词的个数
+        self.withWeight = with_weight
 
-    def _cut_sentence(self):
+    def _cut_sentence(self, sentence):
         """
         # 对句子进行分词
         :return:
         """
         tk = Tokenization.Tokenizer()
-        self.word_list = tk.token(self.sentence)
+        self.word_list = tk.token(sentence)
         # dicts.init()
         # jieba.load_userdict('user_dict.txt')
         # tag_filter = ['a', 'd', 'n', 'v']
@@ -92,13 +102,13 @@ class TextRank(object):
                 self.matrix[self.word_index[w]][self.word_index[key]] = 1
         # 归一化
         for j in range(self.matrix.shape[1]):
-            sum = 0
+            summary = 0
             for i in range(self.matrix.shape[0]):
-                sum += self.matrix[i][j]
+                summary += self.matrix[i][j]
             for i in range(self.matrix.shape[0]):
-                self.matrix[i][j] /= sum
+                self.matrix[i][j] /= summary
 
-    def _cal_PR(self):
+    def _cal_pr(self):
         """
         # 根据textrank公式计算权重
         :return:
@@ -126,19 +136,23 @@ class TextRank(object):
         else:
             return tags
 
-    def run(self):
-        if type(self.sentence) is not list:
-            self._cut_sentence()
+    def run(self, sentence):
+        if type(sentence) is not list:
+            self._cut_sentence(sentence)
         else:
-            self.word_list = self.sentence
+            self.word_list = sentence
         self._create_nodes()
         self._create_matrix()
-        self._cal_PR()
+        self._cal_pr()
         result = self._print_result()
         return result
 
 
 def test():
+    """
+    类接口测试
+    :return:
+    """
     s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。' \
         '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
         '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
@@ -151,16 +165,45 @@ def test():
 
     tk = Tokenization.Tokenizer()
     s_list = tk.token(s)
-    tr = TextRank(s_list, 15, withWeight=True)
-    res = tr.run()
-    print("提取的%s个关键词: "% len(res))
-    print ",".join(item[0] for item in res)
+    # textrank = TextRank(s_list, top_k=15, with_weight=True)
+    textrank = TextRank(top_k=15)
+    res = textrank.run(s_list)
+    print("提取的%s个关键词: " % len(res))
+    if textrank.withWeight:
+        print ",".join(item[0] for item in res)
+        print ",".join(str(item[1]) for item in res)
+    else:
+        print ",".join(str(item) for item in res)
 
-    # # 权重
-    # for i in res:
-    #     print "keyword\tweight"
-    #     print(str(i[0]) + "\t" + str(i[1]))
+
+def muli_extract_test():
+    import time
+    from multiprocessing import Pool, Queue, Process
+    import multiprocessing as mp
+
+    s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。' \
+        '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
+        '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
+
+    tk = Tokenization.Tokenizer()
+    s_list = tk.token(s)
+    t0 = time.time()
+    textrank = TextRank(top_k=15)
+    for i in range(10000):
+        textrank.run(s_list)
+    print("串行处理花费时间{t}".format(t=time.time()-t0))
+
+    pool = Pool(processes=int(mp.cpu_count()))
+    t1 = time.time()
+    textrank = TextRank(top_k=15)
+    for i in range(10000):
+        pool.apply_async(textrank.run, (s_list,))
+    # pool.map(textrank.run, s_list)
+    pool.close()
+    pool.join()
+    print("并行处理花费时间{t}s".format(t=time.time()-t1))
 
 
 if __name__ == '__main__':
-    test()
+    # test()
+    muli_extract_test()
