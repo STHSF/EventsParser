@@ -10,6 +10,8 @@
 import os
 import dataReader
 import pandas as pd
+import numpy as np
+from gensim.models.word2vec import Word2Vec
 from utills import Tokenization, DataProcess, dicts, Vector
 
 
@@ -69,26 +71,42 @@ class mainProcess(object):
         else:
             print("[Exception] word2vec的保存路径已经存在。")
 
-    def word2vec_load(self):
-        # word2vec 训练测试
+    def word2vec_load(self, model_path=None):
+        """
+        load word2vec model
+        :return:
+        """
+        if model_path:
+            model_path = model_path
+        else:
+            model_path = "/Users/li/PycharmProjects/event_parser/src/model/model_300_2_1"
+
         wd_conf = {"size": 300,
                    "window": 5,
                    "min_count": 1}
         model_wd = Vector.word2vecs(wd_conf)
-        model_path = "/Users/li/PycharmProjects/event_parser/src/model/model_300_2_1"
-
         model_wd = model_wd.load_model(model_path)
-        print model_wd.wv[u'食品饮料']
-
+        # print model_wd.wv[u'食饮料']
         return model_wd
 
-    def word_vector(self, word):
-        pass
-
+    def word_vector(self, word, w2v_model):
+        """
+        查找某个词的词向量
+        :param word: 需要查找的词
+        :param w2v_model: 词向量 shape = (vector_size, )
+        :return:
+        """
+        try:
+            vector = w2v_model.wv[word]
+            return vector
+        except KeyError:
+            return np.zeros(w2v_model.vector_size)
 
 
 if __name__ == '__main__':
     mp = mainProcess()
     # mp.data_save()
     # mp.word2vec_train()
-    mp.word2vec_load()
+    model_w2v = mp.word2vec_load()
+    var = mp.word_vector(u'食品饮料', model_w2v)
+    print var
