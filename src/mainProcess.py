@@ -12,14 +12,20 @@ import dataReader
 import pandas as pd
 import numpy as np
 from gensim.models.word2vec import Word2Vec
-from utills import Tokenization, DataProcess, dicts, Vector
+from utills.Tokenization import load_stop_words
+from utills.DataProcess import DataPressing
+from utills import Tokenization, dicts, Vector
 
 
 class mainProcess(object):
 
     def data_save(self):
-        tk = Tokenization.Tokenizer()
-        dp = DataProcess.DataPressing()
+        """
+        读取数据库中的内容，文本预处理之后，保存成本地，用于词向量训练
+        :return:
+        """
+        data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
+        tk = Tokenization.Tokenizer(data_process, dict_init, stop_words)  # 分词
 
         sql_list = ["ths_news", "ycj_news", "xueqiu_news"]
         df_set = []
@@ -34,14 +40,14 @@ class mainProcess(object):
         for index, row in df_result.iterrows():
             title, content = row["title"], row["content"]
             if title is not None and title:
-                title = dp.no_remove(title)
-                if not dp.useless_filter(title, dicts.stock_dict):
+                title = data_process.no_remove(title)
+                if not data_process.useless_filter(title, dicts.stock_dict):
                     title_list = tk.token(title)
                     res_lists.append(title_list)
 
             if content is not None and content:
-                content = dp.no_remove(content)
-                if not dp.useless_filter(content, dicts.stock_dict):
+                content = data_process.no_remove(content)
+                if not data_process.useless_filter(content, dicts.stock_dict):
                     content_list = tk.token(content)
                     res_lists.append(content_list)
 
