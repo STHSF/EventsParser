@@ -12,36 +12,11 @@
         │   ├── __init__.py
         │   └── c2.txt
         ├── configure.py
-        ├── corpus
-        │   ├── [�\205��\213�\206\233]�\215�\205��\225��\215�.txt
-        │   ├── but.txt
-        │   ├── dic.txt
-        │   ├── eng.txt
-        │   ├── fou.txt
-        │   ├── limit.dict
-        │   ├── senti.txt
-        │   ├── senti_neg.txt
-        │   ├── senti_pos.txt
-        │   ├── stock_words.txt
-        │   ├── stop_words_CN
-        │   ├── �\223�\202�
-        │   ├── �\216\237�\226\231
-        │   ├── �\226��\236
-        │   ├── �\234��\236\204
-        │   ├── �\237��\221
-        │   │   ├── zhi_neg.txt
-        │   │   └── zhi_pos.txt
-        │   ├── �\226��\236_stock
-        │   └── �\213度�\211��\215_datatang.txt
         ├── dataReader.py
         ├── discussParser
         │   ├── __init__.py
         │   └── tonghuashun.py
         ├── log
-        │   ├── keywords.log
-        │   ├── keywordsExtractor.log
-        │   ├── tokenization.log
-        │   └── vectors.log
         ├── mainProcess.py
         ├── model
         │   ├── __init__.py
