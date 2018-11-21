@@ -69,6 +69,7 @@ class Tokenizer(object):
                 result.append(word)
         return result
 
+
 def test():
     t = Tokenizer()
     data_processing = DataPressing()
@@ -88,5 +89,41 @@ def test():
         print(i)
 
 
+def paralize_test(text):
+    t = Tokenizer()
+    restult = t.token(text)
+    return restult
+
+
+def multi_token_test():
+    import time
+    from multiprocessing import Pool
+    import multiprocessing as mp
+
+    s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。' \
+        '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
+        '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
+
+    t0 = time.time()
+    for i in range(10):
+        res1 = paralize_test(s)
+        print res1
+    print("串行处理花费时间{t}s".format(t=time.time()-t0))
+
+    t1 = time.time()
+    res2_l = []
+    pool = Pool(processes=int(mp.cpu_count()))
+    for i in range(10):
+        res = pool.apply_async(paralize_test, (s,))
+        res2_l.append(res)
+
+    for k in res2_l:
+        print k.get()
+    pool.close()
+    pool.join()
+    print("并行处理花费时间{t}s".format(t=time.time()-t1))
+
+
 if __name__ == '__main__':
     test()
+    # multi_token_test()

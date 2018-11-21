@@ -176,6 +176,11 @@ def test():
         print ",".join(str(item) for item in res)
 
 
+def paralize_test(text):
+    textrank = TextRank(top_k=15)
+    return textrank.run(text)
+
+
 def muli_extract_test():
     import time
     from multiprocessing import Pool, Queue, Process
@@ -188,17 +193,20 @@ def muli_extract_test():
     tk = Tokenization.Tokenizer()
     s_list = tk.token(s)
     t0 = time.time()
-    textrank = TextRank(top_k=15)
     for i in range(10000):
-        textrank.run(s_list)
+        paralize_test(s_list)
     print("串行处理花费时间{t}".format(t=time.time()-t0))
 
     pool = Pool(processes=int(mp.cpu_count()))
+    res_l = []
     t1 = time.time()
-    textrank = TextRank(top_k=15)
     for i in range(10000):
-        pool.apply_async(textrank.run, (s_list,))
-    # pool.map(textrank.run, s_list)
+        res = pool.apply_async(paralize_test, (s_list,))
+        res_l.append(res)
+    # pool.map(paralize_test, s_list)
+
+    # for i in res_l:
+    #     print i.get()
     pool.close()
     pool.join()
     print("并行处理花费时间{t}s".format(t=time.time()-t1))
