@@ -69,8 +69,7 @@ class Tokenizer(object):
                 result.append(word)
         return result
 
-
-if __name__ == '__main__':
+def test():
     t = Tokenizer()
     data_processing = DataPressing()
     # print(["大智慧".decode("utf8")])
@@ -87,3 +86,7 @@ if __name__ == '__main__':
     print('Type of result： {}。'.format(type(result)))
     for i in result:
         print(i)
+
+
+if __name__ == '__main__':
+    test()
