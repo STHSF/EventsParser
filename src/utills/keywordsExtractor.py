@@ -9,11 +9,15 @@
 基于textRank的关键词提取
 """
 import sys
+import dicts
 import my_utils
 import logging.handlers
 import numpy as np
 # from operator import itemgetter
 import Tokenization
+from Tokenization import load_stop_words
+from DataProcess import DataPressing
+
 
 LOG_FILE = '../log/keywordsExtractor.log'
 my_utils.check_path(LOG_FILE)
@@ -54,7 +58,9 @@ class TextRank(object):
         # 对句子进行分词
         :return:
         """
-        tk = Tokenization.Tokenizer()
+        # 使用多进程的时候需要修改一下
+        data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
+        tk = Tokenization.Tokenizer(data_process, dict_init, stop_words)
         self.word_list = tk.token(sentence)
         # dicts.init()
         # jieba.load_userdict('user_dict.txt')
@@ -163,13 +169,14 @@ def test():
     #     u"有部分省超过红线的指标。对一些超过红线的地方，\n陈明忠表示，对一些取用水项目进行区域的限批，" \
     #     u"严格地进行水资源论证和取水许可的批准。"
 
-    tk = Tokenization.Tokenizer()
+    data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
+    tk = Tokenization.Tokenizer(data_process, dict_init, stop_words)
     s_list = tk.token(s)
-    # textrank = TextRank(s_list, top_k=15, with_weight=True)
-    textrank = TextRank(top_k=15)
-    res = textrank.run(s_list)
+    # text_rank = TextRank(s_list, top_k=15, with_weight=True)
+    text_rank = TextRank(top_k=15)
+    res = text_rank.run(s_list)
     print("提取的%s个关键词: " % len(res))
-    if textrank.withWeight:
+    if text_rank.withWeight:
         print ",".join(item[0] for item in res)
         print ",".join(str(item[1]) for item in res)
     else:
@@ -177,8 +184,8 @@ def test():
 
 
 def paralize_test(text):
-    textrank = TextRank(top_k=15)
-    return textrank.run(text)
+    text_rank = TextRank(top_k=15)
+    return text_rank.run(text)
 
 
 def muli_extract_test():
@@ -190,7 +197,11 @@ def muli_extract_test():
         '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
         '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
 
-    tk = Tokenization.Tokenizer()
+    dataprocess = DataPressing()
+    dict_init = dicts.init()
+    stop_words = load_stop_words()
+    # 分词
+    tk = Tokenization.Tokenizer(dataprocess, dict_init, stop_words)
     s_list = tk.token(s)
     t0 = time.time()
     for i in range(10000):

@@ -37,23 +37,27 @@ logger.info("running %s" % ' '.join(sys.argv))
 stopwords = globals()
 
 
+def load_stop_words():
+    # 停用词库准备, 构建停用词表
+    conf = Configure()
+    stop_words_path = conf.stop_words_path
+    try:
+        stop_word = codecs.open(stop_words_path, 'r', encoding='utf8').readlines()
+        stop_words = [w.strip() for w in stop_word]
+        print("[Info] Stopwords 导入成功！")
+        return stop_words
+    except BaseException as e:
+        print('[Exception] Stop Words Exception: {0}'.format(e))
+
+
 class Tokenizer(object):
-    def __init__(self):
-        self.data_precessing = DataPressing()
-        self.dicts = dicts.init()  # 初始化人工词典
+    def __init__(self, data_process, dict_init, stop_words):
+        self.data_precessing = data_process
+        self.dicts = dict_init  # 初始化人工词典
         # 按照词性去停用词
         self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't',
                           'uj', 'm', 'f', 'r', 'a', 'v']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
-
-        # 停用词库准备, 构建停用词表
-        conf = Configure()
-        stop_words_path = conf.stop_words_path
-        try:
-            stopwords = codecs.open(stop_words_path, 'r', encoding='utf8').readlines()
-            self.stopwords = [w.strip() for w in stopwords]
-            print("[Info] Stopwords 导入成功！")
-        except BaseException as e:
-            print('[Exception] Stop Words Exception: {0}'.format(e))
+        self.stopwords = stop_words
 
     def token(self, text):
         """
@@ -71,8 +75,10 @@ class Tokenizer(object):
 
 
 def test():
-    t = Tokenizer()
     data_processing = DataPressing()
+    dict_init = dicts.init()
+    stop_words = load_stop_words()
+    tk = Tokenizer(data_processing, dict_init, stop_words)
     # print(["大智慧".decode("utf8")])
     print(["【今日题材】".decode("utf8")])
     print(["关注机会。".decode("utf-8")])
@@ -83,14 +89,14 @@ def test():
     print(data_processing.useless_remove("[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
 
     # 对content中的内容进行去停，去杂质词，分词
-    result = t.token("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的")
+    result = tk.token("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的")
     print('Type of result： {}。'.format(type(result)))
     for i in result:
         print(i)
 
 
-def paralize_test(text):
-    t = Tokenizer()
+def paralize_test(text, dataprocess, dict_init, stop_words):
+    t = Tokenizer(dataprocess, dict_init, stop_words)
     restult = t.token(text)
     return restult
 
@@ -104,26 +110,32 @@ def multi_token_test():
         '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
         '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
 
+    dataprocess = DataPressing()
+    dict_init = dicts.init()
+    stop_words = load_stop_words()
+    # 串行处理
     t0 = time.time()
-    for i in range(10):
-        res1 = paralize_test(s)
-        print res1
+    res1_l = []
+    for i in range(10000):
+        res1 = paralize_test(s, dataprocess, dict_init, stop_words)
+        res1_l.append(res1)
     print("串行处理花费时间{t}s".format(t=time.time()-t0))
 
+    # 并行处理
     t1 = time.time()
     res2_l = []
-    pool = Pool(processes=int(mp.cpu_count()))
-    for i in range(10):
-        res = pool.apply_async(paralize_test, (s,))
+    pool = Pool(processes=int(mp.cpu_count()*0.8))
+    for i in range(10000):
+        res = pool.apply_async(paralize_test, ((s, dataprocess, dict_init, stop_words),))
         res2_l.append(res)
-
-    for k in res2_l:
-        print k.get()
+    # 获取数据
+    # for k in res2_l:
+    #     print k.get()
     pool.close()
     pool.join()
     print("并行处理花费时间{t}s".format(t=time.time()-t1))
 
 
 if __name__ == '__main__':
-    test()
-    # multi_token_test()
+    # test()
+    multi_token_test()
