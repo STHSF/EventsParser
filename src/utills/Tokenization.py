@@ -102,6 +102,10 @@ def paralize_test(text, dataprocess, dict_init, stop_words):
 
 
 def multi_token_test():
+    """
+    多进程测试
+    :return:
+    """
     import time
     from multiprocessing import Pool
     import multiprocessing as mp

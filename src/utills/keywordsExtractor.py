@@ -34,7 +34,7 @@ logger.info("running %s" % ' '.join(sys.argv))
 
 
 class TextRank(object):
-    def __init__(self, top_k=20, with_weight=False, window=5, alpha=0.85, iter_num=1000):
+    def __init__(self, top_k=20, with_weight=False, window=5, alpha=0.85, min_diff=1000):
         """
         :param sentence:
         :param top_k: return how many top keywords. `None` for all possible words.
@@ -42,14 +42,14 @@ class TextRank(object):
                             if False, return a list of words.
         :param window:
         :param alpha:
-        :param iter_num:
+        :param min_diff:
         """
         # self.sentence = sentence
         self.word_list = ""
         self.window = window
         self.alpha = alpha
         self.edge_dict = {}  # 记录节点的边连接字典
-        self.iter_num = iter_num  # 迭代次数
+        self.iter_num = min_diff  # 设置收敛阈值
         self.topK = top_k  # 提取关键词的个数
         self.withWeight = with_weight
 
@@ -119,6 +119,7 @@ class TextRank(object):
         # 根据textrank公式计算权重
         :return:
         """
+        #
         self.PR = np.ones([len(set(self.word_list)), 1])
         for i in range(self.iter_num):
             self.PR = (1 - self.alpha) + self.alpha * np.dot(self.matrix, self.PR)
@@ -189,6 +190,10 @@ def paralize_test(text):
 
 
 def muli_extract_test():
+    """
+    多进程测试
+    :return:
+    """
     import time
     from multiprocessing import Pool, Queue, Process
     import multiprocessing as mp
