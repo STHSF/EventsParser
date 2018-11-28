@@ -15,6 +15,9 @@ from gensim.models.word2vec import Word2Vec
 from utills.Tokenization import load_stop_words
 from utills.DataProcess import DataPressing
 from utills import Tokenization, dicts, Vector
+from utills import keywordsExtractor
+from utills import news
+from multiprocessing import Pool
 
 
 class mainProcess(object):
@@ -36,26 +39,67 @@ class mainProcess(object):
         df_result = pd.concat(df_set, join="inner")
         # df_result.ix[:, ["content"]].apply(tk.token)
         # 提取dataframe中的title和content的内容，然后分别进行预处理，
+
+        # 方式一、标题和正文保存为同一个新闻，且新闻标题和正文同时存在
         res_lists = []
-        for index, row in df_result.iterrows():
-            title, content = row["title"], row["content"]
-            if title is not None and title:
-                title = data_process.no_remove(title)
-                if not data_process.useless_filter(title, dicts.stock_dict):
-                    title_list = tk.token(title)
-                    res_lists.append(title_list)
+        for i in range(len(df_result)):
+            title = df_result.iloc[i]['title']
+            content = df_result.iloc[i]['content']
+            unix_time = df_result.iloc[i]['unix_time']
+            if content and title:
+                string = title.strip() + content.strip()
+                string_list = tk.token(string)
+                if not data_process.useless_filter(string_list, dicts.stock_dict):
+                    keyword_list = keywordsExtractor.paralize_test(string_list)
+                    res_lists.append((keyword_list, unix_time))
 
-            if content is not None and content:
-                content = data_process.no_remove(content)
-                if not data_process.useless_filter(content, dicts.stock_dict):
-                    content_list = tk.token(content)
-                    res_lists.append(content_list)
-
-        file_out = open("text.txt", "w")
-        for index in res_lists:
-            item = ",".join(item for item in index)
-            file_out.write(item.encode("utf8") + "\n")
+        file_out = open("text_test.txt", "w")
+        for index, content in enumerate(res_lists):
+            item = ",".join(item for item in content[0])
+            file_out.write(str(index) + "\t" + str(content[1]) + "\t" + item.encode("utf8") + "\n")
         file_out.close()
+
+        # # 方式二、标题和正文保存为同一个新闻
+        # res_lists = []
+        # for i in range(len(df_result)):
+        #     title = df_result.iloc[i]['title']
+        #     if title is None:
+        #         title = ''
+        #     content = df_result.iloc[i]['content']
+        #     if content is None:
+        #         content = ''
+        #     string = title.strip() + content.strip()
+        #     if not data_process.useless_filter(string, dicts.stock_dict):
+        #         string_list = tk.token(string)
+        #         keyword_list = keywordsExtractor.paralize_test(string_list)
+        #         res_lists.append(keyword_list)
+        #
+        # file_out = open("text.txt", "w")
+        # for index, content in enumerate(res_lists):
+        #     item = ",".join(item for item in content)
+        #     file_out.write(str(index) + "\t" + item.encode("utf8") + "\n")
+        # file_out.close()
+
+        # 方式三、标题和正文分开保存
+        # for index, row in df_result.iterrows():
+        #     title, content = row["title"], row["content"]
+        #     if title is not None and title:
+        #         title = data_process.no_remove(title)
+        #         if not data_process.useless_filter(title, dicts.stock_dict):
+        #             title_list = tk.token(title)
+        #             res_lists.append(title_list)
+        #
+        #     if content is not None and content:
+        #         content = data_process.no_remove(content)
+        #         if not data_process.useless_filter(content, dicts.stock_dict):
+        #             content_list = tk.token(content)
+        #             res_lists.append(content_list)
+        #
+        # file_out = open("text.txt", "w")
+        # for index, content in enumerate(res_lists):
+        #     item = ",".join(item for item in content)
+        #     file_out.write(str(index) + "\t" + item.encode("utf8") + "\n")
+        # file_out.close()
 
     def word2vec_train(self):
         # load training data
@@ -111,8 +155,8 @@ class mainProcess(object):
 
 if __name__ == '__main__':
     mp = mainProcess()
-    # mp.data_save()
+    mp.data_save()
     # mp.word2vec_train()
-    model_w2v = mp.word2vec_load()
-    var = mp.word_vector(u'食品饮料', model_w2v)
-    print var
+    # model_w2v = mp.word2vec_load()
+    # var = mp.word_vector(u'食品饮料', model_w2v)
+    # print var

@@ -48,6 +48,8 @@ def init():
     zhi_po_path = dic_path + "/知网/zhi_pos.txt"
     jg_path = dic_path + "/机构"
 
+    # 添加基金公司实体名字，比如("工银瑞信基金"， "华泰柏瑞基金"， "东方基金")
+
     # 结巴新词
     word_add = set()
 

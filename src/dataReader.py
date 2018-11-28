@@ -56,7 +56,7 @@ def get_full_data(sheet_name):
     :return:
     """
     # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
-    sql = "SELECT title, content FROM xavier_db.%s" % sheet_name
+    sql = "SELECT distinct content, title, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
     df_result = pd.read_sql(sql, engine_mysql)
     return df_result
 

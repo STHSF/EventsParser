@@ -74,14 +74,14 @@ class Tokenizer(object):
         return result
 
 
-def test():
+def dtest():
     data_processing = DataPressing()
     dict_init = dicts.init()
     stop_words = load_stop_words()
     tk = Tokenizer(data_processing, dict_init, stop_words)
     # print(["大智慧".decode("utf8")])
     print(["【今日题材】".decode("utf8")])
-    print(["关注机会。".decode("utf-8")])
+    print(["关注同".decode("utf-8")])
 
     # 剔除杂质词
     print(data_processing.no_remove("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。"))
@@ -141,5 +141,5 @@ def multi_token_test():
 
 
 if __name__ == '__main__':
-    # test()
-    multi_token_test()
+    dtest()
+    # multi_token_test()

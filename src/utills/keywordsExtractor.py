@@ -155,7 +155,7 @@ class TextRank(object):
         return result
 
 
-def test():
+def dtest():
     """
     类接口测试
     :return:
@@ -164,7 +164,7 @@ def test():
         '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
         '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
     # s = '【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。'
-
+    s = '中兴通讯（000063）在经历七个一字跌停板后，于今天打开跌停板。债转股开盘大涨，天津普林（002134）、信达地产（600657）、海德股份（000567）集体涨停，长航凤凰（000520）、浙江东方（600120）、陕国投A（000563）大涨，消息面上，央行宣布定向降准0.5个百分点，将重点支持债转股。中兴通讯机构最低估值12.02元/股在复牌之前，多家基金公司对中兴通讯估值大多调整至20.54元/股。连续7个跌停板后，中兴通讯A股股价早就已经跌穿这一价格。据《中国经营报》记者不完全统计，6月20日～22日，多家基金公司再做出调整中兴通讯A股估值的公告，下调公司包括工银瑞信基金、华泰柏瑞基金、东方基金、大摩华鑫基金、融通基金、大成基金等22家基金公司。值得注意的是，此次基金公司估值下调幅度并不一致，调整估值在每股12.02～16.64元之间。其中，大摩华鑫基金、融通基金和安信基金给出的估值最高，为每股16.64元，而工银瑞信基金、富国基金和泰达宏利基金给出的估值最低，为每股12.02元。关注同花顺财经（ths518），获取更多机会'
     # s = u"水利部水资源司司长陈明忠9月29日在国务院新闻办举行的新闻发布会上透露，" \
     #     u"根据刚刚完成了水资源管理制度的考核，有部分省接近了红线的指标，\n" \
     #     u"有部分省超过红线的指标。对一些超过红线的地方，\n陈明忠表示，对一些取用水项目进行区域的限批，" \
@@ -173,6 +173,7 @@ def test():
     data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
     tk = Tokenization.Tokenizer(data_process, dict_init, stop_words)
     s_list = tk.token(s)
+    top_k = int(len(s_list) * 0.1)
     # text_rank = TextRank(s_list, top_k=15, with_weight=True)
     text_rank = TextRank(top_k=15)
     res = text_rank.run(s_list)
@@ -187,6 +188,20 @@ def test():
 def paralize_test(text):
     text_rank = TextRank(top_k=15)
     return text_rank.run(text)
+
+
+def multi_extract(s_lists):
+    from multiprocessing import Pool, Queue, Process
+    import multiprocessing as mp
+    res_l = []
+    pool = Pool(processes=int(mp.cpu_count()))
+    for s_list in s_lists:
+        res = pool.apply_async(paralize_test, (s_list,))
+        res_l.append(res.get())
+    pool.close()
+    pool.join()
+
+    return res_l
 
 
 def muli_extract_test():
@@ -229,5 +244,5 @@ def muli_extract_test():
 
 
 if __name__ == '__main__':
-    # test()
-    muli_extract_test()
+    dtest()
+    # muli_extract_test()

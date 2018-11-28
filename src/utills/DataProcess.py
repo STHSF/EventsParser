@@ -17,8 +17,8 @@ class DataPressing(object):
     def __init__(self):
         # 杂质词
         self.pattern_word = u'(\[AI\u51b3\u7b56\])|(\u3010\u4eca\u65e5\u9898\u6750\u3011)' \
-                            u'|(\u5173\u6ce8.*\u673a\u4f1a\u3002)'
-        #
+                            u'|(\u5173\u6ce8\u540c.*\u673a\u4f1a\u3002)'
+        # [关注同花顺财经(ths518)，获取更多机会。]
         self.pattern_text = u'(\[AI\u51b3\u7b56\])'
         self.num = 4
 
