@@ -26,6 +26,7 @@ def tfidf_vector(corpus_path):
             target_train.append(category)
             corpus_train.append(words)
     print "build train-corpus done!!"
+    # replace 必须加，保存训练集的特征
     count_vectorizer = CountVectorizer(max_df=0.4, min_df=0.01, decode_error="replace")
     counts_train = count_vectorizer.fit_transform(corpus_train)
 
@@ -35,6 +36,8 @@ def tfidf_vector(corpus_path):
     print "the shape of train is" + repr(counts_train.shape)
 
     tfidftransformer = TfidfTransformer()
+    # 注意在训练的时候必须用vectorizer.fit_transform、tfidftransformer.fit_transform
+    # 在预测的时候必须用vectorizer.transform、tfidftransformer.transform
     tfidf_train = tfidftransformer.fit_transform(counts_train)
     # tfidf_train = tfidftransformer.fit(counts_train).transform(counts_train)
 
@@ -52,25 +55,6 @@ def tfidf_vector(corpus_path):
         pickle.dump(word_dict, fw)
 
     return tfidf_train, word_dict
-
-# train_content = segmentWord(X_train)
-# test_content = segmentWord(X_test)
-# # replace 必须加，保存训练集的特征
-# vectorizer = CountVectorizer(decode_error="replace")
-# tfidftransformer = TfidfTransformer()
-# # 注意在训练的时候必须用vectorizer.fit_transform、tfidftransformer.fit_transform
-# # 在预测的时候必须用vectorizer.transform、tfidftransformer.transform
-# vec_train = vectorizer.fit_transform(train_content)
-# tfidf = tfidftransformer.fit_transform(vec_train)
-#
-# # 保存经过fit的vectorizer 与 经过fit的tfidftransformer,预测时使用
-# feature_path = 'models/feature.pkl'
-# with open(feature_path, 'wb') as fw:
-#     pickle.dump(vectorizer.vocabulary_, fw)
-#
-# tfidftransformer_path = 'models/tfidftransformer.pkl'
-# with open(tfidftransformer_path, 'wb') as fw:
-#     pickle.dump(tfidftransformer, fw)
 
 
 def load_tfidf_vectorizer(corpus_path):
