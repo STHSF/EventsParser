@@ -148,10 +148,14 @@ class TextRank(object):
             self._cut_sentence(sentence)
         else:
             self.word_list = sentence
-        self._create_nodes()
-        self._create_matrix()
-        self._cal_pr()
-        result = self._print_result()
+
+        if len(self.word_list) > 1:  # bug 如果sentence分词后只有一个单词，则直接输出
+            self._create_nodes()
+            self._create_matrix()
+            self._cal_pr()
+            result = self._print_result()
+        else:
+            result = self.word_list
         return result
 
 

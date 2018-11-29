@@ -109,7 +109,7 @@ def load_data_test():
 
 def data_save():
     """
-    读取数据库中的内容，文本预处理之后，保存成本地，用于词向量训练
+    读取数据库中的内容，文本预处理之后，保存成本地，用于词向量训练，关键词提取等操作
     :return:
     """
     data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
@@ -132,19 +132,21 @@ def data_save():
         content = df_result.iloc[i]['content']
         unix_time = df_result.iloc[i]['unix_time']
         if content and title:
-            string = title.strip() + content.strip()
+            string = title.strip()
+            # string = title.strip() + content.strip()
             string_list = tk.token(string)
             if not data_process.useless_filter(string_list, dicts.stock_dict):
                 keyword_list = keywordsExtractor.paralize_test(string_list)
-                res_lists.append((keyword_list, unix_time))
+                res_lists.append((string, keyword_list, unix_time))  # 将正文
 
-    file_out = open("text_keyword.txt", "w")
+    file_out = open("text_title_cut.txt", "w")
     for index, content in enumerate(res_lists):
-        item = ",".join(item for item in content[0])
-        file_out.write(str(index) + "\t" + str(content[1]) + "\t" + item.encode("utf8") + "\n")
+        item = ",".join(item for item in content[1])
+        # file_out.write(str(index) + "\t" + str(content[2]) + "\t" + content[0].encode("utf8") + "\n")
+        file_out.write(str(index) + "\t" + str(content[2]) + "\t" + item.encode("utf8") + "\n")
     file_out.close()
 
-    # # 方式二、标题和正文保存为同一个新闻
+    # # # 方式二、标题和正文保存为同一个新闻
     # res_lists = []
     # for i in range(len(df_result)):
     #     title = df_result.iloc[i]['title']

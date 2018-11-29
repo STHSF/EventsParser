@@ -100,9 +100,9 @@ class OnePassCluster:
             min_distance = cosine_distance(vec_a=self.vectors[0],
                                            vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小cosine距离
 
-            print("index:{}, min_distance:{}".format(index, min_distance))
+            # print("index:{}, min_distance:{}".format(index, min_distance))
             min_cluster_index = 0  # 最小距离的簇的索引
-            print "len of cluster_list %s " % len(self.cluster_list)
+            # print "len of cluster_list %s " % len(self.cluster_list)
             for cluster_index, cluster in enumerate(self.cluster_list[1:]):
                 # enumerate会将数组或列表组成一个索引序列
                 # 寻找距离最小的簇，记录下距离和对应的簇的索引
@@ -110,7 +110,7 @@ class OnePassCluster:
                 #                               vec_b=cluster.centroid)
                 distance = cosine_distance(vec_a=self.vectors[index],
                                            vec_b=cluster.centroid)
-                print("cluster_index:{}, distance:{}".format(cluster_index, distance))
+                # print("cluster_index:{}, distance:{}".format(cluster_index, distance))
                 if distance > min_distance:  # 使用欧式距离是改为小于号
                     min_distance = distance
                     min_cluster_index = cluster_index + 1

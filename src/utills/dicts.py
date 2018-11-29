@@ -137,6 +137,8 @@ def init():
 
     # 结巴添加新词
     jieba.add_word("淡定")
+    # jieba.add_word("加多宝")
+    # jieba.add_word("红罐")
     jieba.add_word("非公开")
     jieba.add_word("不成人形")
     jieba.add_word("中美贸易战")

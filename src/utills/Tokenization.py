@@ -56,7 +56,7 @@ class Tokenizer(object):
         self.dicts = dict_init  # 初始化人工词典
         # 按照词性去停用词
         self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't',
-                          'uj', 'm', 'f', 'r', 'a', 'v']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
+                          'uj', 'm', 'f', 'r']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
         self.stopwords = stop_words
 
     def token(self, text):
@@ -89,7 +89,8 @@ def dtest():
     print(data_processing.useless_remove("[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
 
     # 对content中的内容进行去停，去杂质词，分词
-    result = tk.token("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的")
+    # result = tk.token("【今日题材】[AI决策]加多宝的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的")
+    result = tk.token("加多宝重推红罐 是否能再与王老吉争锋")
     print('Type of result： {}。'.format(type(result)))
     for i in result:
         print(i)

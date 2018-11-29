@@ -10,5 +10,3 @@
 
 import time, datetime
 now = int(time.time())
-
-print now

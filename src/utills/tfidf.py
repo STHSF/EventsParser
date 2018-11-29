@@ -110,7 +110,7 @@ def tfidf_vector_test(corpus_path):
     return tfidf_train, word_dict
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     corpus_train = "/Users/li/PycharmProjects/event_parser/src/text.txt"
     tfidf_train, word_dict = tfidf_vector(corpus_train)
     # tfidf_test = load_tfidf_vectorizer(corpus_train)
