@@ -26,7 +26,7 @@ class mainProcess(object):
 
 if __name__ == '__main__':
     mp = mainProcess()
-    mp.data_save()
+    # mp.data_save()
     # mp.word2vec_train()
     # model_w2v = mp.word2vec_load()
     # var = mp.word_vector(u'食品饮料', model_w2v)

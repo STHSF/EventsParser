@@ -138,7 +138,7 @@ def data_save():
                 keyword_list = keywordsExtractor.paralize_test(string_list)
                 res_lists.append((keyword_list, unix_time))
 
-    file_out = open("text_test.txt", "w")
+    file_out = open("text_keyword.txt", "w")
     for index, content in enumerate(res_lists):
         item = ",".join(item for item in content[0])
         file_out.write(str(index) + "\t" + str(content[1]) + "\t" + item.encode("utf8") + "\n")
@@ -189,11 +189,4 @@ def data_save():
 
 if __name__ == '__main__':
     # load_data_test()
-    a1 = get_news_data()
-    a2 = get_datasest()
-
-    print np.shape(a1[0])
-    print np.shape(a2[0])
-
-    print a1[0]
-    print a2[0]
+    data_save()

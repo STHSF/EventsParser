@@ -16,15 +16,16 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 path = "/Users/li/PycharmProjects/event_parser/src/"
 
+
 def tfidf_vector(corpus_path):
     """vectorize the training documents"""
     corpus_train = []
     target_train = []
     for line in open(corpus_path):
         line = line.strip().split('\t')
-        if len(line) == 2:
-            category = line[1]
-            words = line[1]
+        if len(line) == 3:
+            category = line[0]
+            words = line[2]
             target_train.append(category)
             corpus_train.append(words)
     print "build train-corpus done!!"
@@ -64,9 +65,9 @@ def load_tfidf_vectorizer(corpus_path):
     target_test = []
     for line in open(corpus_path):
         line = line.strip().split('\t')
-        if len(line) == 2:
-            category = line[1]
-            words = line[1]
+        if len(line) == 3:
+            category = line[0]
+            words = line[2]
             target_test.append(category)
             corpus_test.append(words)
 
@@ -80,6 +81,33 @@ def load_tfidf_vectorizer(corpus_path):
     test_tfidf = tfidftransformer.transform(loaded_vec.transform(corpus_test))
 
     return test_tfidf
+
+
+def tfidf_vector_test(corpus_path):
+    """vectorize the input documents"""
+    corpus_train = []
+    # 利用train-corpus提取特征
+    target_train = []
+    for line in open(corpus_path):
+        line = line.strip().split('\t')
+        if len(line) == 2:
+            words = line[1]
+            category = line[0]
+            target_train.append(category)
+            corpus_train.append(words)
+    print "build train-corpus done!!"
+    count_v1 = CountVectorizer(max_df=0.4, min_df=0.01)
+    # count_v1 = CountVectorizer()
+    counts_train = count_v1.fit_transform(corpus_train)
+
+    word_dict = {}
+    for index, word in enumerate(count_v1.get_feature_names()):
+        word_dict[index] = word
+
+    print "the shape of train is " + repr(counts_train.shape)
+    tfidftransformer = TfidfTransformer()
+    tfidf_train = tfidftransformer.fit(counts_train).transform(counts_train)
+    return tfidf_train, word_dict
 
 
 if __name__=='__main__':
