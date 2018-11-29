@@ -14,6 +14,9 @@ import numpy as np
 import pandas as pd
 from utills.DataSource import GetDataEngine
 from utills import Tokenization, DataProcess, dicts
+from utills.Tokenization import load_stop_words
+from utills.DataProcess import DataPressing
+from utills import keywordsExtractor
 
 TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
@@ -102,6 +105,86 @@ def load_data_test():
         item = ",".join(item for item in index)
         file_out.write(item.encode("utf8") + "\n")
     file_out.close()
+
+
+def data_save():
+    """
+    读取数据库中的内容，文本预处理之后，保存成本地，用于词向量训练
+    :return:
+    """
+    data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
+    tk = Tokenization.Tokenizer(data_process, dict_init, stop_words)  # 分词
+
+    sql_list = ["ths_news", "ycj_news", "xueqiu_news"]
+    df_set = []
+    # 将所有新闻以dataframe的格式合并
+    for index in sql_list:
+        df = get_full_data(index)
+        df_set.append(df)
+    df_result = pd.concat(df_set, join="inner")
+    # df_result.ix[:, ["content"]].apply(tk.token)
+    # 提取dataframe中的title和content的内容，然后分别进行预处理，
+
+    # 方式一、标题和正文保存为同一个新闻，且新闻标题和正文同时存在
+    res_lists = []
+    for i in range(len(df_result)):
+        title = df_result.iloc[i]['title']
+        content = df_result.iloc[i]['content']
+        unix_time = df_result.iloc[i]['unix_time']
+        if content and title:
+            string = title.strip() + content.strip()
+            string_list = tk.token(string)
+            if not data_process.useless_filter(string_list, dicts.stock_dict):
+                keyword_list = keywordsExtractor.paralize_test(string_list)
+                res_lists.append((keyword_list, unix_time))
+
+    file_out = open("text_test.txt", "w")
+    for index, content in enumerate(res_lists):
+        item = ",".join(item for item in content[0])
+        file_out.write(str(index) + "\t" + str(content[1]) + "\t" + item.encode("utf8") + "\n")
+    file_out.close()
+
+    # # 方式二、标题和正文保存为同一个新闻
+    # res_lists = []
+    # for i in range(len(df_result)):
+    #     title = df_result.iloc[i]['title']
+    #     if title is None:
+    #         title = ''
+    #     content = df_result.iloc[i]['content']
+    #     if content is None:
+    #         content = ''
+    #     string = title.strip() + content.strip()
+    #     if not data_process.useless_filter(string, dicts.stock_dict):
+    #         string_list = tk.token(string)
+    #         keyword_list = keywordsExtractor.paralize_test(string_list)
+    #         res_lists.append(keyword_list)
+    #
+    # file_out = open("text.txt", "w")
+    # for index, content in enumerate(res_lists):
+    #     item = ",".join(item for item in content)
+    #     file_out.write(str(index) + "\t" + item.encode("utf8") + "\n")
+    # file_out.close()
+
+    # 方式三、标题和正文分开保存
+    # for index, row in df_result.iterrows():
+    #     title, content = row["title"], row["content"]
+    #     if title is not None and title:
+    #         title = data_process.no_remove(title)
+    #         if not data_process.useless_filter(title, dicts.stock_dict):
+    #             title_list = tk.token(title)
+    #             res_lists.append(title_list)
+    #
+    #     if content is not None and content:
+    #         content = data_process.no_remove(content)
+    #         if not data_process.useless_filter(content, dicts.stock_dict):
+    #             content_list = tk.token(content)
+    #             res_lists.append(content_list)
+    #
+    # file_out = open("text.txt", "w")
+    # for index, content in enumerate(res_lists):
+    #     item = ",".join(item for item in content)
+    #     file_out.write(str(index) + "\t" + item.encode("utf8") + "\n")
+    # file_out.close()
 
 
 if __name__ == '__main__':

@@ -95,11 +95,14 @@ class OnePassCluster:
         self.cluster_list.append(ClusterUnit())  # 初始新建一个簇
         self.cluster_list[0].add_node(0, self.vectors[0])  # 将读入的第一个节点归于该簇
         for index in range(len(self.vectors))[1:]:
-            # min_distance = euclidean_distance(vec_a=self.vectors[0],
-            #                                   vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小距离
+            # min_distance = euclidean_distance(vec_a=self.vectors[index],
+            #                                   vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小欧式距离
             min_distance = cosine_distance(vec_a=self.vectors[0],
-                                           vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小距离
+                                           vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小cosine距离
+
+            # print("index:{}, min_distance:{}".format(index, min_distance))
             min_cluster_index = 0  # 最小距离的簇的索引
+            # print "len of cluster_list %s " % len(self.cluster_list)
             for cluster_index, cluster in enumerate(self.cluster_list[1:]):
                 # enumerate会将数组或列表组成一个索引序列
                 # 寻找距离最小的簇，记录下距离和对应的簇的索引
@@ -107,11 +110,12 @@ class OnePassCluster:
                 #                               vec_b=cluster.centroid)
                 distance = cosine_distance(vec_a=self.vectors[index],
                                            vec_b=cluster.centroid)
-
-                if distance < min_distance:
+                # print("cluster_index:{}, distance:{}".format(cluster_index, distance))
+                if distance > min_distance:  # 使用欧式距离是改为小于号
                     min_distance = distance
                     min_cluster_index = cluster_index + 1
-            if min_distance < self.threshold:  # 最小距离小于阈值，则归于该簇
+
+            if min_distance > self.threshold:  # 最小距离小于阈值，则归于该簇  # 使用欧式距离时改为小于号
                 self.cluster_list[min_cluster_index].add_node(index, self.vectors[index])
             else:  # 否则新建一个簇
                 new_cluster = ClusterUnit()
@@ -134,6 +138,8 @@ class OnePassCluster:
         print "the number of cluster %s" % self.cluster_num
         print "spend time %.9fs" % (self.spend_time / 1000)
 
+        return self.cluster_list
+
 
 if __name__ == '__main__':
     # 读取测试集
@@ -143,20 +149,19 @@ if __name__ == '__main__':
     f = open('c2.txt', 'r')
     lines = f.readlines()
     zone_dict = [i.split(',')[1] for i in lines]  # 读取地区并转化为字典
-    print zone_dict
     f.close()
 
     # 构建一趟聚类器
-    clustering = OnePassCluster(vector_list=temperature_all_city, threshold=9)
+    clustering = OnePassCluster(vector_list=temperature_all_city, threshold=99)
     clustering.print_result(label_dict=zone_dict)
 
-    # # 将聚类结果导出图
-    # fig, ax = pl.subplots()
-    # fig = zone_dict
-    # c_map = pl.get_cmap('jet', clustering.cluster_num)
-    # c = 0
-    # for cluster in clustering.cluster_list:
-    #     for node in cluster.node_list:
-    #         ax.scatter(xy[node][0], xy[node][1], c=c, s=30, cmap=c_map, vmin=0, vmax=clustering.cluster_num)
-    #     c += 1
-    # pl.show()
+    # 将聚类结果导出图
+    fig, ax = pl.subplots()
+    fig = zone_dict
+    c_map = pl.get_cmap('jet', clustering.cluster_num)
+    c = 0
+    for cluster in clustering.cluster_list:
+        for node in cluster.node_list:
+            ax.scatter(xy[node][0], xy[node][1], c=c, s=30, cmap=c_map, vmin=0, vmax=clustering.cluster_num)
+        c += 1
+    pl.show()

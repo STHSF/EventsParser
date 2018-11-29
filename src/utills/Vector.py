@@ -11,9 +11,11 @@
 """
 
 import sys
+import os
 sys.path.append("../")
 import logging.handlers
 import my_utils
+import numpy as np
 import multiprocessing
 from gensim.models.word2vec import Word2Vec
 from gensim.models.doc2vec import Doc2Vec, LabeledSentence
@@ -126,13 +128,66 @@ class doc2vec(object):
         model_dm.save(model_path)  # model_dm.load(model_path)
         # model_dm.save_word2vec_format(model_path)  # model_dm.load_word2vec_format(model_path,encoding='utf-8')
 
+    # def train(x_train, size=200, epoch_num=1):
+    #     model_dm = Doc2Vec(x_train, min_count=1, window=3, size=size, sample=1e-3, negative=5, workers=4)
+    #     model_dm.train(x_train, total_examples=model_dm.corpus_count, epochs=100)
+    #     model_dm.save('../model/model_dm')
+    #
+    #     return model_dm
 
-# def train(x_train, size=200, epoch_num=1):
-#     model_dm = Doc2Vec(x_train, min_count=1, window=3, size=size, sample=1e-3, negative=5, workers=4)
-#     model_dm.train(x_train, total_examples=model_dm.corpus_count, epochs=100)
-#     model_dm.save('../model/model_dm')
-#
-#     return model_dm
+
+def word2vec_train(self):
+    # load training data
+    x_train = dataReader.get_news_data()
+    # word2vec 训练测试
+    wd_configure = {"size": 300,
+                    "window": 2,
+                    "min_count": 1}
+    wd = word2vecs(wd_configure)
+    model_wd = wd.train(x_train)
+    print("[Info] word2vec模型训练结束")
+    print model_wd.wv[u'食品饮料']
+    # print model_wd.most_similar['食品饮料']
+
+    # 模型保存
+    model_path = "/Users/li/PycharmProjects/event_parser/src/model/model_300_2_1"
+    if not os.path.exists(model_path):
+        wd.save(model_wd, model_path)
+    else:
+        print("[Exception] word2vec的保存路径已经存在。")
+
+
+def word2vec_load(model_path=None):
+    """
+    load word2vec model
+    :return:
+    """
+    if model_path:
+        model_path = model_path
+    else:
+        model_path = "/Users/li/PycharmProjects/event_parser/src/model/model_300_2_1"
+
+    wd_conf = {"size": 300,
+                "window": 5,
+                "min_count": 1}
+    model_wd = word2vecs(wd_conf)
+    model_wd = model_wd.load_model(model_path)
+    # print model_wd.wv[u'食饮料']
+    return model_wd
+
+
+def word_vector(word, w2v_model):
+    """
+    查找某个词的词向量
+    :param word: 需要查找的词
+    :param w2v_model: 词向量 shape = (vector_size, )
+    :return:
+    """
+    try:
+        vector = w2v_model.wv[word]
+        return vector
+    except KeyError:
+        return np.zeros(w2v_model.vector_size)
 
 
 if __name__ == '__main__':

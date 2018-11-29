@@ -14,6 +14,8 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 
 
+path = "/Users/li/PycharmProjects/event_parser/src/"
+
 def tfidf_vector(corpus_path):
     """vectorize the training documents"""
     corpus_train = []
@@ -42,15 +44,15 @@ def tfidf_vector(corpus_path):
     # tfidf_train = tfidftransformer.fit(counts_train).transform(counts_train)
 
     # 保存经过fit的vectorizer 与 经过fit的tfidftransformer,预测时使用
-    feature_path = '../model/tfidf_model/feature.pkl'
+    feature_path = path + 'model/tfidf_model/feature.pkl'
     with open(feature_path, 'wb') as fw:
         pickle.dump(count_vectorizer.vocabulary_, fw)
 
-    tfidftransformer_path = '../model/tfidf_model/tfidftransformer.pkl'
+    tfidftransformer_path = path + 'model/tfidf_model/tfidftransformer.pkl'
     with open(tfidftransformer_path, 'wb') as fw:
         pickle.dump(tfidftransformer, fw)
 
-    word_dict_path = '../model/tfidf_model/word_dict.pkl'
+    word_dict_path = path + 'model/tfidf_model/word_dict.pkl'
     with open(word_dict_path, 'wb') as fw:
         pickle.dump(word_dict, fw)
 
@@ -69,10 +71,10 @@ def load_tfidf_vectorizer(corpus_path):
             corpus_test.append(words)
 
     # 加载特征
-    feature_path = '../model/tfidf_model/feature.pkl'
+    feature_path = path + 'model/tfidf_model/feature.pkl'
     loaded_vec = CountVectorizer(decode_error="replace", vocabulary=pickle.load(open(feature_path, "rb")))
     # 加载TfidfTransformer
-    tfidftransformer_path = '../model/tfidf_model/tfidftransformer.pkl'
+    tfidftransformer_path = path + 'model/tfidf_model/tfidftransformer.pkl'
     tfidftransformer = pickle.load(open(tfidftransformer_path, "rb"))
     # 测试用transform，表示测试数据，为list
     test_tfidf = tfidftransformer.transform(loaded_vec.transform(corpus_test))
