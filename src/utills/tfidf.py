@@ -10,6 +10,7 @@
 """
 
 import pickle
+import numpy as np
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -29,8 +30,10 @@ def tfidf_vector(corpus_path):
             target_train.append(category)
             corpus_train.append(words)
     print "build train-corpus done!!"
+    print "corpus_train.shape %s" % np.shape(corpus_train)
     # replace 必须加，保存训练集的特征
-    count_vectorizer = CountVectorizer(max_df=0.4, min_df=0.01, decode_error="replace")
+    count_vectorizer = CountVectorizer(decode_error="replace")
+    # count_vectorizer = CountVectorizer(max_df=0.4, min_df=0.01, decode_error="replace")
     counts_train = count_vectorizer.fit_transform(corpus_train)
 
     word_dict = {}
@@ -61,15 +64,20 @@ def tfidf_vector(corpus_path):
 
 
 def load_tfidf_vectorizer(corpus_path):
-    corpus_test = []
-    target_test = []
-    for line in open(corpus_path):
-        line = line.strip().split('\t')
-        if len(line) == 3:
-            category = line[0]
-            words = line[2]
-            target_test.append(category)
-            corpus_test.append(words)
+
+    # if type(corpus_path) is not list:
+    #     corpus_test = []
+    #     target_test = []
+    #     for line in open(corpus_path):
+    #         line = line.strip().split('\t')
+    #         if len(line) == 3:
+    #             category = line[0]
+    #             words = line[2]
+    #             target_test.append(category)
+    #             corpus_test.append(words)
+    # else:
+    #     corpus_test = corpus_path
+    corpus_test = corpus_path
 
     # 加载特征
     feature_path = path + 'model/tfidf_model/feature.pkl'
@@ -111,6 +119,10 @@ def tfidf_vector_test(corpus_path):
 
 
 if __name__ == '__main__':
-    corpus_train = "/Users/li/PycharmProjects/event_parser/src/text.txt"
+    corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
     tfidf_train, word_dict = tfidf_vector(corpus_train)
+    print np.shape(tfidf_train.toarray()[0])
+    print np.nonzero(tfidf_train.toarray()[1])
+    # for i in tfidf_train.toarray()[0]:
+    #     print i
     # tfidf_test = load_tfidf_vectorizer(corpus_train)

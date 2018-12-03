@@ -14,13 +14,13 @@ from src.cluster.singlePass.singlePassCluster import *
 from src.utills import tfidf
 import pickle
 
-corpus_train = "/Users/li/PycharmProjects/event_parser/src/text.txt"
+corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
 # tfidf_train, word_dict = tfidf_vector(corpus_train)
 tfidf_train, word_dict = tfidf.tfidf_vector(corpus_train)
 # print np.shape(tfidf_train.toarray())
 # print tfidf_train.toarray()[1]
 
-clustering = OnePassCluster(vector_list=tfidf_train.toarray(), threshold=15)
+clustering = OnePassCluster(vector_list=tfidf_train.toarray(), threshold=10)
 clustering.print_result()
 
 # 将聚好的类簇保存下来，为后面的事件表示和有效事件判断使用。

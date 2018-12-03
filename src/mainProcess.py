@@ -7,23 +7,16 @@
 @file: mainProcess.py
 @time: 2018/11/14 3:33 PM
 """
-import os
 import pickle
-import dataReader
-import pandas as pd
-import numpy as np
-from gensim.models.word2vec import Word2Vec
-from utills.Tokenization import load_stop_words
-from utills.DataProcess import DataPressing
-from utills import Tokenization, dicts, Vector
-from utills import keywordsExtractor
-from utills import news
-from multiprocessing import Pool
-from src.cluster.singlePass.singlePassCluster import *
-from utills import tfidf
+from utills import eventsUtill
 
 
 def import_title(corpus_path):
+    """
+    将新闻的news_id和新闻的标题news_title转换成dict，为后面从类簇中提取节点对应的新闻标题使用
+    :param corpus_path: 语料的路径
+    :return: dict, {news_id: news_title}
+    """
     text_dict = {}
     for line in open(corpus_path):
         line = line.strip().split('\t')
@@ -34,7 +27,30 @@ def import_title(corpus_path):
     return text_dict
 
 
-def get_news(text_dict, node_list):
+def import_news(corpus_path):
+
+    """
+    将新闻的news_id和新闻的标题news_title转换成dict，为后面从类簇中提取节点对应的新闻标题使用
+    :param corpus_path: 语料的路径
+    :return: dict, {news_id: news_title}
+    """
+    news_dict = {}
+    for line in open(corpus_path):
+        line = line.strip().split('\t')
+        if len(line) == 3:
+            news_id = line[0]
+            word_list = line[2]
+            news_dict[news_id] = word_list
+    return news_dict
+
+
+def get_event_news(text_dict, node_list):
+    """
+    从text_dict中提取node_list里面所有的对应的新闻或者新闻标题内容
+    :param text_dict:dict: {news_id: news_title+content}
+    :param node_list: list: [news_id]
+    :return: list: [news_title+content]
+    """
     # 读取文章中的内容
     text_list = []
     for node in node_list:
@@ -51,14 +67,18 @@ clustering_path = path + 'model/clustering.pkl'
 clustering = pickle.load(open(clustering_path, 'rb'))
 # clustering.print_result()
 
-# # 读取原文本
-corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_title.txt"
-corpus_dict = import_title(corpus_train)
-for cluster_index, cluster in enumerate(clustering.cluster_list):
-    print "cluster: %s" % cluster_index  # 簇的序号
-    print cluster.node_list  # 该簇的节点列表
+# 读取新闻文本
+corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
+news_dict = import_news(corpus_train)
 
-    txt_lists = get_news(corpus_dict, cluster.node_list)
-    for tmp in txt_lists:
-        print tmp
+eventsUtill.events_effectiveness(clustering.cluster_list, news_dict)
+#
+# for cluster_index, cluster in enumerate(clustering.cluster_list):
+#     print "cluster: %s" % cluster_index  # 簇的序号
+#     print cluster.node_list  # 该簇的节点列表
+#
+#     event_lists = get_event_news(news_dict, cluster.node_list)
+#     eventsUtill.event_expression(event_lists)
+
+
 

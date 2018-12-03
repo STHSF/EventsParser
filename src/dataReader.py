@@ -132,16 +132,16 @@ def data_save():
         content = df_result.iloc[i]['content']
         unix_time = df_result.iloc[i]['unix_time']
         if content and title:
-            string = title.strip()
-            # string = title.strip() + content.strip()
+            # string = title.strip()
+            string = title.strip() + content.strip()
             string_list = tk.token(string)
             if not data_process.useless_filter(string_list, dicts.stock_dict):
-                keyword_list = keywordsExtractor.paralize_test(string_list)
-                res_lists.append((string, keyword_list, unix_time))  # 将正文
+                # string_list = keywordsExtractor.paralize_test(string_list)
+                res_lists.append((string, string_list, unix_time))  # 将正文
 
-    file_out = open("text_title_cut.txt", "w")
+    file_out = open("text_full_full.txt", "w")
     for index, content in enumerate(res_lists):
-        item = ",".join(item for item in content[1])
+        item = " ".join(item for item in content[1])
         # file_out.write(str(index) + "\t" + str(content[2]) + "\t" + content[0].encode("utf8") + "\n")
         file_out.write(str(index) + "\t" + str(content[2]) + "\t" + item.encode("utf8") + "\n")
     file_out.close()
