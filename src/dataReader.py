@@ -132,18 +132,19 @@ def data_save():
         content = df_result.iloc[i]['content']
         unix_time = df_result.iloc[i]['unix_time']
         if content and title:
-            # string = title.strip()
+            title = title.strip()
             string = title.strip() + content.strip()
             string_list = tk.token(string)
             if not data_process.useless_filter(string_list, dicts.stock_dict):
-                # string_list = keywordsExtractor.paralize_test(string_list)
-                res_lists.append((string, string_list, unix_time))  # 将正文
+                string_list = keywordsExtractor.paralize_test(string_list)
+                res_lists.append((title, string_list, unix_time))  # 根据上面的具体格式，组成tuple
+                # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
 
-    file_out = open("text_full_full.txt", "w")
+    file_out = open("text_title.txt", "w")
     for index, content in enumerate(res_lists):
-        item = " ".join(item for item in content[1])
-        # file_out.write(str(index) + "\t" + str(content[2]) + "\t" + content[0].encode("utf8") + "\n")
-        file_out.write(str(index) + "\t" + str(content[2]) + "\t" + item.encode("utf8") + "\n")
+        # item = " ".join(item for item in content[1])
+        file_out.write(str(index) + "\t" + str(content[2]) + "\t" + content[0].encode("utf8") + "\n")
+        # file_out.write(str(index) + "\t" + str(content[2]) + "\t" + item.encode("utf8") + "\n")
     file_out.close()
 
     # # # 方式二、标题和正文保存为同一个新闻

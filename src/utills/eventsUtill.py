@@ -47,23 +47,30 @@ def events_effectiveness(cluster_list, news_dict):
             text_vectors_similary.append(similary)
         # 计算每个类簇中文章方差
         variance = np.var(text_vectors_similary)
+        print "variance: %s" % variance
+
         # 如果方差大于某个阈值，则为无效事件
         if variance >= 12:
             non_effectiveness_events.append(cluster)
         else:
             effectiveness_events.append(cluster)
+
+    print "length of effectiveness_events: %s" % len(effectiveness_events)
+    print "length of non_effectiveness_events: %s" % len(effectiveness_events)
     return effectiveness_events, non_effectiveness_events
 
 
-def event_expression(news_title_list):
+def event_expression(news_title_list, news_list):
     """
     事件表示，
     :return:
     """
+    # 根据事件类簇中的新闻id，从原始
+    for news in news_list:
+        print news
+
     for news_title in news_title_list:
         print news_title
-        pass
-# 事件有效性判断，剔除无效事件
 
 
 # 重复性事件合并

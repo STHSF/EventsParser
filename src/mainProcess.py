@@ -17,14 +17,14 @@ def import_title(corpus_path):
     :param corpus_path: 语料的路径
     :return: dict, {news_id: news_title}
     """
-    text_dict = {}
+    title_text_dict = {}
     for line in open(corpus_path):
         line = line.strip().split('\t')
         if len(line) == 3:
             category = line[0]
-            words = line[2]
-            text_dict[category] = words
-    return text_dict
+            title = line[2]
+            title_text_dict[category] = title
+    return title_text_dict
 
 
 def import_news(corpus_path):
@@ -68,17 +68,25 @@ clustering = pickle.load(open(clustering_path, 'rb'))
 # clustering.print_result()
 
 # 读取新闻文本
-corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
-news_dict = import_news(corpus_train)
+corpus_news = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
+corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/text_title.txt"
+news_dict = import_news(corpus_news)
+news_title_dict = import_title(corpus_news_title)
 
-eventsUtill.events_effectiveness(clustering.cluster_list, news_dict)
+# eventsUtill.events_effectiveness(clustering.cluster_list, news_dict)
 #
-# for cluster_index, cluster in enumerate(clustering.cluster_list):
-#     print "cluster: %s" % cluster_index  # 簇的序号
-#     print cluster.node_list  # 该簇的节点列表
-#
-#     event_lists = get_event_news(news_dict, cluster.node_list)
-#     eventsUtill.event_expression(event_lists)
+for cluster_index, cluster in enumerate(clustering.cluster_list):
+    print "cluster: %s" % cluster_index  # 簇的序号
+    print cluster.node_list  # 该簇的节点列表
+
+    # 获取新闻标题
+    event_title_lists = get_event_news(news_title_dict, cluster.node_list)
+    # 获取新闻正文
+    event_news_lists = get_event_news(news_dict, cluster.node_list)
+    eventsUtill.event_expression(event_title_lists, event_news_lists)
+
+
+
 
 
 
