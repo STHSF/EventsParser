@@ -10,10 +10,11 @@
 """
 import numpy as np
 from src.cluster.singlePass import singlePassCluster
-from src.utills import tfidf
-
+from src.utills import tfidf, DataProcess, dicts, keywordsExtractor
 
 corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
+
+data_process = DataProcess.DataPressing()
 
 
 def events_list(news_title_list):
@@ -66,11 +67,27 @@ def event_expression(news_title_list, news_list):
     :return:
     """
     # 根据事件类簇中的新闻id，从原始
+    stock_lists = []
+    news_lists = []
     for news in news_list:
-        print news
+        # print news
+        # 提取正文中提及到的股票代码
+        content_list = news.split(" ")
+        stock_list = data_process.find_stocks(content_list=content_list, stock_dicts=dicts.stock_dict)
+        stock_lists.extend(stock_list)
+        news_lists.extend(content_list)
+    # 事件中涉及的股票
+    stocks = ",".join(item for item in set(stock_lists))
+    print "事件中包含的股票 %s" % stocks
+    # 事件簇关健词提取
+    new_string = ' '.join(item for item in news_lists)
+    print "事件类簇 %s" % new_string
+    event_keywords = keywordsExtractor.paralize_test(news_lists)
+    event_keywords = ','.join(item for item in event_keywords)
+    print "事件关键词： %s" % event_keywords
 
-    for news_title in news_title_list:
-        print news_title
+    # for news_title in news_title_list:
+    #     print news_title
 
 
 # 重复性事件合并
@@ -82,5 +99,3 @@ class eventLib(object):
 
 def event_lib(event_list):
     pass
-
-

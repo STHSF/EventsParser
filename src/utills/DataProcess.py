@@ -60,6 +60,26 @@ class DataPressing(object):
         else:
             return False
 
+    def find_stocks(self, content_list, stock_dicts):
+        """
+        提取content_list中所有的股票以及股票代码
+        :param content_list: 分词之后的文章list
+        :param stock_dicts: 股票代码
+        :return: 返回股票列表
+        """
+        stock_num = []
+        for item in set(content_list):
+            if item in stock_dicts:
+                stock_num.append(item)
+
+        if len(stock_num) > 0:
+            return stock_num
+        else:
+            return []
+
+
+
+
     def find_keywords(self, content, key1, key2):
         """
         获取一大段文本之间两个关键字之间的内容

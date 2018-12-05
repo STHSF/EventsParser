@@ -60,7 +60,7 @@ def get_event_news(text_dict, node_list):
 
 
 # 导入通过singlepass聚类生成的类簇
-path = "/Users/li/PycharmProjects/event_parser/src/"
+path = "/Users/li/PycharmProjects/event_parser/src/data/"
 clustering_path = path + 'model/clustering.pkl'
 # with open(clustering_path, 'wb') as fw:
 #     pickle.dump(clustering, fw)
@@ -68,8 +68,8 @@ clustering = pickle.load(open(clustering_path, 'rb'))
 # clustering.print_result()
 
 # 读取新闻文本
-corpus_news = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
-corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/text_title.txt"
+corpus_news = "/Users/li/PycharmProjects/event_parser/src/data/text_full_full.txt"
+corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/data/text_title.txt"
 news_dict = import_news(corpus_news)
 news_title_dict = import_title(corpus_news_title)
 
