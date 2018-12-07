@@ -4,15 +4,12 @@
 """
 @version: ??
 @author: li
-@file: DataProcess.py
+@file: data_process.py
 @time: 2018/10/31 1:32 PM
 文本解析类
 """
-import sys
-sys.path.append("../")
 import re
-
-
+from src.utills import keywords_extractor, tokenization, dicts
 class DataPressing(object):
     def __init__(self):
         # 杂质词
@@ -77,9 +74,6 @@ class DataPressing(object):
         else:
             return []
 
-
-
-
     def find_keywords(self, content, key1, key2):
         """
         获取一大段文本之间两个关键字之间的内容
@@ -94,3 +88,5 @@ class DataPressing(object):
 
 
 
+
+dataprocess = DataPressing()

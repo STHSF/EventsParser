@@ -10,9 +10,9 @@
 import sys
 sys.path.append("..")
 from gensim import corpora, models, similarities
-from Tokenization import Tokenizer
+from tokenization import Tokenizer
 from configure import Configure
-from DataProcess import DataPressing
+from data_process import DataPressing
 
 
 conf = Configure()

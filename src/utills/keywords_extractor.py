@@ -4,23 +4,23 @@
 """
 @version: ??
 @author: li
-@file: keywordsExtractor.py
+@file: keywords_extractor.py
 @time: 2018/11/19 10:19 AM
 基于textRank的关键词提取
 """
 import sys
 import dicts
-import my_utils
+import my_util
 import logging.handlers
 import numpy as np
 # from operator import itemgetter
-import Tokenization
-from Tokenization import load_stop_words
-from DataProcess import DataPressing
+import tokenization
+from tokenization import load_stop_words
+from data_process import DataPressing
 
 
 LOG_FILE = '../log/keywordsExtractor.log'
-my_utils.check_path(LOG_FILE)
+my_util.check_path(LOG_FILE)
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
 fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
 # logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
@@ -36,7 +36,6 @@ logger.info("running %s" % ' '.join(sys.argv))
 class TextRank(object):
     def __init__(self, top_k=20, with_weight=False, window=5, alpha=0.85, min_diff=1000):
         """
-        :param sentence:
         :param top_k: return how many top keywords. `None` for all possible words.
         :param with_weight: if True, return a list of (word, weight);
                             if False, return a list of words.
@@ -60,7 +59,7 @@ class TextRank(object):
         """
         # 使用多进程的时候需要修改一下
         data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
-        tk = Tokenization.Tokenizer(data_process, dict_init, stop_words)
+        tk = tokenization.Tokenizer(data_process, dict_init, stop_words)
         self.word_list = tk.token(sentence)
         # dicts.init()
         # jieba.load_userdict('user_dict.txt')
@@ -159,26 +158,39 @@ class TextRank(object):
         return result
 
 
-def dtest():
+def d_test():
     """
     类接口测试
     :return:
     """
-    s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。' \
-        '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
-        '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
-    # s = '【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。'
-    s = '中兴通讯（000063）在经历七个一字跌停板后，于今天打开跌停板。债转股开盘大涨，天津普林（002134）、信达地产（600657）、海德股份（000567）集体涨停，长航凤凰（000520）、浙江东方（600120）、陕国投A（000563）大涨，消息面上，央行宣布定向降准0.5个百分点，将重点支持债转股。中兴通讯机构最低估值12.02元/股在复牌之前，多家基金公司对中兴通讯估值大多调整至20.54元/股。连续7个跌停板后，中兴通讯A股股价早就已经跌穿这一价格。据《中国经营报》记者不完全统计，6月20日～22日，多家基金公司再做出调整中兴通讯A股估值的公告，下调公司包括工银瑞信基金、华泰柏瑞基金、东方基金、大摩华鑫基金、融通基金、大成基金等22家基金公司。值得注意的是，此次基金公司估值下调幅度并不一致，调整估值在每股12.02～16.64元之间。其中，大摩华鑫基金、融通基金和安信基金给出的估值最高，为每股16.64元，而工银瑞信基金、富国基金和泰达宏利基金给出的估值最低，为每股12.02元。关注同花顺财经（ths518），获取更多机会'
+    # s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。' \
+    #     '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
+    #     '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
+
+    # s = '【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，' \
+    #     '还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。'
+
+    s = '中兴通讯（000063）在经历七个一字跌停板后，于今天打开跌停板。债转股开盘大涨，天津普林（002134）、信达地产（600657）' \
+        '、海德股份（000567）集体涨停，长航凤凰（000520）、浙江东方（600120）、陕国投A（000563）大涨，消息面上，' \
+        '央行宣布定向降准0.5个百分点，将重点支持债转股。中兴通讯机构最低估值12.02元/股在复牌之前，' \
+        '多家基金公司对中兴通讯估值大多调整至20.54元/股。连续7个跌停板后，中兴通讯A股股价早就已经跌穿这一价格。' \
+        '据《中国经营报》记者不完全统计，6月20日～22日，多家基金公司再做出调整中兴通讯A股估值的公告，下调公司包括工银瑞信基金、' \
+        '华泰柏瑞基金、东方基金、大摩华鑫基金、融通基金、大成基金等22家基金公司。值得注意的是，此次基金公司估值下调幅度并不一致，' \
+        '调整估值在每股12.02～16.64元之间。其中，大摩华鑫基金、融通基金和安信基金给出的估值最高，为每股16.64元，而工银瑞信基金、' \
+        '富国基金和泰达宏利基金给出的估值最低，为每股12.02元。关注同花顺财经（ths518），获取更多机会'
+
     # s = u"水利部水资源司司长陈明忠9月29日在国务院新闻办举行的新闻发布会上透露，" \
     #     u"根据刚刚完成了水资源管理制度的考核，有部分省接近了红线的指标，\n" \
     #     u"有部分省超过红线的指标。对一些超过红线的地方，\n陈明忠表示，对一些取用水项目进行区域的限批，" \
     #     u"严格地进行水资源论证和取水许可的批准。"
 
     data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
-    tk = Tokenization.Tokenizer(data_process, dict_init, stop_words)
+    tk = tokenization.Tokenizer(data_process, dict_init, stop_words)
     s_list = tk.token(s)
-    top_k = int(len(s_list) * 0.1)
+    # 根据句子的长度，动态划分关键词的个数
+    # top_k = int(len(s_list) * 0.1)
     # text_rank = TextRank(s_list, top_k=15, with_weight=True)
+
     text_rank = TextRank(top_k=15)
     res = text_rank.run(s_list)
     print("提取的%s个关键词: " % len(res))
@@ -189,7 +201,7 @@ def dtest():
         print ",".join(str(item) for item in res)
 
 
-def paralize_test(text):
+def parallel_test(text):
     text_rank = TextRank(top_k=15)
     return text_rank.run(text)
 
@@ -200,7 +212,7 @@ def multi_extract(s_lists):
     res_l = []
     pool = Pool(processes=int(mp.cpu_count()))
     for s_list in s_lists:
-        res = pool.apply_async(paralize_test, (s_list,))
+        res = pool.apply_async(parallel_test, (s_list,))
         res_l.append(res.get())
     pool.close()
     pool.join()
@@ -208,7 +220,7 @@ def multi_extract(s_lists):
     return res_l
 
 
-def muli_extract_test():
+def multi_extract_test():
     """
     多进程测试
     :return:
@@ -225,20 +237,20 @@ def muli_extract_test():
     dict_init = dicts.init()
     stop_words = load_stop_words()
     # 分词
-    tk = Tokenization.Tokenizer(dataprocess, dict_init, stop_words)
+    tk = tokenization.Tokenizer(dataprocess, dict_init, stop_words)
     s_list = tk.token(s)
     t0 = time.time()
     for i in range(10000):
-        paralize_test(s_list)
+        parallel_test(s_list)
     print("串行处理花费时间{t}".format(t=time.time()-t0))
 
     pool = Pool(processes=int(mp.cpu_count()))
     res_l = []
     t1 = time.time()
     for i in range(10000):
-        res = pool.apply_async(paralize_test, (s_list,))
+        res = pool.apply_async(parallel_test, (s_list,))
         res_l.append(res)
-    # pool.map(paralize_test, s_list)
+    # pool.map(parallel_test, s_list)
 
     # for i in res_l:
     #     print i.get()
@@ -248,5 +260,5 @@ def muli_extract_test():
 
 
 if __name__ == '__main__':
-    dtest()
-    # muli_extract_test()
+    d_test()
+    # multi_extract_test()

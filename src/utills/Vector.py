@@ -4,7 +4,7 @@
 """
 @version: ??
 @author: li
-@file: Vector.py
+@file: vector.py
 @time: 2018/11/5 2:31 PM
 词向量，文本向量训练模块
 训练用的编码格式要与使用model时的编码格式一致。
@@ -14,7 +14,7 @@ import sys
 import os
 sys.path.append("../")
 import logging.handlers
-import my_utils
+import my_util
 import numpy as np
 import multiprocessing
 from gensim.models.word2vec import Word2Vec
@@ -22,7 +22,7 @@ from gensim.models.doc2vec import Doc2Vec, LabeledSentence
 import dataReader
 
 LOG_FILE = '../log/vectors.log'
-my_utils.check_path(LOG_FILE)
+my_util.check_path(LOG_FILE)
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
 fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
 # logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')

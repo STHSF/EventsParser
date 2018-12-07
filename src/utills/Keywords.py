@@ -10,15 +10,15 @@
 """
 import sys
 import logging.handlers
-import my_utils
+import my_util
 sys.path.append("../")
 from configure import Configure
 from pyhanlp import *
 from jieba import analyse
-from Tokenization import Tokenizer
+from tokenization import Tokenizer
 
 LOG_FILE = '../log/keywords.log'
-my_utils.check_path(LOG_FILE)
+my_util.check_path(LOG_FILE)
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
 fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
 # logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')

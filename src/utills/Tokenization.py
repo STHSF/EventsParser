@@ -4,24 +4,24 @@
 """
 @version: ??
 @author: li
-@file: Tokenization.py
+@file: tokenization.py
 @time: 2018/11/2 10:40 AM
 分词模块
 调用jieba分词，添加用户自定义词典，封装，并且去停用词等操作
 """
 import sys
+
 sys.path.append("../")
 import dicts
 import codecs
-import my_utils
+import my_util
 import logging.handlers
 import jieba.posseg as pseg
-from DataProcess import DataPressing
+from data_process import DataPressing
 from configure import Configure
 
-
 LOG_FILE = '../log/tokenization.log'
-my_utils.check_path(LOG_FILE)
+my_util.check_path(LOG_FILE)
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
 fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
 # logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
@@ -32,7 +32,6 @@ logger.addHandler(handler)
 logger.setLevel(level=logging.INFO)
 # logger.setLevel(level=logging.DEBUG)
 logger.info("running %s" % ' '.join(sys.argv))
-
 
 stopwords = globals()
 
@@ -56,7 +55,8 @@ class Tokenizer(object):
         self.dicts = dict_init  # 初始化人工词典
         # 按照词性去停用词
         self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't',
-                          'uj', 'm', 'f', 'r']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
+                          'uj', 'm', 'f',
+                          'r']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
         self.stopwords = stop_words
 
     def token(self, text):
@@ -74,7 +74,7 @@ class Tokenizer(object):
         return result
 
 
-def dtest():
+def d_test():
     data_processing = DataPressing()
     dict_init = dicts.init()
     stop_words = load_stop_words()
@@ -84,7 +84,8 @@ def dtest():
     print(["关注同".decode("utf-8")])
 
     # 剔除杂质词
-    print(data_processing.no_remove("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。"))
+    print(
+        data_processing.no_remove("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。"))
     # 判断content中是否存在某些特殊词
     print(data_processing.useless_remove("[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
 
@@ -124,12 +125,12 @@ def multi_token_test():
     for i in range(10000):
         res1 = paralize_test(s, dataprocess, dict_init, stop_words)
         res1_l.append(res1)
-    print("串行处理花费时间{t}s".format(t=time.time()-t0))
+    print("串行处理花费时间{t}s".format(t=time.time() - t0))
 
     # 并行处理
     t1 = time.time()
     res2_l = []
-    pool = Pool(processes=int(mp.cpu_count()*0.8))
+    pool = Pool(processes=int(mp.cpu_count() * 0.8))
     for i in range(10000):
         res = pool.apply_async(paralize_test, ((s, dataprocess, dict_init, stop_words),))
         res2_l.append(res)
@@ -138,9 +139,10 @@ def multi_token_test():
     #     print k.get()
     pool.close()
     pool.join()
-    print("并行处理花费时间{t}s".format(t=time.time()-t1))
+    print("并行处理花费时间{t}s".format(t=time.time() - t1))
 
 
+tokenizer = Tokenizer()
 if __name__ == '__main__':
-    dtest()
+    d_test()
     # multi_token_test()

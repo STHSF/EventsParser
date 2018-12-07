@@ -104,11 +104,26 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-
+.DS_Store
 .idea/
 /src/corpus
 .log
 /src/discussParser/hs_err_pid40588.log
-/src/cluster/c2.txt
-/src/text.txt
+/src/cluster/singlePass/c2.txt
+/src/data/text.txt
 /src/model/
+/src/data/full_text.txt
+/src/data/corpus_train.txt
+/src/data/text_keyword.txt
+/src/data/cluster_keywords_lda.txt
+/src/data/cluster_keywords_lsi.txt
+/src/data/cluster_result_document.txt
+/src/data/cluster_result_keyword.txt
+/src/model/tfidf_model/feature.pkl
+/src/model/tfidf_model/tfidftransformer.pkl
+/src/model/model_300_2_1
+/src/data/text_full.txt
+/src/data/text_title.txt
+/src/data/text_title_cut.txt
+/src/data/text_full_full.txt
+/src/data/

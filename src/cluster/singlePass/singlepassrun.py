@@ -14,7 +14,7 @@ from src.cluster.singlePass.singlePassCluster import *
 from src.utills import tfidf
 import pickle
 
-corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
+corpus_train = "/Users/li/PycharmProjects/event_parser/src/data/text_full_full.txt"
 # tfidf_train, word_dict = tfidf_vector(corpus_train)
 tfidf_train, word_dict = tfidf.tfidf_vector(corpus_train)
 # print np.shape(tfidf_train.toarray())
