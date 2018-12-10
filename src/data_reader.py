@@ -7,12 +7,12 @@
 @file: data_reader.py
 @time: 2018/10/30 7:05 PM
 """
+import time
 import gensim
 import pandas as pd
 from src.utills.data_source import GetDataEngine
 from src.utills import tokenization, data_process, dicts
 from src.utills.tokenization import load_stop_words
-from src.utills.data_process import dataprocess
 from src.utills import keywords_extractor, time_util, tfidf
 
 TaggededDocument = gensim.models.doc2vec.TaggedDocument
@@ -65,9 +65,13 @@ def read_ordered_data(sheet_name, time_stamp):
     """
     :return:
     """
+
+    timestamp_now = int(time.time())
     # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
-    sql = "SELECT distinct content, title, unix_time FROM xavier_db.%s where unix_time >= %s ORDER BY unix_time" % (
-    sheet_name, time_stamp)
+    sql = "SELECT distinct id, content, title, unix_time FROM xavier_db.%s where unix_time >= %s ORDER BY unix_time" % (sheet_name, time_stamp)
+
+    # sql = "SELECT distinct content, title, unix_time FROM xavier_db.%s where unix_time >= %s AND unix_time <= %s ORDER BY unix_time" % (
+    # sheet_name, time_stamp, timestamp_now)
     result = pd.read_sql(sql, engine_mysql)
     return result
 
@@ -161,7 +165,7 @@ def get_event_news(text_dict, node_list):
 
 
 def load_data_test():
-    dp, dict_init, stop_words = dataprocess, dicts.init(), load_stop_words()
+    dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), load_stop_words()
     # 分词
     tk = tokenization.Tokenizer(dp, dict_init, stop_words)
     # 获取三张表中的所有新闻
@@ -193,10 +197,11 @@ def trans_df_data(df_result):
     :param df_result:
     :return:
     """
-    dp, dict_init, stop_words = dataprocess, dicts.init(), tokenization.load_stop_words()
+    dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
     tk = tokenization.Tokenizer(dp, dict_init, stop_words)
     res_lists = []
     for i in range(len(df_result)):
+        news_id = df_result.iloc[i]['id']
         title = df_result.iloc[i]['title']
         content = df_result.iloc[i]['content']
         unix_time = df_result.iloc[i]['unix_time']
@@ -208,7 +213,7 @@ def trans_df_data(df_result):
             text_vector = tfidf.load_tfidf_vectorizer([string]).toarray().reshape(-1)
             if not dp.useless_filter(string_list, dicts.stock_dict):
                 # string_list = keywords_extractor.parallel_test(string_list)
-                res_lists.append((string, text_vector, unix_time))  # 根据上面的具体格式，组成tuple
+                res_lists.append((news_id, string, text_vector, unix_time))  # 根据上面的具体格式，组成tuple
                 # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
     print "length of res_lists: %s" % len(res_lists)
     return res_lists
@@ -219,7 +224,7 @@ def data_save():
     读取数据库中的内容，文本预处理之后，保存成本地，用于词向量训练，关键词提取等操作
     :return:
     """
-    dp, dict_init, stop_words = dataprocess, dicts.init(), load_stop_words()
+    dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), load_stop_words()
     tk = tokenization.Tokenizer(dp, dict_init, stop_words)  # 分词
     df_result = get_data()
     # df_result.ix[:, ["content"]].apply(tk.token)

@@ -4,7 +4,7 @@
 """
 @version: ??
 @author: li
-@file: main_process.py
+@file: history_event.py
 @time: 2018/11/14 3:33 PM
 将类簇转换成事件单元，并根据类簇中的节点id从文本中提取每个类簇对应的新闻，构成事件单元，然后提取每个事件单元涉及的股票。并且对每个事件单元提取关键词代表每个事件单元。所有的结果打包成pickle文件保存到本地。
 """
@@ -40,6 +40,7 @@ for cluster_index, cluster in enumerate(clustering.cluster_list):
     event_unit.node_list = cluster.node_list
     event_unit.node_num = cluster.node_num
     event_unit.centroid = cluster.centroid
+    event_unit.event_id = cluster_index
 
     # 获取新闻标题
     event_title_lists = get_event_news(news_title_dict, cluster.node_list)
@@ -64,7 +65,3 @@ event_unit_path = path + 'model/event_units.pkl'
 with open(event_unit_path, 'wb') as fw:
     # pickle.dump(event_lib, fw)
     pickle.dump(event_unit_lists, fw)
-
-
-
-

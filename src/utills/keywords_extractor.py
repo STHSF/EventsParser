@@ -13,11 +13,9 @@ import dicts
 import my_util
 import logging.handlers
 import numpy as np
-# from operator import itemgetter
 import tokenization
 from tokenization import load_stop_words
-from data_process import DataPressing
-
+import data_process
 
 LOG_FILE = '../log/keywordsExtractor.log'
 my_util.check_path(LOG_FILE)

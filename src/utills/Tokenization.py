@@ -17,7 +17,7 @@ import codecs
 import my_util
 import logging.handlers
 import jieba.posseg as pseg
-from data_process import DataPressing
+import data_process
 from configure import Configure
 
 LOG_FILE = '../log/tokenization.log'
@@ -75,7 +75,7 @@ class Tokenizer(object):
 
 
 def d_test():
-    data_processing = DataPressing()
+    data_processing = data_process.dataprocess
     dict_init = dicts.init()
     stop_words = load_stop_words()
     tk = Tokenizer(data_processing, dict_init, stop_words)
@@ -116,7 +116,7 @@ def multi_token_test():
         '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
         '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
 
-    dataprocess = DataPressing()
+    dataprocess = data_process.DataPressing()
     dict_init = dicts.init()
     stop_words = load_stop_words()
     # 串行处理
@@ -142,7 +142,7 @@ def multi_token_test():
     print("并行处理花费时间{t}s".format(t=time.time() - t1))
 
 
-tokenizer = Tokenizer()
+# tokenizer = Tokenizer()
 if __name__ == '__main__':
     d_test()
     # multi_token_test()

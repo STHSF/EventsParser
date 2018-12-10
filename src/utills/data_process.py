@@ -10,6 +10,8 @@
 """
 import re
 from src.utills import keywords_extractor, tokenization, dicts
+
+
 class DataPressing(object):
     def __init__(self):
         # 杂质词
@@ -89,4 +91,5 @@ class DataPressing(object):
 
 
 
-dataprocess = DataPressing()
+# dataprocess = DataPressing()
+

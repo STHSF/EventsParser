@@ -9,7 +9,9 @@
 事件表示，事件的有效性判断
 """
 
+import os
 import pickle
+import datetime
 import numpy as np
 from src.cluster.singlePass import singlePassCluster
 from src.cluster.singlePass.singlePassCluster import ClusterUnit
@@ -107,15 +109,38 @@ def load_history_event(event_unit_path=None):
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
 
     print "事件库中事件的个数 %s" % len(event_unit_lists)
-    for index, event_unit in enumerate(event_unit_lists):
-        print "cluster: %s" % index  # 簇的序号
-        print event_unit.node_list  # 该簇的节点列表
-        print event_unit.centroid
+    # for index, event_unit in enumerate(event_unit_lists):
+    #     print "cluster: %s" % index  # 簇的序号
+    #     print event_unit.node_list  # 该簇的节点列表
+    #     print event_unit.centroid
 
     return event_unit_lists
 
 
-# 重复性事件合并?
+def event_save(event_units, save_name, save_path=None):
+    if save_path is None:
+        save_path = "../event_model/"
+    clustering_path = save_path + '%s.pkl' % save_name
+    with open(clustering_path, 'wb') as fw:
+        pickle.dump(event_units, fw)
+
+
+def event_load(save_path):
+    """
+    从文件夹中读取最新的事件单元保存文件。
+    :param save_path: 目录地址
+    :return:
+    """
+    lists = os.listdir(save_path)  # 列出目录的下所有文件和文件夹保存到lists
+    lists.sort(key=lambda fn: os.path.getmtime(save_path + fn))  # 将文件按时间排序
+    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(save_path+lists[-1]))
+    file_new = os.path.join(save_path, lists[-1])  # 获取最新的文件保存到file_new
+    print("时间："+filetime.strftime('%Y-%m-%d %H-%M-%S'))
+    print("最新修改的文件(夹)："+lists[-1])
+    return file_new
+
+
+# 重复性事件合并? 可以手动标记然后合并
 
 
 class EventUnit(singlePassCluster.ClusterUnit):
@@ -125,6 +150,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
 
     def __init__(self):
         ClusterUnit.__init__(self)
+        self.event_id = ''
         self.title = " "
         self.keywords = []
         self.stocks = []
