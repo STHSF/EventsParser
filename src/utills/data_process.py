@@ -9,7 +9,6 @@
 文本解析类
 """
 import re
-from src.utills import keywords_extractor, tokenization, dicts
 
 
 class DataPressing(object):
@@ -87,9 +86,3 @@ class DataPressing(object):
         form = re.compile(key1 + '(.*?)' + key2, re.S)
         result = form.findall(content)
         return result
-
-
-
-
-# dataprocess = DataPressing()
-

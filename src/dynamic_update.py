@@ -58,10 +58,20 @@ for news_index in range(len_news):  # 遍历每一篇新闻
         new_event_units.append(new_event)
         del new_event
 
+# 事件库更新，更新标题，关键词，事件簇心。
+
+
 print '[Info] 更新后的事件个数: %s' % len(new_event_units)
 
 # # 将更新后的事件单元保存下来
-save_name = '20181211'
+save_name = int(time.time())
 save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
-# event_util.event_save(new_event_units, save_name, save_path)
-event_util.event_load(save_path)
+event_util.event_save(new_event_units, save_name, save_path)
+file_new = event_util.event_load(save_path)
+print file_new
+new_event_units = event_util.load_history_event(file_new)
+
+for i in new_event_units:
+    print i.title
+    print i.node_list
+

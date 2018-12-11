@@ -15,15 +15,15 @@ from data_reader import import_news, import_title, get_event_news
 
 # 导入通过singlepass聚类生成的类簇
 path = "/Users/li/PycharmProjects/event_parser/src/"
-clustering_path = path + 'model/clustering.pkl'
+clustering_path = path + 'model/clustering_new.pkl'
 # with open(clustering_path, 'wb') as fw:
 #     pickle.dump(clustering, fw)
 clustering = pickle.load(open(clustering_path, 'rb'))
 # clustering.print_result()
 
 # 读取新闻文本
-corpus_news = "/Users/li/PycharmProjects/event_parser/src/data/text_full_full.txt"
-corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/data/text_title.txt"
+corpus_news = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"
+corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/data/text_title_index.txt"
 news_dict = import_news(corpus_news)
 news_title_dict = import_title(corpus_news_title)
 
@@ -59,9 +59,9 @@ print "事件库中事件的个数 %s" % len(event_unit_lists)
 # event_lib = EventLib()
 # event_lib.event_unit_list = event_unit_lists
 
-# 保存事件库
+# # 保存事件库
 path = "/Users/li/PycharmProjects/event_parser/src/"
-event_unit_path = path + 'model/event_units.pkl'
+event_unit_path = path + 'model/event_units_new.pkl'
 with open(event_unit_path, 'wb') as fw:
     # pickle.dump(event_lib, fw)
     pickle.dump(event_unit_lists, fw)

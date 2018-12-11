@@ -56,7 +56,7 @@ def read_full_data(sheet_name):
     :return:
     """
     # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
-    sql = "SELECT distinct content, title, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
+    sql = "SELECT distinct content, id, title, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
     result = pd.read_sql(sql, engine_mysql)
     return result
 
@@ -68,7 +68,7 @@ def read_ordered_data(sheet_name, time_stamp):
 
     timestamp_now = int(time.time())
     # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
-    sql = "SELECT distinct id, content, title, unix_time FROM xavier_db.%s where unix_time >= %s ORDER BY unix_time" % (sheet_name, time_stamp)
+    sql = "SELECT distinct content, id, title, unix_time FROM xavier_db.%s where unix_time >= %s ORDER BY unix_time" % (sheet_name, time_stamp)
 
     # sql = "SELECT distinct content, title, unix_time FROM xavier_db.%s where unix_time >= %s AND unix_time <= %s ORDER BY unix_time" % (
     # sheet_name, time_stamp, timestamp_now)
@@ -233,25 +233,31 @@ def data_save():
     # 方式一、标题和正文保存为同一个新闻，且新闻标题和正文同时存在
     res_lists = []
     for i in range(len(df_result)):
+        news_id = df_result.iloc[i]['id']
         title = df_result.iloc[i]['title']
         content = df_result.iloc[i]['content']
         unix_time = df_result.iloc[i]['unix_time']
         if content and title:
+            news_id = news_id.strip()
             title = title.strip()
             string = title.strip() + content.strip()
             string_list = tk.token(string)
             if not dp.useless_filter(string_list, dicts.stock_dict):
-                string_list = keywords_extractor.parallel_test(string_list)
-                res_lists.append((title, string_list, unix_time))  # 根据上面的具体格式，组成tuple
+                # string_list = keywords_extractor.parallel_test(string_list)  # 提取关键词
+                res_lists.append((news_id, title, string_list, unix_time))  # 根据上面的具体格式，组成tuple
                 # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
     print "length of res_lists: %s" % len(res_lists)
+    # 数据更新
+    file_out = open("./data/text_full_index.txt", "w")
+    for index, content in enumerate(res_lists):
+        item = " ".join(item for item in content[2])
+        file_out.write(str(content[0]) + "\t" + str(content[3]) + "\t" + item.encode("utf8") + "\n")
+    file_out.close()
 
-    # file_out = open("text_title.txt", "w")
-    # for index, content in enumerate(res_lists):
-    #     # item = " ".join(item for item in content[1])
-    #     file_out.write(str(index) + "\t" + str(content[2]) + "\t" + content[0].encode("utf8") + "\n")
-    #     # file_out.write(str(index) + "\t" + str(content[2]) + "\t" + item.encode("utf8") + "\n")
-    # file_out.close()
+    file_out = open("./data/text_title_index.txt", "w")
+    for index, content in enumerate(res_lists):
+        file_out.write(str(content[0]) + "\t" + str(content[3]) + "\t" + content[1] + "\n")
+    file_out.close()
 
     # # # 方式二、标题和正文保存为同一个新闻
     # res_lists = []
@@ -298,13 +304,13 @@ def data_save():
 
 if __name__ == '__main__':
     # load_data_test()
-    # data_save()
-    import time
-
-    now = int(time.time())
-    print now - 60 * 12 * 60 * 60
-    print time_util.timestamp_to_time(now)
-    print time_util.timestamp_to_time(now - 60 * 12 * 60 * 60)
-    # 读取指定时间戳之后的新闻
-    df_result = get_ordered_data(now - 60 * 12 * 60 * 60)
-    print df_result
+    data_save()
+    # import time
+    #
+    # now = int(time.time())
+    # print now - 60 * 12 * 60 * 60
+    # print time_util.timestamp_to_time(now)
+    # print time_util.timestamp_to_time(now - 60 * 12 * 60 * 60)
+    # # 读取指定时间戳之后的新闻
+    # df_result = get_ordered_data(now - 60 * 12 * 60 * 60)
+    # print df_result

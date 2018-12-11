@@ -18,7 +18,6 @@ class ClusterUnit:
     """
     # 定义一个簇单元
     """
-
     def __init__(self):
         self.node_list = []  # 该簇存在的节点列表
         self.node_num = 0  # 该簇节点数
@@ -53,6 +52,13 @@ class ClusterUnit:
         another_cluster.add_node(node=node)
 
 
+# cluster_unit = ClusterUnit()
+# cluster_unit.add_node(1, [1, 1, 2])
+# cluster_unit.add_node(5, [2, 1, 2])
+# cluster_unit.add_node(3, [3, 1, 2])
+# print cluster_unit.centroid
+
+
 def euclidean_distance(vec_a, vec_b):
     # 计算向量a与向量b的欧式距离
     diff = vec_a - vec_b
@@ -62,24 +68,23 @@ def euclidean_distance(vec_a, vec_b):
 def cosine_distance(vec_a, vec_b):
     # 计算向量a与向量b的余弦距离
     dot_product = 0.0
-    norm_a = 0.0
-    norm_b = 0.0
+    normA = 0.0
+    normB = 0.0
     for a, b in zip(vec_a, vec_b):
         dot_product += a * b
-        norm_a += a ** 2
-        norm_b += b ** 2
-    if norm_a == 0.0 or norm_b == 0.0:
+        normA += a ** 2
+        normB += b ** 2
+    if normA == 0.0 or normB == 0.0:
         return 0
     else:
-        return round(dot_product / ((norm_a ** 0.5) * (norm_b ** 0.5)) * 100, 2)
+        return round(dot_product / ((normA**0.5)*(normB**0.5)) * 100, 2)
 
 
 class OnePassCluster:
-    def __init__(self, threshold, vector_tuple):
+    def __init__(self, threshold, vector_list):
         # t:一趟聚类的阈值
         self.threshold = threshold  # 一趟聚类的阈值
-        # self.vectors = np.array(vector_tuple)
-        self.vectors = vector_tuple
+        self.vectors = np.array(vector_list)
         self.cluster_list = []  # 聚类后簇的列表
         t1 = time.time()
         self.clustering()
@@ -89,11 +94,11 @@ class OnePassCluster:
 
     def clustering(self):
         self.cluster_list.append(ClusterUnit())  # 初始新建一个簇
-        self.cluster_list[0].add_node(self.vectors[0][0], self.vectors[0][1])  # 将读入的第一个节点归于该簇
+        self.cluster_list[0].add_node(0, self.vectors[0])  # 将读入的第一个节点归于该簇
         for index in range(len(self.vectors))[1:]:
-            # min_distance = euclidean_distance(vec_a=self.vectors[index][1],
+            # min_distance = euclidean_distance(vec_a=self.vectors[index],
             #                                   vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小欧式距离
-            min_distance = cosine_distance(vec_a=self.vectors[index][1],
+            min_distance = cosine_distance(vec_a=self.vectors[index],
                                            vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小cosine距离
 
             # print("index:{}, min_distance:{}".format(index, min_distance))
@@ -102,21 +107,21 @@ class OnePassCluster:
             for cluster_index, cluster in enumerate(self.cluster_list[1:]):
                 # enumerate会将数组或列表组成一个索引序列
                 # 寻找距离最小的簇，记录下距离和对应的簇的索引
-                # distance = euclidean_distance(vec_a=self.vectors[index][1],
+                # distance = euclidean_distance(vec_a=self.vectors[index],
                 #                               vec_b=cluster.centroid)
-                distance = cosine_distance(vec_a=self.vectors[index][1],
+                distance = cosine_distance(vec_a=self.vectors[index],
                                            vec_b=cluster.centroid)
                 # print("cluster_index:{}, distance:{}".format(cluster_index, distance))
                 if distance > min_distance:  # 使用欧式距离是改为小于号
                     min_distance = distance
                     min_cluster_index = cluster_index + 1
-            # print 'max_dist: %s' % min_distance
-            # print 'min_cluster_index: %s' % min_cluster_index
+            print 'max_dist: %s' % min_distance
+            print 'min_cluster_index: %s' % min_cluster_index
             if min_distance > self.threshold:  # 最小距离小于阈值，则归于该簇  # 使用欧式距离时改为小于号
-                self.cluster_list[min_cluster_index].add_node(self.vectors[index][0], self.vectors[index][1])
+                self.cluster_list[min_cluster_index].add_node(index, self.vectors[index])
             else:  # 否则新建一个簇
                 new_cluster = ClusterUnit()
-                new_cluster.add_node(self.vectors[index][0], self.vectors[index][1])
+                new_cluster.add_node(index, self.vectors[index])
                 self.cluster_list.append(new_cluster)
                 del new_cluster
 
@@ -138,37 +143,17 @@ class OnePassCluster:
 
 
 if __name__ == '__main__':
-    # cluster unit 测试
-    # cluster_unit = ClusterUnit()
-    # cluster_unit.add_node(1, [1, 1, 2])
-    # cluster_unit.add_node(5, [2, 1, 2])
-    # cluster_unit.add_node(3, [3, 1, 2])
-    # print cluster_unit.centroid
-
     # 读取测试集
     temperature_all_city = np.loadtxt('c2.txt', delimiter=",", usecols=(3, 4))  # 读取聚类特征:[最高温度， 最低温度]
-    temperature_all_city_index = np.loadtxt('c2.txt', delimiter=",", usecols=0)  # 索引
-
-    result = []
-    for i in range(len(temperature_all_city_index)):
-        result.append((temperature_all_city_index[i], temperature_all_city[i]))
-
-    xy_ = dict()
     xy = np.loadtxt('c2.txt', delimiter=",", usecols=(8, 9))  # 读取各地经纬度
-    for i in range(len(temperature_all_city_index)):
-        xy_[temperature_all_city_index[i]] = xy[i]
-
+    # print(temperature_all_city)
     f = open('c2.txt', 'r')
     lines = f.readlines()
-    zone = [i.split(',')[1] for i in lines]  # 读取地区并转化为字典
-    zone_dict = dict()
-    for i in range(len(zone)):
-        zone_dict[temperature_all_city_index[i]] = zone[i]
+    zone_dict = [i.split(',')[1] for i in lines]  # 读取地区并转化为字典
     f.close()
 
     # 构建一趟聚类器
-    clustering = OnePassCluster(vector_tuple=result, threshold=97)
-    # clustering.print_result()
+    clustering = OnePassCluster(vector_list=temperature_all_city, threshold=90)
     clustering.print_result(label_dict=zone_dict)
 
     # 将聚类结果导出图
@@ -178,6 +163,6 @@ if __name__ == '__main__':
     c = 0
     for cluster in clustering.cluster_list:
         for node in cluster.node_list:
-            ax.scatter(xy_[node][0], xy_[node][1], c=c, s=30, cmap=c_map, vmin=0, vmax=clustering.cluster_num)
+            ax.scatter(xy[node][0], xy[node][1], c=c, s=30, cmap=c_map, vmin=0, vmax=clustering.cluster_num)
         c += 1
     pl.show()

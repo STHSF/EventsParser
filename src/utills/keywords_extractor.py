@@ -13,9 +13,7 @@ import dicts
 import my_util
 import logging.handlers
 import numpy as np
-import tokenization
-from tokenization import load_stop_words
-import data_process
+from src.utills import data_process, tokenization
 
 LOG_FILE = '../log/keywordsExtractor.log'
 my_util.check_path(LOG_FILE)
@@ -56,8 +54,8 @@ class TextRank(object):
         :return:
         """
         # 使用多进程的时候需要修改一下
-        data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
-        tk = tokenization.Tokenizer(data_process, dict_init, stop_words)
+        dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
+        tk = tokenization.Tokenizer(dp, dict_init, stop_words)
         self.word_list = tk.token(sentence)
         # dicts.init()
         # jieba.load_userdict('user_dict.txt')
@@ -182,8 +180,8 @@ def d_test():
     #     u"有部分省超过红线的指标。对一些超过红线的地方，\n陈明忠表示，对一些取用水项目进行区域的限批，" \
     #     u"严格地进行水资源论证和取水许可的批准。"
 
-    data_process, dict_init, stop_words = DataPressing(), dicts.init(), load_stop_words()
-    tk = tokenization.Tokenizer(data_process, dict_init, stop_words)
+    dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
+    tk = tokenization.Tokenizer(dp, dict_init, stop_words)
     s_list = tk.token(s)
     # 根据句子的长度，动态划分关键词的个数
     # top_k = int(len(s_list) * 0.1)
@@ -231,11 +229,11 @@ def multi_extract_test():
         '一般将程序员分为程序设计人员和程序编码人员，但两者的界限并不非常清楚，' \
         '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
 
-    dataprocess = DataPressing()
+    dp = data_process.DataPressing()
     dict_init = dicts.init()
-    stop_words = load_stop_words()
+    stop_words = tokenization.load_stop_words()
     # 分词
-    tk = tokenization.Tokenizer(dataprocess, dict_init, stop_words)
+    tk = tokenization.Tokenizer(dp, dict_init, stop_words)
     s_list = tk.token(s)
     t0 = time.time()
     for i in range(10000):

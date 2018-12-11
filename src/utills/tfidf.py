@@ -18,16 +18,27 @@ from sklearn.feature_extraction.text import CountVectorizer
 path = "/Users/li/PycharmProjects/event_parser/src/"
 
 
-def tfidf_vector(corpus_path):
-    """vectorize the training documents"""
-    corpus_train = []
-    target_train = []
+def load_data(corpus_path):
+    corpus_train_dic = {}
     for line in open(corpus_path):
         line = line.strip().split('\t')
         if len(line) == 3:
             category = line[0]
             words = line[2]
-            target_train.append(category)
+            corpus_train_dic[category] = words
+    return corpus_train_dic
+
+
+def tfidf_vector(corpus_path):
+    """vectorize the training documents"""
+    corpus_train = []
+    category_train = []
+    for line in open(corpus_path):
+        line = line.strip().split('\t')
+        if len(line) == 3:
+            category = line[0]
+            words = line[2]
+            category_train.append(category)
             corpus_train.append(words)
     print "build train-corpus done!!"
     print "corpus_train.shape %s" % np.shape(corpus_train)
@@ -47,20 +58,25 @@ def tfidf_vector(corpus_path):
     tfidf_train = tfidftransformer.fit_transform(counts_train)
     # tfidf_train = tfidftransformer.fit(counts_train).transform(counts_train)
 
+    tfidf_train_array = tfidf_train.toarray()
+    tfidf_train_dict = []
+    for item in range(len(tfidf_train_array)):
+        tfidf_train_dict.append((category_train[item], tfidf_train_array[item]))
+
     # 保存经过fit的vectorizer 与 经过fit的tfidftransformer,预测时使用
-    feature_path = path + 'model/tfidf_model/feature.pkl'
+    feature_path = path + 'model/tfidf_model/feature_1.pkl'
     with open(feature_path, 'wb') as fw:
         pickle.dump(count_vectorizer.vocabulary_, fw)
 
-    tfidftransformer_path = path + 'model/tfidf_model/tfidftransformer.pkl'
+    tfidftransformer_path = path + 'model/tfidf_model/tfidftransformer_1.pkl'
     with open(tfidftransformer_path, 'wb') as fw:
         pickle.dump(tfidftransformer, fw)
 
-    word_dict_path = path + 'model/tfidf_model/word_dict.pkl'
+    word_dict_path = path + 'model/tfidf_model/word_dict_1.pkl'
     with open(word_dict_path, 'wb') as fw:
         pickle.dump(word_dict, fw)
 
-    return tfidf_train, word_dict
+    return tfidf_train_dict, word_dict
 
 
 def load_tfidf_vectorizer(corpus_path):
@@ -80,10 +96,10 @@ def load_tfidf_vectorizer(corpus_path):
     corpus_test = corpus_path
 
     # 加载特征
-    feature_path = path + 'model/tfidf_model/feature.pkl'
+    feature_path = path + 'model/tfidf_model/feature_1.pkl'
     loaded_vec = CountVectorizer(decode_error="replace", vocabulary=pickle.load(open(feature_path, "rb")))
     # 加载TfidfTransformer
-    tfidftransformer_path = path + 'model/tfidf_model/tfidftransformer.pkl'
+    tfidftransformer_path = path + 'model/tfidf_model/tfidftransformer_1.pkl'
     tfidftransformer = pickle.load(open(tfidftransformer_path, "rb"))
     # 测试用transform，表示测试数据，为list
     test_tfidf = tfidftransformer.transform(loaded_vec.transform(corpus_test))
@@ -119,10 +135,18 @@ def tfidf_vector_test(corpus_path):
 
 
 if __name__ == '__main__':
-    corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
-    tfidf_train, word_dict = tfidf_vector(corpus_train)
-    print np.shape(tfidf_train.toarray()[0])
-    print np.nonzero(tfidf_train.toarray()[1])
+    # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
+    corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
+    tfidf_train_dic, word_dict = tfidf_vector(corpus_train)
+    print np.nonzero(tfidf_train_dic['111755669'])
+    print np.shape(tfidf_train_dic['111755669'])
+    print type(tfidf_train_dic['111755669'])
+    # print np.shape(tfidf_train.toarray()[0])
+    # print np.nonzero(tfidf_train.toarray()[0])
     # for i in tfidf_train.toarray()[0]:
     #     print i
-    # tfidf_test = load_tfidf_vectorizer(corpus_train)
+
+    # corpus_data_dic = load_data(corpus_train)
+    # print type(corpus_data_dic['111755669'])
+    # tfidf_test = load_tfidf_vectorizer([corpus_data_dic['111755669']]).toarray().reshape(-1)
+    # print np.nonzero(tfidf_test)

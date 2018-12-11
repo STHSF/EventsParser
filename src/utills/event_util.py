@@ -10,6 +10,7 @@
 """
 
 import os
+import time
 import pickle
 import datetime
 import numpy as np
@@ -83,7 +84,7 @@ def event_expression(news_title_list, news_list):
         news_lists.extend(content_list)
     # 事件中涉及的股票
     stocks = ",".join(item for item in set(stock_lists))
-    # print "事件中包含的股票 %s" % stocks
+    print "事件中包含的股票 %s" % stocks
     # 事件簇关健词提取
     new_string = ' '.join(item for item in news_lists)
     # print "事件类簇 %s" % new_string
@@ -93,6 +94,8 @@ def event_expression(news_title_list, news_list):
 
     # for news_title in news_title_list:
     #     print news_title
+    for news in news_list:
+        print news
     return stock_lists, event_keywords
 
 
@@ -104,8 +107,8 @@ def load_history_event(event_unit_path=None):
     """
     if event_unit_path is None:
         path = "/Users/li/PycharmProjects/event_parser/src/"
-        event_unit_path = path + 'model/event_units.pkl'
-
+        event_unit_path = path + 'model/event_units_new.pkl'
+    print event_unit_path
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
 
     print "事件库中事件的个数 %s" % len(event_unit_lists)
@@ -117,9 +120,12 @@ def load_history_event(event_unit_path=None):
     return event_unit_lists
 
 
-def event_save(event_units, save_name, save_path=None):
+def event_save(event_units, save_name=None, save_path=None):
+    if save_name is None:
+        save_name = str(int(time.time()))
     if save_path is None:
         save_path = "../event_model/"
+        print("[event_util Info]当前文件夹: %s" % save_path)
     clustering_path = save_path + '%s.pkl' % save_name
     with open(clustering_path, 'wb') as fw:
         pickle.dump(event_units, fw)
@@ -135,8 +141,8 @@ def event_load(save_path):
     lists.sort(key=lambda fn: os.path.getmtime(save_path + fn))  # 将文件按时间排序
     filetime = datetime.datetime.fromtimestamp(os.path.getmtime(save_path+lists[-1]))
     file_new = os.path.join(save_path, lists[-1])  # 获取最新的文件保存到file_new
-    print("时间："+filetime.strftime('%Y-%m-%d %H-%M-%S'))
-    print("最新修改的文件(夹)："+lists[-1])
+    print("[event_util Info] 时间：" + filetime.strftime('%Y-%m-%d %H-%M-%S'))
+    print("[event_util Info] 最新修改的文件(夹)：" + lists[-1])
     return file_new
 
 

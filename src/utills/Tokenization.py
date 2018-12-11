@@ -10,15 +10,13 @@
 调用jieba分词，添加用户自定义词典，封装，并且去停用词等操作
 """
 import sys
-
-sys.path.append("../")
 import dicts
 import codecs
 import my_util
 import logging.handlers
 import jieba.posseg as pseg
-import data_process
-from configure import Configure
+from src.utills import data_process
+from src.configure import Configure
 
 LOG_FILE = '../log/tokenization.log'
 my_util.check_path(LOG_FILE)
@@ -75,7 +73,7 @@ class Tokenizer(object):
 
 
 def d_test():
-    data_processing = data_process.dataprocess
+    data_processing = data_process.DataPressing()
     dict_init = dicts.init()
     stop_words = load_stop_words()
     tk = Tokenizer(data_processing, dict_init, stop_words)
