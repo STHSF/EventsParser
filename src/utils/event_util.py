@@ -16,7 +16,7 @@ import datetime
 import numpy as np
 from src.cluster.singlePass import singlePassCluster
 from src.cluster.singlePass.singlePassCluster import ClusterUnit
-from src.utills import tfidf, data_process, dicts, keywords_extractor
+from src.utils import tfidf, data_process, dicts, keywords_extractor
 
 corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
 
@@ -90,13 +90,51 @@ def event_expression(news_title_list, news_list):
     # print "事件类簇 %s" % new_string
     event_keywords = keywords_extractor.parallel_test(news_lists)
     event_keywords = ','.join(item for item in event_keywords)
-    # print "事件关键词： %s" % event_keywords
+    print "事件关键词： %s" % event_keywords
+    # 事件表示,事件要素抽取
 
-    # for news_title in news_title_list:
-    #     print news_title
+    # 事件包含的新闻正文
     for news in news_list:
         print news
+
+    # 事件包含的新闻标题
+    for news_title in news_title_list:
+
+        print news_title
     return stock_lists, event_keywords
+
+
+def units_title(cluster, news_dict, news_title_dict):
+    """
+    提取事件单元的标题，
+    :param cluster:
+    :param news_dict:
+    :param news_title_dict:
+    :return:
+    """
+    node_list = cluster.node_list
+    distance_list = []
+    print 'first node: %s' % node_list[0]
+    # 事件单元中第一节点的td-idf
+    node0_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node_list[0]]]).toarray().reshape(-1)
+    max_dist = singlePassCluster.cosine_distance(cluster.centroid, node0_tf_idf)
+    distance_list.append(max_dist)
+    topic_node = node_list[0]
+    for node_index, node in enumerate(node_list[1:]):
+        print 'event node: %s' % node
+        # 计算每个节点的空间向量
+        node_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node]]).toarray().reshape(-1)
+        # 计算每个节点到簇心的欧式距离
+        temp_dist = singlePassCluster.cosine_distance(cluster.centroid, node_tf_idf)
+        distance_list.append(temp_dist)
+        # 读取最大的
+        if temp_dist >= max_dist:
+            max_dist = temp_dist
+            topic_node = node
+    print "distance_list: %s" % distance_list
+    print "max_distance: %s" % max_dist
+    print "topic_node: %s" % topic_node
+    return news_title_dict[topic_node]
 
 
 def load_history_event(event_unit_path=None):
@@ -162,10 +200,14 @@ class EventUnit(singlePassCluster.ClusterUnit):
         self.stocks = []
 
     def title_update(self):
-        # 遍历节点列表
+        # 事件标题更新
         pass
 
     def keywords_update(self):
+        # 关键词更新
+        pass
+
+    def remove_node(self, node):
         pass
 
 

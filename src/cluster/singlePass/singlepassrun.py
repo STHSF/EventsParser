@@ -9,13 +9,13 @@
 """
 
 from src.cluster.singlePass.singlePassCluster import *
-from src.utills import tfidf
+from src.utils import tfidf
 import pickle
 
-corpus_train = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"
+corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"
 # tfidf_train, word_dict = tfidf_vector(corpus_train)
 # tfidf_train, word_dict = tfidf.tfidf_vector(corpus_train)
-tfidf_train_dict, word_dict = tfidf.tfidf_vector(corpus_train)
+tfidf_train_dict, word_dict = tfidf.tfidf_vector(corpus_train_path)
 # print np.shape(tfidf_train.toarray())
 # print tfidf_train.toarray()[1]
 

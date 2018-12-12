@@ -13,7 +13,7 @@ import dicts
 import my_util
 import logging.handlers
 import numpy as np
-from src.utills import data_process, tokenization
+from src.utils import data_process, tokenization
 
 LOG_FILE = '../log/keywordsExtractor.log'
 my_util.check_path(LOG_FILE)

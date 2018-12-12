@@ -10,10 +10,10 @@
 import time
 import gensim
 import pandas as pd
-from src.utills.data_source import GetDataEngine
-from src.utills import tokenization, data_process, dicts
-from src.utills.tokenization import load_stop_words
-from src.utills import keywords_extractor, time_util, tfidf
+from src.utils.data_source import GetDataEngine
+from src.utils import tokenization, data_process, dicts
+from src.utils.tokenization import load_stop_words
+from src.utils import keywords_extractor, time_util, tfidf
 
 TaggededDocument = gensim.models.doc2vec.TaggedDocument
 

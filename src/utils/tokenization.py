@@ -15,7 +15,7 @@ import codecs
 import my_util
 import logging.handlers
 import jieba.posseg as pseg
-from src.utills import data_process
+from src.utils import data_process
 from src.configure import Configure
 
 LOG_FILE = '../log/tokenization.log'

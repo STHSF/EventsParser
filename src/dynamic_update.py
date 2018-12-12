@@ -9,7 +9,7 @@
 增量式事件更新，基于历史事件库，将新增新闻实时与历史事件库进行相似度计算，最后合并
 """
 import time
-from src.utills import event_util
+from src.utils import event_util
 from src.cluster.singlePass import singlePassCluster
 from data_reader import get_ordered_data, trans_df_data
 
