@@ -20,7 +20,7 @@ from src.cluster.singlePass.singlePassCluster import ClusterUnit
 from src.utils import tfidf, data_process, dicts, keywords_extractor
 
 # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
-corpus_train = conf.corpus_train
+corpus_train = conf.corpus_train_path
 
 data_process = data_process.DataPressing()
 
@@ -117,6 +117,7 @@ def units_title(cluster, news_dict, news_title_dict):
     :return:
     """
     node_list = cluster.node_list
+
     distance_list = []
     # print 'first node: %s' % node_list[0]
     # 事件单元中第一节点的td-idf
@@ -151,10 +152,10 @@ def load_history_event(event_unit_path=None):
     if event_unit_path is None:
         # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
         event_unit_path = conf.event_unit_path
-    print event_unit_path
+    print '[读取的事件文件目录]: %s' % event_unit_path
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
 
-    print "事件库中事件的个数 %s" % len(event_unit_lists)
+    # print "事件库中事件的个数 %s" % len(event_unit_lists)
     # for index, event_unit in enumerate(event_unit_lists):
     #     print "cluster: %s" % index  # 簇的序号
     #     print event_unit.node_list  # 该簇的节点列表
@@ -191,7 +192,6 @@ def event_load(save_path):
 
 # 重复性事件合并? 可以手动标记然后合并
 
-
 class EventUnit(singlePassCluster.ClusterUnit):
     """
     定义一个事件单元
@@ -200,12 +200,97 @@ class EventUnit(singlePassCluster.ClusterUnit):
     def __init__(self):
         ClusterUnit.__init__(self)
         self.event_id = ''
-        self.title = " "
+        self.topic_title = " "
         self.keywords = []
         self.stocks = []
 
-    def title_update(self):
+    def add_node(self, node, node_vec):
+        ClusterUnit.add_node(self, node, node_vec)
+        # self.title_update()
+
+    def add_units_title(self, news_dict, news_title_dict):
+        """
+        提取事件单元的标题，
+        :param self:
+        :param news_dict:
+        :param news_title_dict:
+        :return:
+        """
+        node_list = self.node_list
+
+        distance_list = []
+        # print 'first node: %s' % node_list[0]
+        # 事件单元中第一节点的td-idf
+        node0_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node_list[0]]]).toarray().reshape(-1)
+        max_dist = singlePassCluster.cosine_distance(self.centroid, node0_tf_idf)
+        distance_list.append(max_dist)
+        topic_node = node_list[0]
+        for node_index, node in enumerate(node_list[1:]):
+            # print 'event node: %s' % node
+            # 计算每个节点的空间向量
+            node_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node]]).toarray().reshape(-1)
+            # 计算每个节点到簇心的欧式距离
+            temp_dist = singlePassCluster.cosine_distance(self.centroid, node_tf_idf)
+            distance_list.append(temp_dist)
+            # 读取相似度最大的节点
+            if temp_dist >= max_dist:
+                max_dist = temp_dist
+                topic_node = node
+        # print "distance_list: %s" % distance_list
+        # print "max_distance: %s" % max_dist
+        # print "topic_node: %s" % topic_node
+        # 返回相似度最大的节点对应的新闻标题
+        self.topic_title = news_title_dict[topic_node]
+        print "[事件标题]: \n%s" % self.topic_title
+
+    def event_expression(self, news_title_list, news_list):
+        """
+        事件表示，
+        :return:
+        """
+        # 根据事件类簇中的新闻id，从原始
+        stock_lists = []
+        news_lists = []
+        for news in news_list:
+            # print news
+            # 提取正文中提及到的股票代码
+            content_list = news.split(" ")
+            stock_list = data_process.find_stocks(content_list=content_list, stock_dicts=dicts.stock_dict)
+            stock_lists.extend(stock_list)
+            news_lists.extend(content_list)
+        # 事件中涉及的股票
+        stocks = ",".join(item for item in set(stock_lists))
+        print "[事件中包含的股票]: %s " % stocks
+
+        # 事件簇关健词提取
+        event_new_string = ' '.join(item for item in news_lists)
+        # print "事件类簇 %s" % event_new_string
+        event_keywords_list = keywords_extractor.parallel_test(news_lists)
+        event_keywords = ','.join(item for item in event_keywords_list)
+        print "[事件关键词]:\n %s " % event_keywords
+
+        # 事件表示,事件要素抽取
+        # 事件包含的新闻正文
+        print '[事件包含的新闻正文]:'
+        for news in news_list:
+            print news
+
+        # 事件包含的新闻标题
+        print '[事件包含的新闻标题]:'
+        for news_title in news_title_list:
+            print news_title
+        self.stocks = stock_lists
+        self.keywords = event_keywords
+
+    def title_update(self, news_dict, news_title_dict):
+        """
+        对每天更新后的事件单元做title更新
+        :return:
+        """
         # 事件标题更新
+        print "事件标题更新"
+        units_title(self, news_dict, news_title_dict)
+        print "更新后的事件标题： %s" % self.topic_title
         pass
 
     def keywords_update(self):
@@ -213,7 +298,8 @@ class EventUnit(singlePassCluster.ClusterUnit):
         pass
 
     def remove_node(self, node):
-        pass
+        ClusterUnit.remove_node(self, node)
+        # self.title_update()
 
 
 class EventLib():

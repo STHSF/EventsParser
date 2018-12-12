@@ -55,14 +55,17 @@ for cluster_index, cluster in enumerate(clustering.cluster_list):
     event_title_lists = get_event_news(news_title_dict, cluster.node_list)
     # 获取事件单元中的新闻正文
     event_news_lists = get_event_news(news_dict, cluster.node_list)
-    # 事件表示,提取事件中涉及的股票，对所有新闻提取关键词
-    stock_list, keywords_list = event_util.event_expression(event_title_lists, event_news_lists)
-    # 事件表示， 计算事件的标题
-    topic_title = event_util.units_title(cluster, news_dict, news_title_dict)
-    print "[事件标题]:\n %s " % topic_title
-    event_unit.title = topic_title
-    event_unit.stocks = stock_list
-    event_unit.keywords = keywords_list
+    # # 事件表示,提取事件中涉及的股票，对所有新闻提取关键词, 添加事件标题
+    # stock_list, keywords_list = event_util.event_expression(event_title_lists, event_news_lists)
+    # # 事件表示， 计算事件的标题
+    # topic_title = event_util.units_title(cluster, news_dict, news_title_dict)
+    # print "[事件标题]:\n %s " % topic_title
+    # event_unit.topic_title, event_unit.stocks, event_unit.keywords = topic_title, stock_list, keywords_list
+
+    # 添加涉及的股票和事件关键词
+    event_unit.event_expression(event_title_lists, event_news_lists)
+    # 添加事件标题
+    event_unit.add_units_title(news_dict, news_title_dict)
     event_unit_lists.append(event_unit)
     del event_unit
 print "[类簇的个数]: %s" % len(clustering.cluster_list)
@@ -71,9 +74,9 @@ print "[事件库中事件的个数]: %s" % len(event_unit_lists)
 # event_lib = EventLib()
 # event_lib.event_unit_list = event_unit_lists
 
-# 保存事件库
-# event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
-event_unit_path = conf.event_unit_path
-with open(event_unit_path, 'wb') as fw:
-    # pickle.dump(event_lib, fw)
-    pickle.dump(event_unit_lists, fw)
+# # 保存事件库
+# # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
+# event_unit_path = conf.event_unit_path
+# with open(event_unit_path, 'wb') as fw:
+#     # pickle.dump(event_lib, fw)
+#     pickle.dump(event_unit_lists, fw)

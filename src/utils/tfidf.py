@@ -6,7 +6,6 @@
 @author: li
 @file: tfidf.py
 @time: 2018/11/28 4:03 PM
-
 """
 
 import pickle
@@ -48,7 +47,7 @@ def tfidf_vector(corpus_path):
     word_dict = {}
     for index, word in enumerate(count_vectorizer.get_feature_names()):
         word_dict[index] = word
-    print "the shape of train is" + repr(counts_train.shape)
+    print "The VSM shape of train is" + repr(counts_train.shape)
 
     tfidftransformer = TfidfTransformer()
     # 注意在训练的时候必须用vectorizer.fit_transform、tfidftransformer.fit_transform
