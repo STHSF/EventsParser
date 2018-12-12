@@ -11,20 +11,30 @@
 
 
 class Configure(object):
-
-    path = "/Users/li/PycharmProjects/event_parser/src/"
+    project_path = "/Users/li/PycharmProjects"
 
     # 停用词目录
-    stop_words_path = '/Users/li/PycharmProjects/event_parser/src/corpus/stop_words_CN'
+    stop_words_path = project_path + '/event_parser/src/corpus/stop_words_CN'
 
     # tf-idf 训练语料文件位置
-    corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"
-
-
-    #
-    clustering_save_path = path + 'model/clustering_new.pkl'
+    corpus_train_path = project_path + "/event_parser/src/data/text_full_index.txt"
 
     #
-    event_save_path = ''
+    clustering_save_path = project_path + '/event_parser/src/model/clustering_new.pkl'
+
+    corpus_news = corpus_train_path
+
+    corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/data/text_title_index.txt"
+
+    event_unit_path = project_path + '/event_parser/src/model/event_units_new.pkl'
+
+    #
+    event_save_path = project_path + '/event_parser/src/model/event_model/'
+
+    # TF-IDF计算
+    tfidf_feature_path = project_path + '/event_parser/src/model/tfidf_model/feature_1.pkl'
+    tfidftransformer_path = project_path + '/event_parser/src/model/tfidf_model/tfidftransformer_1.pkl'
+    word_dict_path = project_path + '/event_parser/src/model/tfidf_model/word_dict_1.pkl'
 
 
+conf = Configure()

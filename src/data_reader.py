@@ -10,6 +10,7 @@
 import time
 import gensim
 import pandas as pd
+from src.configure import conf
 from src.utils.data_source import GetDataEngine
 from src.utils import tokenization, data_process, dicts
 from src.utils.tokenization import load_stop_words
@@ -135,9 +136,9 @@ def import_title(corpus_path):
 
 def import_news(corpus_path):
     """
-    将新闻的news_id和新闻的标题news_title转换成dict，为后面从类簇中提取节点对应的新闻标题使用
+    将新闻的news_id和新闻的正文news转换成dict，为后面从类簇中提取节点对应的新闻正文使用
     :param corpus_path: 语料的路径
-    :return: dict, {news_id: news_title}
+    :return: dict, {news_id: news}
     """
     news_dict = {}
     for line in open(corpus_path):
@@ -228,7 +229,7 @@ def data_save():
     tk = tokenization.Tokenizer(dp, dict_init, stop_words)  # 分词
     df_result = get_data()
     # df_result.ix[:, ["content"]].apply(tk.token)
-    # 提取dataframe中的title和content的内容，然后分别进行预处理，
+    # 提取dataFrame中的title和content的内容，然后分别进行预处理，
 
     # 方式一、标题和正文保存为同一个新闻，且新闻标题和正文同时存在
     res_lists = []
@@ -248,13 +249,15 @@ def data_save():
                 # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
     print "length of res_lists: %s" % len(res_lists)
     # 数据更新
-    file_out = open("./data/text_full_index.txt", "w")
+    # file_out = open("./data/text_full_index.txt", "w")
+    file_out = open(conf.corpus_news, "w")
     for index, content in enumerate(res_lists):
         item = " ".join(item for item in content[2])
         file_out.write(str(content[0]) + "\t" + str(content[3]) + "\t" + item.encode("utf8") + "\n")
     file_out.close()
 
-    file_out = open("./data/text_title_index.txt", "w")
+    # file_out = open("./data/text_title_index.txt", "w")
+    file_out = open(conf.corpus_news_title, "w")
     for index, content in enumerate(res_lists):
         file_out.write(str(content[0]) + "\t" + str(content[3]) + "\t" + content[1] + "\n")
     file_out.close()

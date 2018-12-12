@@ -14,11 +14,13 @@ import time
 import pickle
 import datetime
 import numpy as np
+from src.configure import conf
 from src.cluster.singlePass import singlePassCluster
 from src.cluster.singlePass.singlePassCluster import ClusterUnit
 from src.utils import tfidf, data_process, dicts, keywords_extractor
 
-corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
+# corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
+corpus_train = conf.corpus_train
 
 data_process = data_process.DataPressing()
 
@@ -39,8 +41,8 @@ def events_effectiveness(cluster_list, news_dict):
     effectiveness_events = []
     non_effectiveness_events = []
     for cluster_index, cluster in enumerate(cluster_list):  # 遍历每一个事件类簇
-        print "cluster: %s" % cluster_index  # 簇的序号
-        print "node_list: %s" % cluster.node_list  # 该簇的节点列表
+        print "[cluster]: %s" % cluster_index  # 簇的序号
+        print "[node_list]: %s" % cluster.node_list  # 该簇的节点列表
         centroid = cluster.centroid
         text_vectors_similarly = []
         for node in cluster.node_list:  # 提取每个事件类簇中的结点，并且计算每个节点的文本向量空间
@@ -50,11 +52,11 @@ def events_effectiveness(cluster_list, news_dict):
             text_vector = tfidf.load_tfidf_vectorizer([news]).toarray().reshape(-1)
             # 计算每篇文章与类簇中心的相似度
             similarly = singlePassCluster.cosine_distance(text_vector, centroid)
-            print "similarly %s " % similarly
+            print "[similarly] %s " % similarly
             text_vectors_similarly.append(similarly)
         # 计算每个类簇中文章方差
         variance = np.var(text_vectors_similarly)
-        print "variance: %s" % variance
+        print "[variance]: %s" % variance
 
         # 如果方差大于某个阈值，则为无效事件
         if variance >= 10000:
@@ -62,8 +64,8 @@ def events_effectiveness(cluster_list, news_dict):
         else:
             effectiveness_events.append(cluster)
 
-    print "length of effectiveness_events: %s" % len(effectiveness_events)
-    print "length of non_effectiveness_events: %s" % len(effectiveness_events)
+    print "[length of effectiveness_events]: %s" % len(effectiveness_events)
+    print "[length of non_effectiveness_events]: %s" % len(effectiveness_events)
     return effectiveness_events, non_effectiveness_events
 
 
@@ -84,22 +86,24 @@ def event_expression(news_title_list, news_list):
         news_lists.extend(content_list)
     # 事件中涉及的股票
     stocks = ",".join(item for item in set(stock_lists))
-    print "事件中包含的股票 %s" % stocks
-    # 事件簇关健词提取
-    new_string = ' '.join(item for item in news_lists)
-    # print "事件类簇 %s" % new_string
-    event_keywords = keywords_extractor.parallel_test(news_lists)
-    event_keywords = ','.join(item for item in event_keywords)
-    print "事件关键词： %s" % event_keywords
-    # 事件表示,事件要素抽取
+    print "[事件中包含的股票]: %s " % stocks
 
+    # 事件簇关健词提取
+    event_new_string = ' '.join(item for item in news_lists)
+    # print "事件类簇 %s" % event_new_string
+    event_keywords_list = keywords_extractor.parallel_test(news_lists)
+    event_keywords = ','.join(item for item in event_keywords_list)
+    print "[事件关键词]:\n %s " % event_keywords
+
+    # 事件表示,事件要素抽取
     # 事件包含的新闻正文
+    print '[事件包含的新闻正文]:'
     for news in news_list:
         print news
 
     # 事件包含的新闻标题
+    print '[事件包含的新闻标题]:'
     for news_title in news_title_list:
-
         print news_title
     return stock_lists, event_keywords
 
@@ -114,26 +118,27 @@ def units_title(cluster, news_dict, news_title_dict):
     """
     node_list = cluster.node_list
     distance_list = []
-    print 'first node: %s' % node_list[0]
+    # print 'first node: %s' % node_list[0]
     # 事件单元中第一节点的td-idf
     node0_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node_list[0]]]).toarray().reshape(-1)
     max_dist = singlePassCluster.cosine_distance(cluster.centroid, node0_tf_idf)
     distance_list.append(max_dist)
     topic_node = node_list[0]
     for node_index, node in enumerate(node_list[1:]):
-        print 'event node: %s' % node
+        # print 'event node: %s' % node
         # 计算每个节点的空间向量
         node_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node]]).toarray().reshape(-1)
         # 计算每个节点到簇心的欧式距离
         temp_dist = singlePassCluster.cosine_distance(cluster.centroid, node_tf_idf)
         distance_list.append(temp_dist)
-        # 读取最大的
+        # 读取相似度最大的节点
         if temp_dist >= max_dist:
             max_dist = temp_dist
             topic_node = node
-    print "distance_list: %s" % distance_list
-    print "max_distance: %s" % max_dist
-    print "topic_node: %s" % topic_node
+    # print "distance_list: %s" % distance_list
+    # print "max_distance: %s" % max_dist
+    # print "topic_node: %s" % topic_node
+    # 返回相似度最大的节点对应的新闻标题
     return news_title_dict[topic_node]
 
 
@@ -144,8 +149,8 @@ def load_history_event(event_unit_path=None):
     :return:
     """
     if event_unit_path is None:
-        path = "/Users/li/PycharmProjects/event_parser/src/"
-        event_unit_path = path + 'model/event_units_new.pkl'
+        # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
+        event_unit_path = conf.event_unit_path
     print event_unit_path
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
 

@@ -9,6 +9,7 @@
 增量式事件更新，基于历史事件库，将新增新闻实时与历史事件库进行相似度计算，最后合并
 """
 import time
+from src.configure import conf
 from src.utils import event_util
 from src.cluster.singlePass import singlePassCluster
 from data_reader import get_ordered_data, trans_df_data
@@ -52,7 +53,8 @@ for news_index in range(len_news):  # 遍历每一篇新闻
     # 如果最大距离大于某一个阈值，则将该新闻归并到该事件单元
     if max_dist > 10:
         new_event_units[min_cluster_index].add_node(ordered_news_lists[news_index][0], ordered_news_lists[news_index][2])
-    else:  # 否则则新建一个事件单元
+    else:
+        # 否则则新建一个事件单元
         new_event = event_util.EventUnit()
         new_event.add_node(ordered_news_lists[news_index][0], ordered_news_lists[news_index])
         new_event_units.append(new_event)
@@ -64,10 +66,13 @@ for news_index in range(len_news):  # 遍历每一篇新闻
 print '[Info] 更新后的事件个数: %s' % len(new_event_units)
 
 # # 将更新后的事件单元保存下来
-save_name = int(time.time())
-save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
-event_util.event_save(new_event_units, save_name, save_path)
-file_new = event_util.event_load(save_path)
+event_save_name = int(time.time())
+event_save_path = conf.event_save_path
+# event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
+event_util.event_save(new_event_units, event_save_name, event_save_path)
+
+#
+file_new = event_util.event_load(event_save_path)
 print file_new
 new_event_units = event_util.load_history_event(file_new)
 
