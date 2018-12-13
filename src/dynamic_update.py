@@ -12,7 +12,7 @@ import time
 from src.configure import conf
 from src.utils import event_util
 from src.cluster.singlePass import singlePassCluster
-from data_reader import get_ordered_data, trans_df_data
+from data_reader import get_ordered_data, trans_df_data, get_data
 
 
 # step 1、读取指定日期之后的新闻
@@ -37,13 +37,12 @@ print "[Info] 事件库中事件的个数 %s" % len(history_event_units)
 len_news = len(ordered_news_lists)
 new_event_units = []
 new_event_units.extend(history_event_units)
-
+# step 3、遍历新新闻，然后将新新闻添加到事件单元中，更新事件单元的节点和簇心
 for news_index in range(len_news):  # 遍历每一篇新的新闻
     # 新的节点id
     new_node_id = ordered_news_lists[news_index][0]
     # 新的节点的VSM
     new_node_vec = ordered_news_lists[news_index][2]
-
     # max_dist = singlePassCluster.cosine_distance(history_event_units[0].centroid, ordered_news_lists[news_index][2])
     max_dist = singlePassCluster.cosine_distance(new_event_units[0].centroid, new_node_vec)
     min_event_index = 0
@@ -56,6 +55,7 @@ for news_index in range(len_news):  # 遍历每一篇新的新闻
         if dist > max_dist:
             max_dist = dist
             min_event_index = event_index + 1
+    print '[Info] new_node_id: %s' % new_node_id
     print '[Info] len of new_event_unit: %s' % len(new_event_units)
     print '[Info] max_dist: %s' % max_dist
     print '[Info] min_cluster_index: %s\n' % min_event_index
@@ -64,30 +64,64 @@ for news_index in range(len_news):  # 遍历每一篇新的新闻
         # new_node_id = ordered_news_lists[news_index][0]
         # new_node_vec = ordered_news_lists[news_index][2]
         new_event_units[min_event_index].add_node(new_node_id, new_node_vec)
+        # new_event_units[min_event_index].add_unit_title()
+        # new_event_units[min_event_index].event_expression()
     else:
         # 否则则新建一个事件单元
+        index = len(new_event_units)
         new_event = event_util.EventUnit()
+        new_event.event_id = index
         new_event.add_node(new_node_id, new_node_vec)
+        # new_event.add_unit_title()
+        # new_event.event_expression()
         new_event_units.append(new_event)
         del new_event
 
-# 事件库更新，更新标题，关键词，事件簇心。
-
-
 print '[Info] 更新后的事件个数: %s' % len(new_event_units)
 
-# # 将更新后的事件单元保存下来
-event_save_name = int(time.time())
-event_save_path = conf.event_save_path
-# event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
-event_util.event_save(new_event_units, event_save_name, event_save_path)
+# step 4、对更新的事件库进行标题和关键词更新
+# 事件库更新，更新标题，关键词,股票代码。
+full_df_data = get_data().set_index('id')
 
+for unit in new_event_units:
+    if unit.event_tag == 1:
+        # 更新标题，股票代码，关键词等
+        print "事件 %s 是新事件" % unit.event_id
+        # 读取每个事件
+        node_df_data = full_df_data.loc[set(unit.node_list)]
+
+        node_news_lists = trans_df_data(node_df_data.reset_index())
+        news_list = []
+        news_title_list = []
+        for i in node_news_lists:
+            # print i[1], i[4]
+            news_list.append(i[1])
+            news_title_list.append(i[4])
+        # 更新股票列表
+        unit.event_expression(news_title_list, news_list)
+        print "stocks: %s" % ','.join(tmp for tmp in unit.stocks)
+        print "keywords: %s" % unit.keywords
+        # 更新标题
+        node_news_dict = {}
+        for node in node_news_lists:
+            node_news_dict[node[0]] = (node[1], node[2], node[3], node[4])
+        unit.title_update(node_news_dict)
+    else:
+        continue
+
+
+# # # 将更新后的事件单元保存下来
+# event_save_name = int(time.time())
+# event_save_path = conf.event_save_path
+# # event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
+# event_util.event_save(new_event_units, event_save_name, event_save_path)
 #
-file_new = event_util.event_load(event_save_path)
-print file_new
-new_event_units = event_util.load_history_event(file_new)
-
-for i in new_event_units:
-    # print i.title
-    print i.node_list
+# #
+# file_new = event_util.event_load(event_save_path)
+# print file_new
+# new_event_units = event_util.load_history_event(file_new)
+#
+# for i in new_event_units:
+#     # print i.title
+#     print i.node_list
 

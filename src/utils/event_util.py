@@ -196,28 +196,30 @@ class EventUnit(singlePassCluster.ClusterUnit):
     """
     定义一个事件单元
     """
-
     def __init__(self):
         ClusterUnit.__init__(self)
         self.event_id = ''
         self.topic_title = " "
+        self.start_time = ''  # 起始时间
+        self.stop_time = ''   # 截止时间
         self.keywords = []
         self.stocks = []
+        self.event_tag = 0  # 判断时间是否为新事件, 0为旧事件, 1为新事件. 如果是新事件, 则进行标题等的更新.
 
     def add_node(self, node, node_vec):
         ClusterUnit.add_node(self, node, node_vec)
+        self.event_tag = 1  # 添加了新的节点，将该事件标记为更新新事件
         # self.title_update()
 
-    def add_units_title(self, news_dict, news_title_dict):
+    def add_unit_title(self, news_dict, news_title_dict):
         """
-        提取事件单元的标题，
+        事件表示，提取事件单元的标题，
         :param self:
         :param news_dict:
         :param news_title_dict:
         :return:
         """
         node_list = self.node_list
-
         distance_list = []
         # print 'first node: %s' % node_list[0]
         # 事件单元中第一节点的td-idf
@@ -245,7 +247,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
 
     def event_expression(self, news_title_list, news_list):
         """
-        事件表示，
+        事件表示，提取事件单元中涉及的股票，提取事件单元中新闻的关键词（所有新闻一起提取）
         :return:
         """
         # 根据事件类簇中的新闻id，从原始
@@ -282,16 +284,38 @@ class EventUnit(singlePassCluster.ClusterUnit):
         self.stocks = stock_lists
         self.keywords = event_keywords
 
-    def title_update(self, news_dict, news_title_dict):
+    def title_update(self, node_news_dict):
         """
         对每天更新后的事件单元做title更新
         :return:
         """
         # 事件标题更新
         print "事件标题更新"
-        units_title(self, news_dict, news_title_dict)
+        node_list = self.node_list
+        distance_list = []
+        # print 'first node: %s' % node_list[0]
+        # 事件单元中第一节点的td-idf
+        first_node = node_news_dict[node_list[0]]
+        node0_tf_idf = first_node[1]
+        # node0_tf_idf = tfidf.load_tfidf_vectorizer([first_node[1]]).toarray().reshape(-1)
+        max_dist = singlePassCluster.cosine_distance(self.centroid, node0_tf_idf)
+        distance_list.append(max_dist)
+        topic_node = node_list[0]
+        for node_index, node in enumerate(node_list[1:]):
+            # print 'event node: %s' % node
+            # 计算每个节点的空间向量
+            node_tf_idf = node_news_dict[node][1]
+            # node_tf_idf = tfidf.load_tfidf_vectorizer([node_news_dict[node]]).toarray().reshape(-1)
+            # 计算每个节点到簇心的欧式距离
+            temp_dist = singlePassCluster.cosine_distance(self.centroid, node_tf_idf)
+            distance_list.append(temp_dist)
+            # 读取相似度最大的节点
+            if temp_dist >= max_dist:
+                max_dist = temp_dist
+                topic_node = node
+        # 返回相似度最大的节点对应的新闻标题
+        self.topic_title = node_news_dict[topic_node][3]
         print "更新后的事件标题： %s" % self.topic_title
-        pass
 
     def keywords_update(self):
         # 关键词更新

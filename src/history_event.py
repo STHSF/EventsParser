@@ -65,7 +65,7 @@ for cluster_index, cluster in enumerate(clustering.cluster_list):
     # 添加涉及的股票和事件关键词
     event_unit.event_expression(event_title_lists, event_news_lists)
     # 添加事件标题
-    event_unit.add_units_title(news_dict, news_title_dict)
+    event_unit.add_unit_title(news_dict, news_title_dict)
     event_unit_lists.append(event_unit)
     del event_unit
 print "[类簇的个数]: %s" % len(clustering.cluster_list)
@@ -74,9 +74,9 @@ print "[事件库中事件的个数]: %s" % len(event_unit_lists)
 # event_lib = EventLib()
 # event_lib.event_unit_list = event_unit_lists
 
-# # 保存事件库
-# # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
-# event_unit_path = conf.event_unit_path
-# with open(event_unit_path, 'wb') as fw:
-#     # pickle.dump(event_lib, fw)
-#     pickle.dump(event_unit_lists, fw)
+# 保存事件库
+# event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
+event_unit_path = conf.event_unit_path
+with open(event_unit_path, 'wb') as fw:
+    # pickle.dump(event_lib, fw)
+    pickle.dump(event_unit_lists, fw)

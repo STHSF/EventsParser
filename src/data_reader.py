@@ -214,7 +214,7 @@ def trans_df_data(df_result):
             text_vector = tfidf.load_tfidf_vectorizer([string]).toarray().reshape(-1)
             if not dp.useless_filter(string_list, dicts.stock_dict):
                 # string_list = keywords_extractor.parallel_test(string_list)
-                res_lists.append((news_id, string, text_vector, unix_time))  # 根据上面的具体格式，组成tuple
+                res_lists.append((news_id, string, text_vector, unix_time, title))  # 根据上面的具体格式，组成tuple
                 # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
     print "length of res_lists: %s" % len(res_lists)
     return res_lists
