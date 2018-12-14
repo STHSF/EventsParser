@@ -20,7 +20,7 @@ from src.cluster.singlePass.singlePassCluster import ClusterUnit
 from src.utils import tfidf, data_process, dicts, keywords_extractor
 
 # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
-corpus_train = conf.corpus_train_path
+# corpus_train = conf.corpus_train_path
 
 data_process = data_process.DataPressing()
 
@@ -276,7 +276,6 @@ class EventUnit(singlePassCluster.ClusterUnit):
         print '[事件包含的新闻正文]:'
         for news in news_list:
             print news
-
         # 事件包含的新闻标题
         print '[事件包含的新闻标题]:'
         for news_title in news_title_list:
@@ -289,8 +288,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         对每天更新后的事件单元做title更新
         :return:
         """
-        # 事件标题更新
-        print "事件标题更新"
+        print "事件标题更新\n"
         node_list = self.node_list
         distance_list = []
         # print 'first node: %s' % node_list[0]
@@ -326,6 +324,6 @@ class EventUnit(singlePassCluster.ClusterUnit):
         # self.title_update()
 
 
-class EventLib():
+class EventLib(object):
     def __init__(self):
         self.event_unit_list = []

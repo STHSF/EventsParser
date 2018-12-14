@@ -106,6 +106,7 @@ for unit in new_event_units:
         for node in node_news_lists:
             node_news_dict[node[0]] = (node[1], node[2], node[3], node[4])
         unit.title_update(node_news_dict)
+        unit.event_tag = 0  # 所有内容更新完成之后将事件表示为0
     else:
         continue
 
