@@ -13,6 +13,9 @@
 class Configure(object):
     project_path = "/Users/li/PycharmProjects"
 
+    # 词典目录
+    dic_path = project_path + '/event_parser/src/corpus'
+
     # 停用词目录
     stop_words_path = project_path + '/event_parser/src/corpus/stop_words_CN'
 
@@ -24,7 +27,7 @@ class Configure(object):
 
     corpus_news = corpus_train_path
     # 提取的新闻标题
-    corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/data/text_title_index.txt"
+    corpus_news_title = project_path + "/event_parser/src/data/text_title_index.txt"
     #
     event_unit_path = project_path + '/event_parser/src/model/event_units_new.pkl'
     #

@@ -52,9 +52,8 @@ class Tokenizer(object):
         self.data_precessing = data_process
         self.dicts = dict_init  # 初始化人工词典
         # 按照词性去停用词
-        self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't',
-                          'uj', 'm', 'f',
-                          'r']  # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
+        # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
+        self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
         self.stopwords = stop_words
 
     def token(self, text):
@@ -82,10 +81,9 @@ def d_test():
     print(["关注同".decode("utf-8")])
 
     # 剔除杂质词
-    print(
-        data_processing.no_remove("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。"))
+    print(data_processing.no_remove("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。"))
     # 判断content中是否存在某些特殊词
-    print(data_processing.useless_remove("[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
+    print(data_processing.useless_contain("[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
 
     # 对content中的内容进行去停，去杂质词，分词
     # result = tk.token("【今日题材】[AI决策]加多宝的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的")
@@ -95,8 +93,8 @@ def d_test():
         print(i)
 
 
-def paralize_test(text, dataprocess, dict_init, stop_words):
-    t = Tokenizer(dataprocess, dict_init, stop_words)
+def paralize_test(text, data_process, dict_init, stop_words):
+    t = Tokenizer(data_process, dict_init, stop_words)
     restult = t.token(text)
     return restult
 

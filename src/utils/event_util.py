@@ -150,9 +150,8 @@ def load_history_event(event_unit_path=None):
     if event_unit_path is None:
         # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
         event_unit_path = conf.event_unit_path
-    print '[读取的事件文件目录]: %s' % event_unit_path
+    print '[event_util Info] 读取的事件文件目录: %s' % event_unit_path
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
-
     # print "事件库中事件的个数 %s" % len(event_unit_lists)
     # for index, event_unit in enumerate(event_unit_lists):
     #     print "cluster: %s" % index  # 簇的序号

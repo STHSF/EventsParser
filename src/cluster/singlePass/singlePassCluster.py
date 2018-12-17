@@ -11,7 +11,6 @@
 import numpy as np
 from math import sqrt
 import time
-import matplotlib.pylab as pl
 
 
 class ClusterUnit(object):
@@ -179,12 +178,13 @@ if __name__ == '__main__':
     clustering.print_result(label_dict=zone_dict)
 
     # 将聚类结果导出图
-    fig, ax = pl.subplots()
-    fig = zone_dict
-    c_map = pl.get_cmap('jet', clustering.cluster_num)
-    c = 0
-    for cluster in clustering.cluster_list:
-        for node in cluster.node_list:
-            ax.scatter(xy_[node][0], xy_[node][1], c=c, s=30, cmap=c_map, vmin=0, vmax=clustering.cluster_num)
-        c += 1
-    pl.show()
+    # import matplotlib.pylab as pl
+    # fig, ax = pl.subplots()
+    # fig = zone_dict
+    # c_map = pl.get_cmap('jet', clustering.cluster_num)
+    # c = 0
+    # for cluster in clustering.cluster_list:
+    #     for node in cluster.node_list:
+    #         ax.scatter(xy_[node][0], xy_[node][1], c=c, s=30, cmap=c_map, vmin=0, vmax=clustering.cluster_num)
+    #     c += 1
+    # pl.show()

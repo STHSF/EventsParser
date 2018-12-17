@@ -13,6 +13,7 @@ jieba 字典初始化模块
 
 import jieba
 import codecs
+from src.configure import conf
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -31,7 +32,8 @@ jg_dict = []  # 机构名
 
 
 def init():
-    dic_path = '/Users/li/PycharmProjects/huihongcaihui/src/corpus'
+    # dic_path = '/Users/li/PycharmProjects/huihongcaihui/src/corpus'
+    dic_path = conf.dic_path
 
     # 读取词典
     d_path = dic_path + "/程度副词_datatang.txt"

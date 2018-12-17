@@ -10,9 +10,9 @@
 import sys
 sys.path.append("..")
 from gensim import corpora, models, similarities
-from tokenization import Tokenizer
-from configure import Configure
-from data_process import DataPressing
+from src.utils.tokenization import Tokenizer, load_stop_words
+from src.configure import Configure
+from src.utils import data_process
 
 
 conf = Configure()
@@ -103,9 +103,11 @@ raw_documents = [
 
 if __name__ == '__main__':
     import dicts
+    data_processing = data_process.DataPressing()
+    dict_init = dicts.init()
+    stop_words = load_stop_words()
+    t = Tokenizer(data_processing, dict_init, stop_words)
     stock_dict = dicts.stock_dict
-    t = Tokenizer()
-    data_processing = DataPressing()
     print(["大智慧".decode("utf8")])
     a = ["大智慧".decode("utf8")]
     print(len(a[0]))
@@ -119,7 +121,7 @@ if __name__ == '__main__':
     print(data_processing.no_remove("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
 
     # 判断content中是否存在某些特殊词
-    print(data_processing.useless_remove("[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
+    print(data_processing.useless_contain("[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的"))
 
     # 筛选新闻，筛选出股市收报
     # str = '午后，分散染料概念股走强。截至发稿，浙江龙盛(600352)[AI决策](浙江龙盛(600352)[AI决策]-CN)涨6.74%报13.15元，闰土股份(002440)[AI决策](闰土股份(002440)[AI决策]-CN)涨5.84%报19.94元，安诺其(300067)[AI决策](安诺其(300067)[AI决策]-CN)涨5.46%报6.38元，吉华集团(603980)[AI决策](吉华集团(603980)[AI决策]-CN)涨3.41%报22.42元，航民股份(600987)[AI决策](航民股份(600987)[AI决策]-CN)、江苏吴中(600200)[AI决策](江苏吴中(600200)[AI决策]-CN)等个股跟随上涨近2%。据分散染料龙头企业介绍，由于环保形势的持续严峻，企业开工受到限制，染料供应量较少，库存偏低。染料贸易商和印染企业前期采购的分散染料，经过四季度的消耗库存已经很低，近期需要补仓，刚需力度增强。推荐阅读：浙江龙盛最新消息'

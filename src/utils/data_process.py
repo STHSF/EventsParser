@@ -14,10 +14,10 @@ import re
 class DataPressing(object):
     def __init__(self):
         # 杂质词
-        self.pattern_word = u'(\[AI\u51b3\u7b56\])|(\u3010\u4eca\u65e5\u9898\u6750\u3011)' \
+        self.pattern_word = u'(\\[AI\u51b3\u7b56\\])|(\u3010\u4eca\u65e5\u9898\u6750\u3011)' \
                             u'|(\u5173\u6ce8\u540c.*\u673a\u4f1a\u3002)'
         # [关注同花顺财经(ths518)，获取更多机会。]
-        self.pattern_text = u'(\[AI\u51b3\u7b56\])'
+        self.pattern_text = u'(\\[AI\u51b3\u7b56\\])'
         self.num = 4
 
     def no_remove(self, text):
@@ -30,13 +30,13 @@ class DataPressing(object):
         # result = re.sub(self.pattern_word, "", text)
         return result
 
-    def useless_remove(self, content):
+    def useless_contain(self, content):
         """
         判断content中是否包含某些字符
         :return:
         """
-        matchObj = re.search(self.pattern_text, content.decode('utf8'))
-        if matchObj:
+        match_obj = re.search(self.pattern_text, content.decode('utf8'))
+        if match_obj:
             return True
         else:
             return False
@@ -86,5 +86,3 @@ class DataPressing(object):
         form = re.compile(key1 + '(.*?)' + key2, re.S)
         result = form.findall(content)
         return result
-
-

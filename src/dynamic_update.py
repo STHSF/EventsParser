@@ -8,6 +8,9 @@
 @time: 2018/12/5 2:23 PM
 增量式事件更新，基于历史事件库，将新增新闻实时与历史事件库进行相似度计算，最后合并
 """
+import sys
+sys.path.append('../')
+sys.path.append('..')
 import time
 from src.utils import event_util, my_util
 from src.configure import conf
@@ -117,11 +120,10 @@ event_save_path = conf.event_save_path
 # event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
 event_util.event_save(new_event_units, event_save_name, event_save_path)
 
-#
+# step 6、load最新的事件单元库
 file_new = my_util.find_newest_file(event_save_path)
-print file_new
+print '[最新的文件: %s]' % file_new
 new_event_units = event_util.load_history_event(file_new)
-
 for i in new_event_units:
     print i.topic_title
     print i.event_id
