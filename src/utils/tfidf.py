@@ -80,6 +80,11 @@ def tfidf_vector(corpus_path):
 
 
 def load_tfidf_vectorizer(corpus_path):
+    """
+
+    :param corpus_path:
+    :return:
+    """
 
     # if type(corpus_path) is not list:
     #     corpus_test = []

@@ -7,18 +7,25 @@
 @file: __init__.py.py
 @time: 2018/10/30 10:44 AM
 """
+
+import time
+from src.configure import conf
+from src.utils import my_util, event_util
 import data_reader
 import pandas as pd
 import numpy as np
 
-full_df_data = data_reader.get_data().set_index('id').reset_index()
+event_save_name = int(time.time())
+event_save_path = conf.event_save_path
+# event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
+# event_util.event_save(new_event_units, event_save_name, event_save_path)
 
-print full_df_data
-# aa = ['11283186','11316681', '605314817', u'10999906']
-# print full_df_data.loc[aa]
-
-
-# dates = pd.date_range('20121001',periods=10)
-# df = pd.DataFrame(np.random.randn(10,4) , index = dates,columns=list('abcd'))
 #
-# print df
+file_new = my_util.find_newest_file(event_save_path)
+print file_new
+new_event_units = event_util.load_history_event(file_new)
+
+for i in new_event_units:
+    print i.topic_title
+    print i.event_id
+    print i.node_list

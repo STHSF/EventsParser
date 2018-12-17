@@ -9,8 +9,8 @@
 增量式事件更新，基于历史事件库，将新增新闻实时与历史事件库进行相似度计算，最后合并
 """
 import time
+from src.utils import event_util, my_util
 from src.configure import conf
-from src.utils import event_util
 from src.cluster.singlePass import singlePassCluster
 from data_reader import get_ordered_data, trans_df_data, get_data
 
@@ -111,18 +111,19 @@ for unit in new_event_units:
         continue
 
 
-# # # 将更新后的事件单元保存下来
-# event_save_name = int(time.time())
-# event_save_path = conf.event_save_path
-# # event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
-# event_util.event_save(new_event_units, event_save_name, event_save_path)
+# step 5、将更新后的事件单元保存下来
+event_save_name = int(time.time())
+event_save_path = conf.event_save_path
+# event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
+event_util.event_save(new_event_units, event_save_name, event_save_path)
+
 #
-# #
-# file_new = event_util.event_load(event_save_path)
-# print file_new
-# new_event_units = event_util.load_history_event(file_new)
-#
-# for i in new_event_units:
-#     # print i.title
-#     print i.node_list
+file_new = my_util.find_newest_file(event_save_path)
+print file_new
+new_event_units = event_util.load_history_event(file_new)
+
+for i in new_event_units:
+    print i.topic_title
+    print i.event_id
+    print i.node_list
 

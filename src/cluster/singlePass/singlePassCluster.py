@@ -14,7 +14,7 @@ import time
 import matplotlib.pylab as pl
 
 
-class ClusterUnit:
+class ClusterUnit(object):
     """
     # 定义一个簇单元
     """
@@ -24,33 +24,33 @@ class ClusterUnit:
         self.node_num = 0  # 该簇节点数
         self.centroid = None  # 该簇质心
 
-    def add_node(self, node, node_vec):
+    def add_node(self, node_id, node_vec):
         """
         为本簇添加指定节点，并更新簇心
-         node_vec:该节点的特征向量
-         node:节点
-         return:null
+        :param node_id: 节点ID
+        :param node_vec: 该节点对应的特征向量
+        :return: null
         """
-        self.node_list.append(node)
+        self.node_list.append(node_id)
         try:
             self.centroid = (self.node_num * self.centroid + node_vec) / (self.node_num + 1)  # 更新簇心
         except TypeError:
             self.centroid = np.array(node_vec) * 1  # 初始化质心
         self.node_num += 1  # 节点数加1
 
-    def remove_node(self, node):
+    def remove_node(self, node_id):
         # 移除本簇指定节点
         try:
-            self.node_list.remove(node)
+            self.node_list.remove(node_id)
             # 更新簇心
             self.node_num -= 1
         except ValueError:
-            raise ValueError("%s not in this cluster" % node)  # 该簇本身就不存在该节点，移除失败
+            raise ValueError("%s not in this cluster" % node_id)  # 该簇本身就不存在该节点，移除失败
 
-    def move_node(self, node, another_cluster):
+    def move_node(self, node_id, another_cluster):
         # 将本簇中的其中一个节点移至另一个簇
-        self.remove_node(node=node)
-        another_cluster.add_node(node=node)
+        self.remove_node(node_id=node_id)
+        another_cluster.add_node(node_id=node_id)
 
 
 def euclidean_distance(vec_a, vec_b):
@@ -72,6 +72,13 @@ def cosine_distance(vec_a, vec_b):
         return 0
     else:
         return round(dot_product / ((norm_a ** 0.5) * (norm_b ** 0.5)) * 100, 2)
+
+
+def cosine_distance_numpy(vector1, vector2):
+    vector1 = vector1.reshape([-1])
+    vector2 = vector2.reshape([-1])
+    cos_v12 = np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
+    return cos_v12
 
 
 class OnePassCluster:

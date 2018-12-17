@@ -49,7 +49,7 @@ class ClusterUnit:
     def move_node(self, node, another_cluster):
         # 将本簇中的其中一个节点移至另一个簇
         self.remove_node(node=node)
-        another_cluster.add_node(node=node)
+        another_cluster.add_node(node_id=node)
 
 
 # cluster_unit = ClusterUnit()

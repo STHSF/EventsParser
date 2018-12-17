@@ -6,13 +6,11 @@
 @author: li
 @file: event_util.py
 @time: 2018/11/29 8:39 PM
-事件表示，事件的有效性判断
+事件表示，事件的有效性判断, 构建事件库等
 """
 
-import os
 import time
 import pickle
-import datetime
 import numpy as np
 from src.configure import conf
 from src.cluster.singlePass import singlePassCluster
@@ -71,7 +69,7 @@ def events_effectiveness(cluster_list, news_dict):
 
 def event_expression(news_title_list, news_list):
     """
-    事件表示，
+    事件表示，提取事件中的关键词和涉及的股票代码
     :return:
     """
     # 根据事件类簇中的新闻id，从原始
@@ -175,21 +173,6 @@ def event_save(event_units, save_name=None, save_path=None):
         pickle.dump(event_units, fw)
 
 
-def event_load(save_path):
-    """
-    从文件夹中读取最新的事件单元保存文件。
-    :param save_path: 目录地址
-    :return:
-    """
-    lists = os.listdir(save_path)  # 列出目录的下所有文件和文件夹保存到lists
-    lists.sort(key=lambda fn: os.path.getmtime(save_path + fn))  # 将文件按时间排序
-    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(save_path+lists[-1]))
-    file_new = os.path.join(save_path, lists[-1])  # 获取最新的文件保存到file_new
-    print("[event_util Info] 时间：" + filetime.strftime('%Y-%m-%d %H-%M-%S'))
-    print("[event_util Info] 最新修改的文件(夹)：" + lists[-1])
-    return file_new
-
-
 # 重复性事件合并? 可以手动标记然后合并
 
 class EventUnit(singlePassCluster.ClusterUnit):
@@ -206,8 +189,14 @@ class EventUnit(singlePassCluster.ClusterUnit):
         self.stocks = []
         self.event_tag = 0  # 判断时间是否为新事件, 0为旧事件, 1为新事件. 如果是新事件, 则进行标题等的更新.
 
-    def add_node(self, node, node_vec):
-        ClusterUnit.add_node(self, node, node_vec)
+    def add_node(self, node_id, node_vec):
+        """
+        添加新的节点
+        :param node_id: 节点ID
+        :param node_vec: 节点向量，用于更新簇心
+        :return:
+        """
+        ClusterUnit.add_node(self, node_id, node_vec)
         self.event_tag = 1  # 添加了新的节点，将该事件标记为更新新事件
         # self.title_update()
 
@@ -319,8 +308,8 @@ class EventUnit(singlePassCluster.ClusterUnit):
         # 关键词更新
         pass
 
-    def remove_node(self, node):
-        ClusterUnit.remove_node(self, node)
+    def remove_node(self, node_id):
+        ClusterUnit.remove_node(self, node_id)
         # self.title_update()
 
 
