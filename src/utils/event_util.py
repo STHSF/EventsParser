@@ -8,14 +8,17 @@
 @time: 2018/11/29 8:39 PM
 事件表示，事件的有效性判断, 构建事件库等
 """
-
+import sys
+sys.path.append('..')
+sys.path.append('../')
+sys.path.append('../../')
 import time
 import pickle
+from collections import Counter
 import numpy as np
-from src.configure import conf
-from src.cluster.singlePass import singlePassCluster
-from src.cluster.singlePass.singlePassCluster import ClusterUnit
-from src.utils import tfidf, data_process, dicts, keywords_extractor
+from configure import conf
+from cluster.singlePass import singlePassCluster
+import tfidf, data_process, dicts, keywords_extractor
 
 # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
 # corpus_train = conf.corpus_train_path
@@ -67,7 +70,7 @@ def events_effectiveness(cluster_list, news_dict):
     return effectiveness_events, non_effectiveness_events
 
 
-def event_expression(news_title_list, news_list):
+def event_expression(news_title_list, news_list, stock_df):
     """
     事件表示，提取事件中的关键词和涉及的股票代码
     :return:
@@ -76,10 +79,9 @@ def event_expression(news_title_list, news_list):
     stock_lists = []
     news_lists = []
     for news in news_list:
-        # print news
         # 提取正文中提及到的股票代码
         content_list = news.split(" ")
-        stock_list = data_process.find_stocks(content_list=content_list, stock_dicts=dicts.stock_dict)
+        stock_list = data_process.find_stocks(content_list=content_list, stock_df=stock_df)
         stock_lists.extend(stock_list)
         news_lists.extend(content_list)
     # 事件中涉及的股票
@@ -95,15 +97,15 @@ def event_expression(news_title_list, news_list):
 
     # 事件表示,事件要素抽取
     # 事件包含的新闻正文
-    print '[事件包含的新闻正文]:'
-    for news in news_list:
-        print news
+    # print '[事件包含的新闻正文]:'
+    # for news in news_list:
+    #     print news
 
     # 事件包含的新闻标题
-    print '[事件包含的新闻标题]:'
-    for news_title in news_title_list:
-        print news_title
-    return stock_lists, event_keywords
+    # print '[事件包含的新闻标题]:'
+    # for news_title in news_title_list:
+    #     print news_title
+    # return stock_lists, event_keywords
 
 
 def units_title(cluster, news_dict, news_title_dict):
@@ -174,12 +176,13 @@ def event_save(event_units, save_name=None, save_path=None):
 
 # 重复性事件合并? 可以手动标记然后合并
 
+
 class EventUnit(singlePassCluster.ClusterUnit):
     """
     定义一个事件单元
     """
     def __init__(self):
-        ClusterUnit.__init__(self)
+        singlePassCluster.ClusterUnit.__init__(self)
         self.event_id = ''
         self.topic_title = " "
         self.start_time = ''  # 起始时间
@@ -195,7 +198,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         :param node_vec: 节点向量，用于更新簇心
         :return:
         """
-        ClusterUnit.add_node(self, node_id, node_vec)
+        singlePassCluster.ClusterUnit.add_node(self, node_id, node_vec)
         self.event_tag = 1  # 添加了新的节点，将该事件标记为更新新事件
         # self.title_update()
 
@@ -233,7 +236,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         self.topic_title = news_title_dict[topic_node]
         print "[事件标题]: \n%s" % self.topic_title
 
-    def event_expression(self, news_title_list, news_list):
+    def event_expression(self, news_title_list, news_list, stock_df):
         """
         事件表示，提取事件单元中涉及的股票，提取事件单元中新闻的关键词（所有新闻一起提取）
         :return:
@@ -242,14 +245,23 @@ class EventUnit(singlePassCluster.ClusterUnit):
         stock_lists = []
         news_lists = []
         for news in news_list:
-            # print news
+            # print '[news_list: %s]' % news
             # 提取正文中提及到的股票代码
             content_list = news.split(" ")
-            stock_list = data_process.find_stocks(content_list=content_list, stock_dicts=dicts.stock_dict)
+            # print 'content_list %s' % content_list
+            stock_list = data_process.find_stocks(content_list=content_list, stock_df=stock_df)
+            # print stock_list
             stock_lists.extend(stock_list)
             news_lists.extend(content_list)
-        # 事件中涉及的股票
-        stocks = ",".join(item for item in set(stock_lists))
+        # 事件中涉及的股票,并且根据股票的出现次数排序
+        stock_lists_dict = Counter(stock_lists).items()
+        # 降序
+        stock_lists_dict.sort(key=lambda item: item[0], reverse=True)
+        # 从排序结果中提取股票代码
+        stock_set = []
+        for i in stock_lists_dict:
+            stock_set.append(i[0])
+        stocks = ",".join(item for item in stock_set)
         print "[事件中包含的股票]: %s " % stocks
 
         # 事件簇关健词提取
@@ -268,7 +280,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         print '[事件包含的新闻标题]:'
         for news_title in news_title_list:
             print news_title
-        self.stocks = stock_lists
+        self.stocks = stock_set
         self.keywords = event_keywords
 
     def title_update(self, node_news_dict):
@@ -308,7 +320,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         pass
 
     def remove_node(self, node_id):
-        ClusterUnit.remove_node(self, node_id)
+        singlePassCluster.ClusterUnit.remove_node(self, node_id)
         # self.title_update()
 
 

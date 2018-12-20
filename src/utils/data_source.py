@@ -16,8 +16,17 @@ OBJ = 'OBJ'
 SQLALCHEMY = 1
 
 __DNS = {
+    'DNDS':{
+        URL:'mssql+pymssql://reader:reader@10.15.97.127:1433/dnds',
+        DTYPE:SQLALCHEMY
+    },
+
     'XAVIER': {
         URL: 'mysql+mysqlconnector://root:t2R7P7@10.15.5.86:3306/xavier',
+        DTYPE: SQLALCHEMY
+    },
+    'XAVIER_DB': {
+        URL: 'mysql+mysqlconnector://root:t2R7P7@10.15.5.86:3306/xavier_db',
         DTYPE: SQLALCHEMY
     }
 }

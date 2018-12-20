@@ -11,9 +11,14 @@ jieba 字典初始化模块
 如果有新登陆词，可以在corpus中的新增中添加
 """
 
+import sys
+sys.path.append('../')
+sys.path.append('../../')
+sys.path.append('../../../')
 import jieba
+import pandas as pd
 import codecs
-from src.configure import conf
+from configure import conf
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -29,7 +34,7 @@ zhi_dict = []     # 知网
 stock_dict = []   # 股票词
 stock_code_dict = []  # 股票代码
 jg_dict = []  # 机构名
-
+stock_df = []
 
 def init():
     # dic_path = '/Users/li/PycharmProjects/huihongcaihui/src/corpus'
@@ -45,7 +50,9 @@ def init():
     a_path = dic_path + "/dic.txt"
     ns_path = dic_path + "/新增_stock"
     n_path = dic_path + "/新增"
+    n2_path = dic_path + "/新增2"
     st_path = dic_path + "/stock_words.txt"
+    st_new_path = dic_path + "/stock.csv"
     zhi_ne_path = dic_path + "/知网/zhi_neg.txt"
     zhi_po_path = dic_path + "/知网/zhi_pos.txt"
     jg_path = dic_path + "/机构"
@@ -98,6 +105,10 @@ def init():
         stock_dict.append(stock.strip("\n"))
         word_add.add(code.strip("\n"))
         word_add.add(stock.strip("\n"))
+    stocks_df = pd.read_csv(st_new_path, encoding='utf-8')
+    stock_df.append(stocks_df.set_index('SESNAME'))
+    for index, row in stocks_df.iterrows():
+        stock_dict.append(row.SESNAME)
 
     for z1 in open(zhi_ne_path):
         z1 = z1.decode("utf8")
@@ -132,6 +143,7 @@ def init():
     jieba.load_userdict(ns_path)
     jieba.load_userdict(n_path)
     jieba.load_userdict(jg_path)
+    jieba.load_userdict(n2_path)
 
     # 添加新词
     for w in word_add:

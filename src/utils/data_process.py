@@ -8,7 +8,16 @@
 @time: 2018/10/31 1:32 PM
 文本解析类
 """
+import sys
+sys.path.append('../')
+sys.path.append('../../')
 import re
+import pandas as pd
+from configure import conf
+
+dic_path = conf.dic_path
+stock_new_path = dic_path + "/stock.csv"
+data_df = pd.read_csv(stock_new_path, encoding="utf-8")
 
 
 class DataPressing(object):
@@ -18,7 +27,7 @@ class DataPressing(object):
                             u'|(\u5173\u6ce8\u540c.*\u673a\u4f1a\u3002)'
         # [关注同花顺财经(ths518)，获取更多机会。]
         self.pattern_text = u'(\\[AI\u51b3\u7b56\\])'
-        self.num = 4
+        self.num = 5
 
     def no_remove(self, text):
         """
@@ -58,18 +67,25 @@ class DataPressing(object):
         else:
             return False
 
-    def find_stocks(self, content_list, stock_dicts):
+    def find_stocks(self, content_list, stock_df):
         """
         提取content_list中所有的股票以及股票代码
         :param content_list: 分词之后的文章list
-        :param stock_dicts: 股票代码
+        :param stock_df: dataFrame 股票代码
         :return: 返回股票列表
         """
         stock_num = []
         for item in set(content_list):
-            if item in stock_dicts:
-                stock_num.append(item)
-
+            stock = []
+            item = item.decode('utf-8')
+            if item in stock_df.index.tolist():
+                res = stock_df.loc[item].values.tolist()
+                if len(res) > 1:
+                    for i in range(len(res)):
+                        stock.extend(res[i])
+                else:
+                    stock.extend(res)
+            stock_num.extend(stock)
         if len(stock_num) > 0:
             return stock_num
         else:

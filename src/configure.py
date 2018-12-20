@@ -15,6 +15,7 @@ class Configure(object):
 
     # 词典目录
     dic_path = project_path + '/event_parser/src/corpus'
+    stock_new_path = dic_path + "/stock.csv"
 
     # 停用词目录
     stop_words_path = project_path + '/event_parser/src/corpus/stop_words_CN'
@@ -22,21 +23,22 @@ class Configure(object):
     # tf-idf 训练语料文件位置，标题和正文合并在一起
     corpus_train_path = project_path + "/event_parser/src/data/text_full_index.txt"
 
-    # singlepass聚类结果保存目录文件
+    # 新闻标题的保存路径
+    corpus_news_title = project_path + "/event_parser/src/data/text_title_index.txt"
+
+    # singlePass聚类结果保存目录文件
     clustering_save_path = project_path + '/event_parser/src/model/clustering_new.pkl'
 
     corpus_news = corpus_train_path
-    # 提取的新闻标题
-    corpus_news_title = project_path + "/event_parser/src/data/text_title_index.txt"
-    #
+
     event_unit_path = project_path + '/event_parser/src/model/event_units_new.pkl'
-    #
+
     event_save_path = project_path + '/event_parser/src/model/event_model/'
 
     # TF-IDF计算相关文件
-    tfidf_feature_path = project_path + '/event_parser/src/model/tfidf_model/feature_1.pkl'
-    tfidftransformer_path = project_path + '/event_parser/src/model/tfidf_model/tfidftransformer_1.pkl'
-    word_dict_path = project_path + '/event_parser/src/model/tfidf_model/word_dict_1.pkl'
+    tfidf_feature_path = project_path + '/event_parser/src/model/tfidf_model/feature_full.pkl'
+    tfidftransformer_path = project_path + '/event_parser/src/model/tfidf_model/tfidftransformer_full.pkl'
+    word_dict_path = project_path + '/event_parser/src/model/tfidf_model/word_dict_full.pkl'
 
 
 conf = Configure()

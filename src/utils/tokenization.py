@@ -10,13 +10,16 @@
 调用jieba分词，添加用户自定义词典，封装，并且去停用词等操作
 """
 import sys
+sys.path.append('..')
+sys.path.append('../')
+sys.path.append('../../')
 import dicts
 import codecs
 import my_util
 import logging.handlers
 import jieba.posseg as pseg
-from src.utils import data_process
-from src.configure import Configure
+from utils import data_process
+from configure import Configure
 
 LOG_FILE = '../log/tokenization.log'
 my_util.check_path(LOG_FILE)

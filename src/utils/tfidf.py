@@ -7,10 +7,13 @@
 @file: tfidf.py
 @time: 2018/11/28 4:03 PM
 """
-
+import sys
+sys.path.append('..')
+sys.path.append('../')
+sys.path.append('../../')
 import pickle
 import numpy as np
-from src.configure import conf
+from configure import conf
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -56,9 +59,13 @@ def tfidf_vector(corpus_path):
     # tfidf_train = tfidftransformer.fit(counts_train).transform(counts_train)
 
     tfidf_train_array = tfidf_train.toarray()
-    tfidf_train_dict = []
+    tfidf_train_dict = {}
     for item in range(len(tfidf_train_array)):
-        tfidf_train_dict.append((category_train[item], tfidf_train_array[item]))
+        tfidf_train_dict[category_train[item]] = tfidf_train_array[item]
+
+    tfidf_train_tuple = []
+    for item in range(len(tfidf_train_array)):
+        tfidf_train_tuple.append((category_train[item], tfidf_train_array[item]))
 
     # 保存经过fit的vectorizer 与 经过fit的tfidftransformer,预测时使用
     # tfidf_feature_path = '/Users/li/PycharmProjects/event_parser/src/model/tfidf_model/feature_1.pkl'
@@ -76,16 +83,14 @@ def tfidf_vector(corpus_path):
     with open(word_dict_path, 'wb') as fw:
         pickle.dump(word_dict, fw)
 
-    return tfidf_train_dict, word_dict
+    return tfidf_train_dict, tfidf_train_tuple, word_dict
 
 
 def load_tfidf_vectorizer(corpus_path):
     """
-
     :param corpus_path:
     :return:
     """
-
     # if type(corpus_path) is not list:
     #     corpus_test = []
     #     target_test = []
@@ -121,8 +126,8 @@ def tfidf_vector_test(corpus_path):
     target_train = []
     for line in open(corpus_path):
         line = line.strip().split('\t')
-        if len(line) == 2:
-            words = line[1]
+        if len(line) == 3:
+            words = line[2]
             category = line[0]
             target_train.append(category)
             corpus_train.append(words)
@@ -144,7 +149,7 @@ def tfidf_vector_test(corpus_path):
 if __name__ == '__main__':
     # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
     corpus_train = conf.corpus_train_path
-    tfidf_train_dic, word_dict = tfidf_vector(corpus_train)
+    tfidf_train_dic, tfidf_train_tuple, word_dict = tfidf_vector(corpus_train)
     print np.nonzero(tfidf_train_dic["111755669"])
     print np.shape(tfidf_train_dic['111755669'])
     print type(tfidf_train_dic['111755669'])

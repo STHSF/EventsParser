@@ -11,19 +11,29 @@
 import sys
 sys.path.append('../')
 sys.path.append('..')
+sys.path.append('../../')
 import time
-from src.utils import event_util, my_util
-from src.configure import conf
-from src.cluster.singlePass import singlePassCluster
+import datetime
+import pandas as pd
+from tqdm import tqdm
+from configure import conf
+from utils import event_util, my_util
+from cluster.singlePass import singlePassCluster
 from data_reader import get_ordered_data, trans_df_data, get_data
 
 
 # step 1、读取指定日期之后的新闻
 # 读取当前时间段时间
-now = int(time.time())
-ordered_df = get_ordered_data(timestamp=now)
+now = datetime.date.today()
+today_timestamp = int(time.mktime(now.timetuple()))
+ordered_df = get_ordered_data(timestamp=today_timestamp)
 # 提取dataFrame中的内容
 ordered_news_lists = trans_df_data(ordered_df)
+
+# 如果当天没有新闻更新，则直接退出程序，事件单元不需要更新。
+if len(ordered_news_lists) <= 0:
+    print '今天没有新新闻，事件单元不更新'
+    sys.exit()
 
 for tmp in ordered_news_lists:
     print tmp[0], tmp[1]
@@ -41,7 +51,7 @@ len_news = len(ordered_news_lists)
 new_event_units = []
 new_event_units.extend(history_event_units)
 # step 3、遍历新新闻，然后将新新闻添加到事件单元中，更新事件单元的节点和簇心
-for news_index in range(len_news):  # 遍历每一篇新的新闻
+for news_index in tqdm(range(len_news)):  # 遍历每一篇新的新闻
     # 新的节点id
     new_node_id = ordered_news_lists[news_index][0]
     # 新的节点的VSM
@@ -84,9 +94,13 @@ print '[Info] 更新后的事件个数: %s' % len(new_event_units)
 
 # step 4、对更新的事件库进行标题和关键词更新
 # 事件库更新，更新标题，关键词,股票代码。
+# 读取数据库中的所有新闻数据
 full_df_data = get_data().set_index('id')
 
-for unit in new_event_units:
+# 股票及股票代码
+stock_df = pd.read_csv(conf.stock_new_path, encoding='utf-8').set_index('SESNAME')
+
+for unit in tqdm(new_event_units):
     if unit.event_tag == 1:
         # 更新标题，股票代码，关键词等
         print "事件 %s 是新事件" % unit.event_id
@@ -101,7 +115,7 @@ for unit in new_event_units:
             news_list.append(i[1])
             news_title_list.append(i[4])
         # 更新股票列表
-        unit.event_expression(news_title_list, news_list)
+        unit.event_expression(news_title_list, news_list, stock_df)
         print "stocks: %s" % ','.join(tmp for tmp in unit.stocks)
         print "keywords: %s" % unit.keywords
         # 更新标题
@@ -128,4 +142,5 @@ for i in new_event_units:
     print i.topic_title
     print i.event_id
     print i.node_list
+    print i.stocks
 

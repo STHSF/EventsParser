@@ -7,10 +7,10 @@
 @file: singlePassCluster.py
 @time: 2018/11/26 9:48 AM
 """
-
+import time
 import numpy as np
 from math import sqrt
-import time
+from tqdm import tqdm
 
 
 class ClusterUnit(object):
@@ -96,7 +96,7 @@ class OnePassCluster:
     def clustering(self):
         self.cluster_list.append(ClusterUnit())  # 初始新建一个簇
         self.cluster_list[0].add_node(self.vectors[0][0], self.vectors[0][1])  # 将读入的第一个节点归于该簇
-        for index in range(len(self.vectors))[1:]:
+        for index in tqdm(range(len(self.vectors))[1:]):
             # min_distance = euclidean_distance(vec_a=self.vectors[index][1],
             #                                   vec_b=self.cluster_list[0].centroid)  # 与簇的质心的最小欧式距离
             min_distance = cosine_distance(vec_a=self.vectors[index][1],

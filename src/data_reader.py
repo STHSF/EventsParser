@@ -7,18 +7,24 @@
 @file: data_reader.py
 @time: 2018/10/30 7:05 PM
 """
+import sys
+sys.path.append('..')
+sys.path.append('../')
+sys.path.append('../../')
 import time
 import gensim
 import pandas as pd
-from src.configure import conf
-from src.utils.data_source import GetDataEngine
-from src.utils import tokenization, data_process, dicts
-from src.utils.tokenization import load_stop_words
-from src.utils import keywords_extractor, time_util, tfidf
+from tqdm import tqdm
+from configure import conf
+from utils.data_source import GetDataEngine
+from utils import tokenization, data_process, dicts
+from utils.tokenization import load_stop_words
+from utils import keywords_extractor, time_util, tfidf
 
 TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
 engine_mysql = GetDataEngine("XAVIER")
+engine_sqlserver = GetDataEngine("DNDS")
 global _stopwords
 
 
@@ -52,12 +58,33 @@ def get_data_sets():
     return x_train
 
 
+def read_stock_code(sheet_name):
+    """
+    读取股票名称和股票代码
+    :param sheet_name:
+    :return:
+    """
+    sql = "SELECT  SYMBOL, SESNAME FROM dbo.%s" % sheet_name
+    result = pd.read_sql(sql, engine_sqlserver)
+    return result
+
+
 def read_full_data(sheet_name):
     """
     :return:
     """
     # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
     sql = "SELECT distinct content, id, title, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
+    result = pd.read_sql(sql, engine_mysql)
+    return result
+
+
+def read_all_data(sheet_name):
+    """
+    :return:
+    """
+    # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
+    sql = "SELECT distinct content, id, title, url, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
     result = pd.read_sql(sql, engine_mysql)
     return result
 
@@ -96,6 +123,22 @@ def get_data():
     # 将所有新闻合并
     for index in sql_list:
         df = read_full_data(index)
+        df_set.append(df)
+    result = pd.concat(df_set, join="inner")
+    # result.ix[:, ["content"]].apply(tk.token)
+    return result
+
+
+def get_all_data():
+    """
+    获取三张表中的所有新闻
+    :return:
+    """
+    sql_list = ["ths_news", "ycj_news", "xueqiu_news"]
+    df_set = []
+    # 将所有新闻合并
+    for index in sql_list:
+        df = read_all_data(index)
         df_set.append(df)
     result = pd.concat(df_set, join="inner")
     # result.ix[:, ["content"]].apply(tk.token)
@@ -160,7 +203,11 @@ def get_event_news(text_dict, node_list):
     # 读取文章中的内容
     text_list = []
     for node in node_list:
-        text_list.append(text_dict.get(str(node)))
+        node_content = text_dict.get(str(node))
+        if node_content:
+            text_list.append(node_content)
+        else:
+            text_list.append("NULL")
 
     return text_list
 
@@ -233,7 +280,7 @@ def data_save():
 
     # 方式一、标题和正文保存为同一个新闻，且新闻标题和正文同时存在
     res_lists = []
-    for i in range(len(df_result)):
+    for i in tqdm(range(len(df_result))):
         news_id = df_result.iloc[i]['id']
         title = df_result.iloc[i]['title']
         content = df_result.iloc[i]['content']
@@ -249,13 +296,14 @@ def data_save():
                 # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
     print "length of res_lists: %s" % len(res_lists)
     # 数据更新
+    # 保存新闻的新闻ID，发布时间， 分词后的正文；[news_id, timestamp, contents]
     # file_out = open("./data/text_full_index.txt", "w")
     file_out = open(conf.corpus_news, "w")
     for index, content in enumerate(res_lists):
         item = " ".join(item for item in content[2])
         file_out.write(str(content[0]) + "\t" + str(content[3]) + "\t" + item.encode("utf8") + "\n")
     file_out.close()
-
+    # 保存新闻的新闻ID， 发布时间， 新闻标题；[news_id, timestamp, title]
     # file_out = open("./data/text_title_index.txt", "w")
     file_out = open(conf.corpus_news_title, "w")
     for index, content in enumerate(res_lists):
