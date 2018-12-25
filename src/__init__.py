@@ -38,3 +38,32 @@ sys.path.append('../../')
 #     stock_list.append(i[0])
 #
 # print stock_list
+
+
+# import pandas as pd
+# # from itertools import groupby #itertool还包含有其他很多函数，比如将多个list联合起来。。
+# #
+# df = pd.DataFrame({'event_id': [1, 2, 3,4, 5],
+#                   'event_stock': [['i1','i2'], ['i3', 'i2'], ['i3', 'i5'], ['i9', 'i7'], ['i9']]})
+# print df
+#
+# lst = {}
+#
+# for i in range(len(df)):
+#     event_id = df.loc[i]['event_id']
+#     event_stock = df.loc[i]['event_stock']
+#     if len(event_stock) > 0:
+#         for symbol in event_stock:
+#             lst.setdefault(symbol, []).append(event_id)
+#
+# print lst
+
+# from collections import defaultdict
+# # lst = [{'a': 123}, {'a': 456},{'b': 789}]
+#
+# dic = {}
+# for _ in lst:
+#     for k, v in _.items():
+#         dic.setdefault(k, []).append(v)
+#
+# print dic

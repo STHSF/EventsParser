@@ -12,7 +12,9 @@
 
 import sys
 import os
+sys.path.append("..")
 sys.path.append("../")
+sys.path.append("../../")
 import logging.handlers
 import my_util
 import numpy as np
@@ -146,6 +148,7 @@ def word2vec_train(self):
     wd = word2vecs(wd_configure)
     model_wd = wd.train(x_train)
     print("[Info] word2vec模型训练结束")
+    logger.info("[Info] word2vec模型训练结束")
     print model_wd.wv[u'食品饮料']
     # print model_wd.most_similar['食品饮料']
 

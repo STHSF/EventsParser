@@ -9,11 +9,13 @@
 事件表示，事件的有效性判断, 构建事件库等
 """
 import sys
+
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 import time
 import pickle
+from utils import log
 from collections import Counter
 import numpy as np
 from configure import conf
@@ -22,6 +24,11 @@ import tfidf, data_process, dicts, keywords_extractor
 
 # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
 # corpus_train = conf.corpus_train_path
+
+
+logging = log.LoggerConfig(log_file_name='history_event')
+log_info = logging.logger_info()
+log_error = logging.logger_error()
 
 data_process = data_process.DataPressing()
 
@@ -60,7 +67,9 @@ def events_effectiveness(cluster_list, news_dict):
         print "[variance]: %s" % variance
 
         # 如果方差大于某个阈值，则为无效事件
+        # 将有效事件和无效事件分开
         if variance >= 10000:
+            cluster.effectiveness = 0
             non_effectiveness_events.append(cluster)
         else:
             effectiveness_events.append(cluster)
@@ -181,15 +190,17 @@ class EventUnit(singlePassCluster.ClusterUnit):
     """
     定义一个事件单元
     """
+
     def __init__(self):
         singlePassCluster.ClusterUnit.__init__(self)
         self.event_id = ''
         self.topic_title = " "
         self.start_time = ''  # 起始时间
-        self.stop_time = ''   # 截止时间
+        self.stop_time = ''  # 截止时间
         self.keywords = []
         self.stocks = []
         self.event_tag = 0  # 判断时间是否为新事件, 0为旧事件, 1为新事件. 如果是新事件, 则进行标题等的更新.
+        self.effectiveness = 1  # 事件的有效性标记， 1表示有效事件， 2表示无效事件
 
     def add_node(self, node_id, node_vec):
         """
@@ -234,7 +245,8 @@ class EventUnit(singlePassCluster.ClusterUnit):
         # print "topic_node: %s" % topic_node
         # 返回相似度最大的节点对应的新闻标题
         self.topic_title = news_title_dict[topic_node]
-        print "[事件标题]: \n%s" % self.topic_title
+        print "[事件标题]: %s" % self.topic_title
+        log_info.info('[事件标题]: {}'.format(self.topic_title))
 
     def event_expression(self, news_title_list, news_list, stock_df):
         """
@@ -263,6 +275,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
             stock_set.append(i[0])
         stocks = ",".join(item for item in stock_set)
         print "[事件中包含的股票]: %s " % stocks
+        log_info.info('[事件中包含的股票]: {}'.format(stocks))
 
         # 事件簇关健词提取
         event_new_string = ' '.join(item for item in news_lists)
@@ -270,6 +283,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         event_keywords_list = keywords_extractor.parallel_test(news_lists)
         event_keywords = ','.join(item for item in event_keywords_list)
         print "[事件关键词]:\n %s " % event_keywords
+        log_info.info('[事件关键词]: \n{}'.format(event_keywords))
 
         # 事件表示,事件要素抽取
         # 事件包含的新闻正文
@@ -314,6 +328,13 @@ class EventUnit(singlePassCluster.ClusterUnit):
         # 返回相似度最大的节点对应的新闻标题
         self.topic_title = node_news_dict[topic_node][3]
         print "更新后的事件标题： %s" % self.topic_title
+        log_info.info('[更新后的事件标题]: {}'.format(self.topic_title))
+
+    def set_effectiveness(self, flag):
+        if flag:
+            self.effectiveness = 1
+        else:
+            self.effectiveness = 0
 
     def keywords_update(self):
         # 关键词更新
@@ -324,6 +345,10 @@ class EventUnit(singlePassCluster.ClusterUnit):
         # self.title_update()
 
 
-class EventLib(object):
+class EventLib(EventUnit):
     def __init__(self):
+        EventUnit.__init__(self)
         self.event_unit_list = []
+
+    def set_effectiveness(self, flag):
+        EventLib.set_effectiveness(self, flag)

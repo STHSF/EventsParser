@@ -71,10 +71,11 @@ def read_stock_code(sheet_name):
 
 def read_full_data(sheet_name):
     """
+    读取固定的时间之前的新闻，设定固定时间原因是构建历史事件的时候如果每次读取的数据不一样，会导致训练的向量空间模型，聚类之间的数据混乱。
     :return:
     """
     # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
-    sql = "SELECT distinct content, id, title, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
+    sql = "SELECT distinct content, id, title, url, unix_time FROM xavier_db.%s where unix_time <='1545235200' ORDER BY unix_time" % sheet_name
     result = pd.read_sql(sql, engine_mysql)
     return result
 
@@ -217,7 +218,7 @@ def load_data_test():
     # 分词
     tk = tokenization.Tokenizer(dp, dict_init, stop_words)
     # 获取三张表中的所有新闻
-    df_result = get_data()
+    df_result = get_data()  # 接口已经改变，调用时需要注意
     res_lists = []
     for index, row in df_result.iterrows():
         title, content = row["title"], row["content"]
@@ -254,8 +255,8 @@ def trans_df_data(df_result):
         content = df_result.iloc[i]['content']
         unix_time = df_result.iloc[i]['unix_time']
         if content and title:
-            title = title.strip()
-            string = title.strip() + content.strip()
+            title = str(title).strip()
+            string = str(title).strip() + str(content).strip()
             string_list = tk.token(string)  # 分词
             string = " ".join(item for item in string_list)  # 组合成计算tfidf的输入格式
             text_vector = tfidf.load_tfidf_vectorizer([string]).toarray().reshape(-1)
@@ -269,7 +270,8 @@ def trans_df_data(df_result):
 
 def data_save():
     """
-    读取数据库中的内容，文本预处理之后，保存成本地，用于词向量训练，关键词提取等操作
+    读取数据库中的内容，文本预处理之后，保存成本地，主要用于singlepass进行历史事件的聚类使用，用于词向量训练，关键词提取等操作。
+
     :return:
     """
     dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), load_stop_words()

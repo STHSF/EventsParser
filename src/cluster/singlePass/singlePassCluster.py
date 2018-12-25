@@ -7,6 +7,7 @@
 @file: singlePassCluster.py
 @time: 2018/11/26 9:48 AM
 """
+import gc
 import time
 import numpy as np
 from math import sqrt
@@ -125,6 +126,7 @@ class OnePassCluster:
                 new_cluster.add_node(self.vectors[index][0], self.vectors[index][1])
                 self.cluster_list.append(new_cluster)
                 del new_cluster
+                gc.collect()
 
     def print_result(self, label_dict=None):
         # 打印出聚类结果

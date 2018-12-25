@@ -12,27 +12,34 @@ import sys
 sys.path.append('../')
 sys.path.append('..')
 sys.path.append('../../')
+import gc
 import time
 import datetime
+import data_reader
 import pandas as pd
 from tqdm import tqdm
+from utils import log
 from configure import conf
 from utils import event_util, my_util
 from cluster.singlePass import singlePassCluster
-from data_reader import get_ordered_data, trans_df_data, get_data
 
+
+logging = log.LoggerConfig(log_file_name='dynamic_update')
+log_info = logging.logger_info()
+log_error = logging.logger_error()
 
 # step 1、读取指定日期之后的新闻
 # 读取当前时间段时间
 now = datetime.date.today()
 today_timestamp = int(time.mktime(now.timetuple()))
-ordered_df = get_ordered_data(timestamp=today_timestamp)
+ordered_df = data_reader.get_ordered_data(timestamp=today_timestamp)
 # 提取dataFrame中的内容
-ordered_news_lists = trans_df_data(ordered_df)
+ordered_news_lists = data_reader.trans_df_data(ordered_df)
 
 # 如果当天没有新闻更新，则直接退出程序，事件单元不需要更新。
 if len(ordered_news_lists) <= 0:
     print '今天没有新新闻，事件单元不更新'
+    log_info.info('[事件库未更新]: 今天没有新新闻，事件单元不更新')
     sys.exit()
 
 for tmp in ordered_news_lists:
@@ -41,7 +48,7 @@ for tmp in ordered_news_lists:
 # step 2、导入历史事件
 history_event_units = event_util.load_history_event()
 print "[Info] 事件库中事件的个数 %s" % len(history_event_units)
-
+log_info.info("[事件库中事件的个数:] {}".format(len(history_event_units)))
 # for index, event_unit in enumerate(history_event_units):
 #     print "cluster: %s" % index  # 簇的序号
 #     print event_unit.node_list  # 该簇的节点列表
@@ -89,13 +96,14 @@ for news_index in tqdm(range(len_news)):  # 遍历每一篇新的新闻
         # new_event.event_expression()
         new_event_units.append(new_event)
         del new_event
+        gc.collect()
 
 print '[Info] 更新后的事件个数: %s' % len(new_event_units)
-
+log_info.info('[更新后的事件个数: %s]'.format(len(new_event_units)))
 # step 4、对更新的事件库进行标题和关键词更新
 # 事件库更新，更新标题，关键词,股票代码。
 # 读取数据库中的所有新闻数据
-full_df_data = get_data().set_index('id')
+full_df_data = data_reader.get_all_data().set_index('id')
 
 # 股票及股票代码
 stock_df = pd.read_csv(conf.stock_new_path, encoding='utf-8').set_index('SESNAME')
@@ -106,8 +114,7 @@ for unit in tqdm(new_event_units):
         print "事件 %s 是新事件" % unit.event_id
         # 读取每个事件
         node_df_data = full_df_data.loc[set(unit.node_list)]
-
-        node_news_lists = trans_df_data(node_df_data.reset_index())
+        node_news_lists = data_reader.trans_df_data(node_df_data.reset_index())
         news_list = []
         news_title_list = []
         for i in node_news_lists:

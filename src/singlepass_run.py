@@ -26,7 +26,8 @@ tfidf_train_dict, tfidf_train_tuple, word_dict = tfidf.tfidf_vector(corpus_train
 # print tfidf_train.toarray()[1]
 
 # clustering = OnePassCluster(vector_tuple=tfidf_train.toarray(), threshold=10)
-clustering = singlePassCluster.OnePassCluster(vector_tuple=tfidf_train_tuple, threshold=10)
+# clustering = singlePassCluster.OnePassCluster(vector_tuple=tfidf_train_tuple, threshold=10)
+clustering = singlePassCluster.OnePassCluster(vector_tuple=tfidf_train_tuple, threshold=40)
 clustering.print_result()
 
 # 将聚好的类簇保存下来，为后面的事件表示和有效事件判断使用。
