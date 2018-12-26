@@ -33,3 +33,7 @@
         ├── time_util.py  # 时间工具类
         ├── tokenization.py  # 分词模块
         └── vector.py  # 空间向量模块
+        
+## step 1 VSM训练
+## step 2 singlePass聚类
+## step 3 历史事件

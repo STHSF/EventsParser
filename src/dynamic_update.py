@@ -24,7 +24,7 @@ from utils import event_util, my_util
 from cluster.singlePass import singlePassCluster
 
 
-logging = log.LoggerConfig(log_file_name='dynamic_update')
+logging = log.LoggerConfig('dynamic_update')
 log_info = logging.logger_info()
 log_error = logging.logger_error()
 

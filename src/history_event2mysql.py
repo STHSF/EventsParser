@@ -60,7 +60,7 @@ result_df = pd.DataFrame(result,
 # # 创建数据库引擎
 engine_mysql = data_source.GetDataEngine("XAVIER_DB")
 # # 将整理好的数据保存到mysql中
-result_df.to_sql('event_detail', engine_mysql, if_exists='replace')
+# result_df.to_sql('event_detail', engine_mysql, if_exists='replace')
 
 # # 整理出股票对应的事件{}
 event_symbol = result_df[['event_id', 'event_stock']]
@@ -79,4 +79,4 @@ tmp_result = pd.DataFrame(list(lst.items()), columns=['SYMBOL', 'event_id'])
 tmp_result['event_id'] = tmp_result['event_id'].apply(lambda x: ','.join(x))
 # print tmp_result
 # 将整理好的数据保存到mysql中
-tmp_result.to_sql('symbol_event_detail', engine_mysql, if_exists='replace')
+# tmp_result.to_sql('symbol_event_detail', engine_mysql, if_exists='replace')

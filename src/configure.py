@@ -29,10 +29,13 @@ class Configure(object):
     # singlePass聚类结果保存目录文件
     # clustering_save_path = project_path + '/event_parser/src/model/clustering_new.pkl'
     clustering_save_path = project_path + '/event_parser/src/model/clustering_new_40.pkl'
+    # clustering_save_path = project_path + '/event_parser/src/model/clustering_new_20.pkl'
 
     corpus_news = corpus_train_path
 
-    event_unit_path = project_path + '/event_parser/src/model/event_units_new.pkl'
+    # event_unit_path = project_path + '/event_parser/src/model/event_units_new.pkl'
+    # event_unit_path = project_path + '/event_parser/src/model/event_units_new_40.pkl'
+    event_unit_path = project_path + '/event_parser/src/model/event_units_new_20.pkl'
 
     event_save_path = project_path + '/event_parser/src/model/event_model/'
 

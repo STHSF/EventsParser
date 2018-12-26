@@ -14,20 +14,24 @@ sys.path.append('../')
 sys.path.append('../../')
 import pickle
 from configure import conf
-from utils import tfidf
+from utils import tfidf, log
 from cluster.singlePass import singlePassCluster
 
+logger = log.LoggerConfig('singlepass_run')
+log_info = logger.logger_info()
+log_error = logger.logger_error()
 # corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"
 corpus_train_path = conf.corpus_train_path
 # tfidf_train, word_dict = tfidf_vector(corpus_train)
 # tfidf_train, word_dict = tfidf.tfidf_vector(corpus_train)
 tfidf_train_dict, tfidf_train_tuple, word_dict = tfidf.tfidf_vector(corpus_train_path)
+log_info.info('tfidf load success')
 # print np.shape(tfidf_train.toarray())
 # print tfidf_train.toarray()[1]
 
 # clustering = OnePassCluster(vector_tuple=tfidf_train.toarray(), threshold=10)
 # clustering = singlePassCluster.OnePassCluster(vector_tuple=tfidf_train_tuple, threshold=10)
-clustering = singlePassCluster.OnePassCluster(vector_tuple=tfidf_train_tuple, threshold=40)
+clustering = singlePassCluster.OnePassCluster(vector_tuple=tfidf_train_tuple, threshold=20)
 clustering.print_result()
 
 # 将聚好的类簇保存下来，为后面的事件表示和有效事件判断使用。
@@ -35,7 +39,7 @@ clustering.print_result()
 clustering_path = conf.clustering_save_path
 with open(clustering_path, 'wb') as fw:
     pickle.dump(clustering, fw)
-
+log_info.info("cluster units save success in path{}".format(clustering_path))
 # for cluster_index, cluster in enumerate(cluster_list):
 #     print "cluster:%s" % cluster_index  # 簇的序号
 #     print cluster.node_list  # 该簇的节点列表
