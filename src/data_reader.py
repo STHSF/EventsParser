@@ -19,12 +19,13 @@ from configure import conf
 from utils.data_source import GetDataEngine
 from utils import tokenization, data_process, dicts
 from utils.tokenization import load_stop_words
-from utils import keywords_extractor, time_util, tfidf
+from utils import keywords_extractor, time_util, tfidf, log
 
 TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
 engine_mysql = GetDataEngine("XAVIER")
 engine_sqlserver = GetDataEngine("DNDS")
+logging = log.Logger('data_reader_log')
 global _stopwords
 
 
@@ -264,7 +265,7 @@ def trans_df_data(df_result):
                 # string_list = keywords_extractor.parallel_test(string_list)
                 res_lists.append((news_id, string, text_vector, unix_time, title))  # 根据上面的具体格式，组成tuple
                 # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
-    print "length of res_lists: %s" % len(res_lists)
+    logging.logger.info("提取的新闻文本的个数: {}".format(len(res_lists)))
     return res_lists
 
 
@@ -296,7 +297,7 @@ def data_save():
                 # string_list = keywords_extractor.parallel_test(string_list)  # 提取关键词
                 res_lists.append((news_id, title, string_list, unix_time))  # 根据上面的具体格式，组成tuple
                 # res_lists.append((string, unix_time))  # 根据上面的具体格式，组合成tuple
-    print "length of res_lists: %s" % len(res_lists)
+    logging.logger.info("提取的文章的个数: %s" % len(res_lists))
     # 数据更新
     # 保存新闻的新闻ID，发布时间， 分词后的正文；[news_id, timestamp, contents]
     # file_out = open("./data/text_full_index.txt", "w")

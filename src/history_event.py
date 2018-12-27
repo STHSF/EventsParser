@@ -20,19 +20,16 @@ from utils import event_util, log
 from data_reader import import_news, import_title, get_event_news
 
 # import logger
-logging = log.LoggerConfig(log_file_name='history_event')
-log_info = logging.logger_info()
-log_error = logging.logger_error()
-
-# 导入通过singlepass聚类生成的类簇
+logging = log.Logger('history_event')
+# 导入通过singlePass聚类生成的类簇
 # clustering_path = '/Users/li/PycharmProjects/event_parser/src/model/clustering_new.pkl'
 clustering_path = conf.clustering_save_path
 try:
     with open(clustering_path, 'rb') as fr:
         clustering = pickle.load(fr)
-        log_info.info('load cluster units from: {}'.format(clustering_path))
+        logging.logger.info('load cluster units from: {}'.format(clustering_path))
 except EOFError:
-    log_error.error('cluster units pickle file load failed: {}'.format(clustering_path))
+    logging.logger.error('cluster units pickle file load failed: {}'.format(clustering_path))
     sys.exit()
 # clustering.print_result()
 
@@ -43,7 +40,7 @@ corpus_news = conf.corpus_news
 # 新闻标题保存的路径
 # corpus_news_title = "/Users/li/PycharmProjects/event_parser/src/data/text_title_index.txt"
 corpus_news_title = conf.corpus_news_title
-log_info.info('load corpus_news_title from: {}'.format(corpus_news_title))
+logging.logger.info('load corpus_news_title from: {}'.format(corpus_news_title))
 # 构建新闻正文词典
 news_dict = import_news(corpus_news)
 # 构建新闻标题词典
@@ -59,10 +56,8 @@ stock_df = pd.read_csv(conf.stock_new_path, encoding='utf-8').set_index('SESNAME
 event_unit_lists = []
 # for cluster_index, cluster in enumerate(effectiveness_events):
 for cluster_index, cluster in enumerate(clustering.cluster_list):
-    print "[event_id]:%s " % cluster_index  # 簇的序号
-    print "[event_node_id]: %s " % cluster.node_list  # 该簇的节点列表
-    log_info.info('[event_id]: {}'.format(cluster_index))
-    log_info.info('[event_node_id]: {}'.format(cluster.node_list))
+    logging.logger.info('[event_id]: {}'.format(cluster_index))  # 簇的序号
+    logging.logger.info('[event_node_id]: {}'.format(cluster.node_list))  # 该簇的节点列表
 
     event_unit = event_util.EventUnit()
     event_unit.node_list = cluster.node_list
@@ -88,10 +83,8 @@ for cluster_index, cluster in enumerate(clustering.cluster_list):
     event_unit_lists.append(event_unit)
     del event_unit
     gc.collect()
-print "[聚类类簇的个数]: %s" % len(clustering.cluster_list)
-print "[事件库中事件的个数]: %s" % len(event_unit_lists)
-log_info.info('[聚类类簇的个数]: {}'.format(len(clustering.cluster_list)))
-log_info.info('[事件库中事件的个数]: {}'.format(len(event_unit_lists)))
+logging.logger.info('[聚类类簇的个数]: {}'.format(len(clustering.cluster_list)))
+logging.logger.info('[事件库中事件的个数]: {}'.format(len(event_unit_lists)))
 
 # event_lib = EventLib()
 # event_lib.event_unit_list = event_unit_lists
@@ -102,4 +95,4 @@ event_unit_path = conf.event_unit_path
 with open(event_unit_path, 'wb') as fw:
     # pickle.dump(event_lib, fw)
     pickle.dump(event_unit_lists, fw)
-log_info.info('[事件运行结束]事件库保存目录为:{}'.format(event_unit_path))
+logging.logger.info('[历史事件运行结束]事件库保存目录为:{}'.format(event_unit_path))

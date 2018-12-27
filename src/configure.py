@@ -9,40 +9,44 @@
 配置文件
 """
 
+import os
+
 
 class Configure(object):
-    project_path = "/Users/li/PycharmProjects"
+
+    # project_path = "/Users/li/PycharmProjects"
+    project_path = os.getcwd()
 
     # 词典目录
-    dic_path = project_path + '/event_parser/src/corpus'
+    dic_path = project_path + '/corpus'
     stock_new_path = dic_path + "/stock.csv"
 
     # 停用词目录
-    stop_words_path = project_path + '/event_parser/src/corpus/stop_words_CN'
+    stop_words_path = project_path + '/corpus/stop_words_CN'
 
     # tf-idf 训练语料文件位置，标题和正文合并在一起
-    corpus_train_path = project_path + "/event_parser/src/data/text_full_index.txt"
+    corpus_train_path = project_path + "/data/text_full_index.txt"
 
     # 新闻标题的保存路径
-    corpus_news_title = project_path + "/event_parser/src/data/text_title_index.txt"
+    corpus_news_title = project_path + "/data/text_title_index.txt"
 
     # singlePass聚类结果保存目录文件
-    # clustering_save_path = project_path + '/event_parser/src/model/clustering_new.pkl'
-    clustering_save_path = project_path + '/event_parser/src/model/clustering_new_40.pkl'
-    # clustering_save_path = project_path + '/event_parser/src/model/clustering_new_20.pkl'
+    # clustering_save_path = project_path + '/model/clustering_new.pkl'
+    clustering_save_path = project_path + '/model/clustering_new_40.pkl'
+    # clustering_save_path = project_path + '/model/clustering_new_20.pkl'
 
     corpus_news = corpus_train_path
 
-    # event_unit_path = project_path + '/event_parser/src/model/event_units_new.pkl'
-    # event_unit_path = project_path + '/event_parser/src/model/event_units_new_40.pkl'
-    event_unit_path = project_path + '/event_parser/src/model/event_units_new_20.pkl'
+    # event_unit_path = project_path + '/model/event_units_new.pkl'
+    # event_unit_path = project_path + '/model/event_units_new_40.pkl'
+    event_unit_path = project_path + '/model/event_units_new_20.pkl'
 
-    event_save_path = project_path + '/event_parser/src/model/event_model/'
+    event_save_path = project_path + '/model/event_model/'
 
     # TF-IDF计算相关文件
-    tfidf_feature_path = project_path + '/event_parser/src/model/tfidf_model/feature_full.pkl'
-    tfidftransformer_path = project_path + '/event_parser/src/model/tfidf_model/tfidftransformer_full.pkl'
-    word_dict_path = project_path + '/event_parser/src/model/tfidf_model/word_dict_full.pkl'
+    tfidf_feature_path = project_path + '/model/tfidf_model/feature_full.pkl'
+    tfidftransformer_path = project_path + '/model/tfidf_model/tfidftransformer_full.pkl'
+    word_dict_path = project_path + '/model/tfidf_model/word_dict_full.pkl'
 
 
 conf = Configure()

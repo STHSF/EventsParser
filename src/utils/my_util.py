@@ -10,6 +10,10 @@
 import os
 import datetime
 
+# import log
+#
+# logging = log.Logger('my_util_log')
+#
 
 def check_path(_path):
     """check out weather the _path exists. If not, create a new _path dit"""
@@ -27,8 +31,8 @@ def find_newest_file(save_path):
     """
     lists = os.listdir(save_path)  # 列出目录的下所有文件和文件夹保存到lists
     lists.sort(key=lambda fn: os.path.getmtime(save_path + fn))  # 将文件按时间排序
-    filetime = datetime.datetime.fromtimestamp(os.path.getmtime(save_path+lists[-1]))
+    # filetime = datetime.datetime.fromtimestamp(os.path.getmtime(save_path+lists[-1]))
     file_new = os.path.join(save_path, lists[-1])  # 获取最新的文件保存到file_new
-    print("[event_util Info] 时间：" + filetime.strftime('%Y-%m-%d %H-%M-%S'))
-    print("[event_util Info] 最新修改的文件(夹)：" + lists[-1])
+    # logging.logger.info("文件的最新修改时间：" + filetime.strftime('%Y-%m-%d %H:%M:%S'))
+    # logging.logger.info("最新修改的文件(夹)：" + lists[-1])
     return file_new

@@ -10,31 +10,37 @@ jieba 字典初始化模块
 功能：添加用户自定义词典，结巴添加新词
 如果有新登陆词，可以在corpus中的新增中添加
 """
+import jieba
+import codecs
+import pandas as pd
+import log
 
 import sys
 sys.path.append('../')
 sys.path.append('../../')
 sys.path.append('../../../')
-import jieba
-import pandas as pd
-import codecs
-from configure import conf
-import sys
+try:
+    from configure import conf
+except Exception:
+    raise
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-deg_dict = {}     # 程度副词
-senti_dict = {}   # 情感词
-eng_dict = {}     # 英语或拼音词
-fou_dict = []     # 否定词
-but_dict = []     # 转折词
-lim_dict = []     # 限定词
-new_dict = []     # 新词
-zhi_dict = []     # 知网
-stock_dict = []   # 股票词
+deg_dict = {}  # 程度副词
+senti_dict = {}  # 情感词
+eng_dict = {}  # 英语或拼音词
+fou_dict = []  # 否定词
+but_dict = []  # 转折词
+lim_dict = []  # 限定词
+new_dict = []  # 新词
+zhi_dict = []  # 知网
+stock_dict = []  # 股票词
 stock_code_dict = []  # 股票代码
 jg_dict = []  # 机构名
 stock_df = []
+
+logging = log.Logger('dict_log')
+
 
 def init():
     # dic_path = '/Users/li/PycharmProjects/huihongcaihui/src/corpus'
@@ -156,7 +162,7 @@ def init():
     jieba.add_word("非公开")
     jieba.add_word("不成人形")
     jieba.add_word("中美贸易战")
-    print("[Info] jieba总共添加了{}个自定义词汇。".format(len(word_add)))
+    logging.logger.info("[Info] jieba总共添加了{}个自定义词汇。".format(len(word_add)))
 
 
 if __name__ == '__main__':

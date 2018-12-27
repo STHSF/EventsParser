@@ -8,25 +8,14 @@
 @time: 2018/11/19 10:19 AM
 基于textRank的关键词提取
 """
-import sys
-import dicts
-import my_util
-import logging.handlers
 import numpy as np
-from src.utils import data_process, tokenization
 
-LOG_FILE = '../log/keywordsExtractor.log'
-my_util.check_path(LOG_FILE)
-handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
-fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
-# logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
-formatter = logging.Formatter(fmt)
-handler.setFormatter(formatter)
-logger = logging.getLogger()
-logger.addHandler(handler)
-logger.setLevel(level=logging.INFO)
-# logger.setLevel(level=logging.DEBUG)
-logger.info("running %s" % ' '.join(sys.argv))
+import data_process
+import dicts
+import log
+import tokenization
+
+logging = log.Logger('keywordsExtractor_log')
 
 
 class TextRank(object):
@@ -111,7 +100,7 @@ class TextRank(object):
 
     def _cal_pr(self):
         """
-        # 根据textrank公式计算权重
+        # 根据textRank公式计算权重
         :return:
         """
         #
@@ -189,7 +178,7 @@ def d_test():
 
     text_rank = TextRank(top_k=15)
     res = text_rank.run(s_list)
-    print("提取的%s个关键词: " % len(res))
+    logging.logger.info("提取的%s个关键词: " % len(res))
     if text_rank.withWeight:
         print ",".join(item[0] for item in res)
         print ",".join(str(item[1]) for item in res)
@@ -203,7 +192,7 @@ def parallel_test(text):
 
 
 def multi_extract(s_lists):
-    from multiprocessing import Pool, Queue, Process
+    from multiprocessing import Pool
     import multiprocessing as mp
     res_l = []
     pool = Pool(processes=int(mp.cpu_count()))
@@ -222,7 +211,7 @@ def multi_extract_test():
     :return:
     """
     import time
-    from multiprocessing import Pool, Queue, Process
+    from multiprocessing import Pool
     import multiprocessing as mp
 
     s = '程序员(英文Programmer)是从事程序开发、维护的专业人员。' \
@@ -238,7 +227,7 @@ def multi_extract_test():
     t0 = time.time()
     for i in range(10000):
         parallel_test(s_list)
-    print("串行处理花费时间{t}".format(t=time.time()-t0))
+    logging.logger.info("串行处理花费时间{t}".format(t=time.time()-t0))
 
     pool = Pool(processes=int(mp.cpu_count()))
     res_l = []
@@ -252,7 +241,7 @@ def multi_extract_test():
     #     print i.get()
     pool.close()
     pool.join()
-    print("并行处理花费时间{t}s".format(t=time.time()-t1))
+    logging.logger.info("并行处理花费时间{t}s".format(t=time.time()-t1))
 
 
 if __name__ == '__main__':

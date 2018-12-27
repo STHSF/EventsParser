@@ -8,29 +8,30 @@
 @time: 2018/11/29 8:39 PM
 事件表示，事件的有效性判断, 构建事件库等
 """
+import pickle
 import sys
+import time
+from collections import Counter
+
+import numpy as np
+
+import log
+import data_process
+import keywords_extractor
+import tfidf
 
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
-import time
-import pickle
-from utils import log
-from collections import Counter
-import numpy as np
 from configure import conf
 from cluster.singlePass import singlePassCluster
-import tfidf, data_process, dicts, keywords_extractor
 
 # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
 # corpus_train = conf.corpus_train_path
 
 
-logging = log.LoggerConfig(log_file_name='history_event')
-log_info = logging.logger_info()
-log_error = logging.logger_error()
-
 data_process = data_process.DataPressing()
+logging = log.Logger('event_util', level='info')
 
 
 def events_list(news_title_list):
@@ -95,14 +96,14 @@ def event_expression(news_title_list, news_list, stock_df):
         news_lists.extend(content_list)
     # 事件中涉及的股票
     stocks = ",".join(item for item in set(stock_lists))
-    print "[事件中包含的股票]: %s " % stocks
+    logging.logger.info("[事件中包含的股票]: %s " % stocks)
 
     # 事件簇关健词提取
     event_new_string = ' '.join(item for item in news_lists)
-    # print "事件类簇 %s" % event_new_string
+    logging.logger.info("事件类簇 %s" % event_new_string)
     event_keywords_list = keywords_extractor.parallel_test(news_lists)
     event_keywords = ','.join(item for item in event_keywords_list)
-    print "[事件关键词]:\n %s " % event_keywords
+    logging.logger.info("[事件关键词]:\n %s " % event_keywords)
 
     # 事件表示,事件要素抽取
     # 事件包含的新闻正文
@@ -161,7 +162,7 @@ def load_history_event(event_unit_path=None):
     if event_unit_path is None:
         # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
         event_unit_path = conf.event_unit_path
-    print '[event_util Info] 读取的事件文件目录: %s' % event_unit_path
+    logging.logger.info('读取的事件文件目录: %s' % event_unit_path)
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
     # print "事件库中事件的个数 %s" % len(event_unit_lists)
     # for index, event_unit in enumerate(event_unit_lists):
@@ -177,7 +178,7 @@ def event_save(event_units, save_name=None, save_path=None):
         save_name = str(int(time.time()))
     if save_path is None:
         save_path = "../event_model/"
-        print("[event_util Info]当前文件夹: %s" % save_path)
+        logging.logger.info("[event_util Info]当前文件夹: %s" % save_path)
     clustering_path = save_path + '%s.pkl' % save_name
     with open(clustering_path, 'wb') as fw:
         pickle.dump(event_units, fw)
@@ -245,8 +246,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         # print "topic_node: %s" % topic_node
         # 返回相似度最大的节点对应的新闻标题
         self.topic_title = news_title_dict[topic_node]
-        print "[事件标题]: %s" % self.topic_title
-        log_info.info('[事件标题]: {}'.format(self.topic_title))
+        logging.logger.debug("[事件标题]: %s" % self.topic_title)
 
     def event_expression(self, news_title_list, news_list, stock_df):
         """
@@ -274,16 +274,14 @@ class EventUnit(singlePassCluster.ClusterUnit):
         for i in stock_lists_dict:
             stock_set.append(i[0])
         stocks = ",".join(item for item in stock_set)
-        print "[事件中包含的股票]: %s " % stocks
-        log_info.info('[事件中包含的股票]: {}'.format(stocks))
+        logging.logger.info("[事件中包含的股票]: %s " % stocks)
 
         # 事件簇关健词提取
         event_new_string = ' '.join(item for item in news_lists)
         # print "事件类簇 %s" % event_new_string
         event_keywords_list = keywords_extractor.parallel_test(news_lists)
         event_keywords = ','.join(item for item in event_keywords_list)
-        print "[事件关键词]:\n %s " % event_keywords
-        log_info.info('[事件关键词]: \n{}'.format(event_keywords))
+        logging.logger.info("[事件关键词]:\n %s " % event_keywords)
 
         # 事件表示,事件要素抽取
         # 事件包含的新闻正文
@@ -302,7 +300,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         对每天更新后的事件单元做title更新
         :return:
         """
-        print "事件标题更新\n"
+        logging.logger.info("事件标题更新\n")
         node_list = self.node_list
         distance_list = []
         # print 'first node: %s' % node_list[0]
@@ -327,8 +325,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
                 topic_node = node
         # 返回相似度最大的节点对应的新闻标题
         self.topic_title = node_news_dict[topic_node][3]
-        print "更新后的事件标题： %s" % self.topic_title
-        log_info.info('[更新后的事件标题]: {}'.format(self.topic_title))
+        logging.logger.info('更新后的事件标题: {}'.format(self.topic_title))
 
     def set_effectiveness(self, flag):
         if flag:

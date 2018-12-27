@@ -9,30 +9,21 @@
 分词模块
 调用jieba分词，添加用户自定义词典，封装，并且去停用词等操作
 """
+import codecs
 import sys
+
+import jieba.posseg as pseg
+
+import data_process
+import dicts
+import log
+
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
-import dicts
-import codecs
-import my_util
-import logging.handlers
-import jieba.posseg as pseg
-from utils import data_process
 from configure import Configure
 
-LOG_FILE = '../log/tokenization.log'
-my_util.check_path(LOG_FILE)
-handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
-fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
-# logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
-formatter = logging.Formatter(fmt)
-handler.setFormatter(formatter)
-logger = logging.getLogger()
-logger.addHandler(handler)
-logger.setLevel(level=logging.INFO)
-# logger.setLevel(level=logging.DEBUG)
-logger.info("running %s" % ' '.join(sys.argv))
+logging = log.Logger('tokenization_log')
 
 stopwords = globals()
 
@@ -44,10 +35,10 @@ def load_stop_words():
     try:
         stop_word = codecs.open(stop_words_path, 'r', encoding='utf8').readlines()
         stop_words = [w.strip() for w in stop_word]
-        print("[Info] Stopwords 导入成功！")
+        logging.logger.info("Stopwords 导入成功！")
         return stop_words
     except BaseException as e:
-        print('[Exception] Stop Words Exception: {0}'.format(e))
+        logging.logger.error('Stop Words Exception: {0}'.format(e))
 
 
 class Tokenizer(object):

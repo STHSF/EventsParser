@@ -12,43 +12,41 @@ import sys
 sys.path.append('../')
 sys.path.append('..')
 sys.path.append('../../')
-import gc
-import time
-import datetime
-import data_reader
-import pandas as pd
-from tqdm import tqdm
-from utils import log
-from configure import conf
-from utils import event_util, my_util
-from cluster.singlePass import singlePassCluster
+import gc  # noqa: E402
+import time  # noqa: E402
+import datetime  # noqa: E402
+import data_reader  # noqa: E402
+import pandas as pd  # noqa: E402
+from tqdm import tqdm  # noqa: E402
+from utils import log  # noqa: E402
+from configure import conf  # noqa: E402
+from utils import event_util, my_util  # noqa: E402
+from cluster.singlePass import singlePassCluster  # noqa: E402
 
 
-logging = log.LoggerConfig('dynamic_update')
-log_info = logging.logger_info()
-log_error = logging.logger_error()
-
+logging = log.Logger('dynamic_update', level='debug')
 # step 1、读取指定日期之后的新闻
 # 读取当前时间段时间
 now = datetime.date.today()
 today_timestamp = int(time.mktime(now.timetuple()))
+logging.logger.info('读取新闻的起始时间: {}'.format(today_timestamp))
 ordered_df = data_reader.get_ordered_data(timestamp=today_timestamp)
 # 提取dataFrame中的内容
 ordered_news_lists = data_reader.trans_df_data(ordered_df)
 
 # 如果当天没有新闻更新，则直接退出程序，事件单元不需要更新。
 if len(ordered_news_lists) <= 0:
-    print '今天没有新新闻，事件单元不更新'
-    log_info.info('[事件库未更新]: 今天没有新新闻，事件单元不更新')
+    # print '今天没有新新闻，事件单元不更新'
+    logging.logger.info('[事件库未更新]: 今天没有新新闻，事件单元不更新')
     sys.exit()
 
-for tmp in ordered_news_lists:
-    print tmp[0], tmp[1]
+# for tmp in ordered_news_lists:
+#     print tmp[0], tmp[1]
 
 # step 2、导入历史事件
 history_event_units = event_util.load_history_event()
-print "[Info] 事件库中事件的个数 %s" % len(history_event_units)
-log_info.info("[事件库中事件的个数:] {}".format(len(history_event_units)))
+# print "[Info] 事件库中事件的个数 %s" % len(history_event_units)
+logging.logger.info("[事件库中事件的个数:] {}".format(len(history_event_units)))
 # for index, event_unit in enumerate(history_event_units):
 #     print "cluster: %s" % index  # 簇的序号
 #     print event_unit.node_list  # 该簇的节点列表
@@ -75,10 +73,10 @@ for news_index in tqdm(range(len_news)):  # 遍历每一篇新的新闻
         if dist > max_dist:
             max_dist = dist
             min_event_index = event_index + 1
-    print '[Info] new_node_id: %s' % new_node_id
-    print '[Info] len of new_event_unit: %s' % len(new_event_units)
-    print '[Info] max_dist: %s' % max_dist
-    print '[Info] min_cluster_index: %s\n' % min_event_index
+    logging.logger.info('[Info] new_node_id: %s' % new_node_id)
+    logging.logger.info('[Info] len of new_event_unit: %s' % len(new_event_units))
+    logging.logger.info('[Info] max_dist: %s' % max_dist)
+    logging.logger.info('[Info] min_cluster_index: %s\n' % min_event_index)
     # 如果最大距离大于某一个阈值，则将该新闻归并到该事件单元
     if max_dist > 10:
         # new_node_id = ordered_news_lists[news_index][0]
@@ -98,8 +96,7 @@ for news_index in tqdm(range(len_news)):  # 遍历每一篇新的新闻
         del new_event
         gc.collect()
 
-print '[Info] 更新后的事件个数: %s' % len(new_event_units)
-log_info.info('[更新后的事件个数: %s]'.format(len(new_event_units)))
+logging.logger.info('[更新后的事件个数]: {}'.format(len(new_event_units)))
 # step 4、对更新的事件库进行标题和关键词更新
 # 事件库更新，更新标题，关键词,股票代码。
 # 读取数据库中的所有新闻数据
@@ -111,7 +108,7 @@ stock_df = pd.read_csv(conf.stock_new_path, encoding='utf-8').set_index('SESNAME
 for unit in tqdm(new_event_units):
     if unit.event_tag == 1:
         # 更新标题，股票代码，关键词等
-        print "事件 %s 是新事件" % unit.event_id
+        logging.logger.info("事件 [%s] 是新事件" % unit.event_id)
         # 读取每个事件
         node_df_data = full_df_data.loc[set(unit.node_list)]
         node_news_lists = data_reader.trans_df_data(node_df_data.reset_index())
@@ -123,8 +120,8 @@ for unit in tqdm(new_event_units):
             news_title_list.append(i[4])
         # 更新股票列表
         unit.event_expression(news_title_list, news_list, stock_df)
-        print "stocks: %s" % ','.join(tmp for tmp in unit.stocks)
-        print "keywords: %s" % unit.keywords
+        logging.logger.info("股票列表: %s" % ','.join(tmp for tmp in unit.stocks))
+        logging.logger.info("关键词列表: %s" % unit.keywords)
         # 更新标题
         node_news_dict = {}
         for node in node_news_lists:
@@ -143,11 +140,10 @@ event_util.event_save(new_event_units, event_save_name, event_save_path)
 
 # step 6、load最新的事件单元库
 file_new = my_util.find_newest_file(event_save_path)
-print '[最新的文件: %s]' % file_new
-new_event_units = event_util.load_history_event(file_new)
-for i in new_event_units:
-    print i.topic_title
-    print i.event_id
-    print i.node_list
-    print i.stocks
-
+logging.logger.info('[最新的文件: %s]' % file_new)
+# new_event_units = event_util.load_history_event(file_new)
+# for i in new_event_units:
+#     print i.topic_title
+#     print i.event_id
+#     print i.node_list
+#     print i.stocks

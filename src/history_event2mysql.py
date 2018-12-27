@@ -13,9 +13,10 @@ import json
 import pandas as pd
 import data_reader
 from configure import conf
-from utils import my_util, event_util
+from utils import my_util, event_util, log
 from utils import data_source
 
+logging = log.Logger('event2mysql')
 event_save_path = conf.event_save_path
 # event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
 
@@ -33,11 +34,11 @@ result = []
 for item in new_event_units:
     # 如果是有效事件
     if item.effectiveness == 1:
-        print '[Info event ID]: %s' % item.event_id
-        print '[Info event title]: %s' % item.topic_title
+        logging.logger.info('[effective event ID]: %s' % item.event_id)
+        logging.logger.info('[effective event title]: %s' % item.topic_title)
         event_stock = ','.join(k for k in set(item.stocks))
-        print '[Info stock]: %s\n' % event_stock
-        print '[Info node list]: %s' % item.node_list
+        logging.logger.info('[effective stock]: %s\n' % event_stock)
+        logging.logger.info('[effective node list]: %s' % item.node_list)
         # 从dataFrame中获取事件单元中node的标题和出处
         title_url = []
         time_list = []
@@ -48,7 +49,7 @@ for item in new_event_units:
         event_detail = json.dumps(title_url)
         stop_time = max(time_list)
         start_time = min(time_list)
-        print "[Info event time]start_time {}, stop_time {}".format(start_time, stop_time)
+        logging.logger.info("[event start-stop time]start_time {}, stop_time {}".format(start_time, stop_time))
         result.append((item.event_id, item.topic_title, event_stock, start_time, stop_time, event_detail))
     else:
         continue
@@ -60,8 +61,8 @@ result_df = pd.DataFrame(result,
 # # 创建数据库引擎
 engine_mysql = data_source.GetDataEngine("XAVIER_DB")
 # # 将整理好的数据保存到mysql中
-# result_df.to_sql('event_detail', engine_mysql, if_exists='replace')
-
+result_df.to_sql('event_detail', engine_mysql, if_exists='replace')
+logging.logger.info('event_detail update success')
 # # 整理出股票对应的事件{}
 event_symbol = result_df[['event_id', 'event_stock']]
 # print event_symbol
@@ -79,4 +80,5 @@ tmp_result = pd.DataFrame(list(lst.items()), columns=['SYMBOL', 'event_id'])
 tmp_result['event_id'] = tmp_result['event_id'].apply(lambda x: ','.join(x))
 # print tmp_result
 # 将整理好的数据保存到mysql中
-# tmp_result.to_sql('symbol_event_detail', engine_mysql, if_exists='replace')
+tmp_result.to_sql('symbol_event_detail', engine_mysql, if_exists='replace')
+logging.logger.info('symbol_event_detail update success')

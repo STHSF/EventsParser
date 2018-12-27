@@ -9,26 +9,16 @@
 关键词提取程序
 """
 import sys
-import logging.handlers
-import my_util
 sys.path.append("../")
+import log
 from configure import Configure
 from pyhanlp import *
 from jieba import analyse
 from tokenization import Tokenizer
 
-LOG_FILE = '../log/keywords.log'
-my_util.check_path(LOG_FILE)
-handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
-fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
-# logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
-formatter = logging.Formatter(fmt)
-handler.setFormatter(formatter)
-logger = logging.getLogger()
-logger.addHandler(handler)
-logger.setLevel(level=logging.INFO)
-# logger.setLevel(level=logging.DEBUG)
-logger.info("running %s" % ' '.join(sys.argv))
+logging = log.Logger('keywordsLog')
+
+# logging.logger.info("running %s" % ' '.join(sys.argv))
 
 
 class keywordsExtractor(object):
