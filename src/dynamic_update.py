@@ -20,7 +20,7 @@ import pandas as pd  # noqa: E402
 from tqdm import tqdm  # noqa: E402
 from utils import log  # noqa: E402
 from configure import conf  # noqa: E402
-from utils import event_util, my_util  # noqa: E402
+from utils import event_util, my_util, tfidf, data_process, dicts, tokenization  # noqa: E402
 from cluster.singlePass import singlePassCluster  # noqa: E402
 
 
@@ -31,8 +31,22 @@ now = datetime.date.today()
 today_timestamp = int(time.mktime(now.timetuple()))
 logging.logger.info('读取新闻的起始时间: {}'.format(today_timestamp))
 ordered_df = data_reader.get_ordered_data(timestamp=today_timestamp)
+
+# load tf-idf VSM
+# tfidf_feature_path = '/Users/li/PycharmProjects/event_parser/src/model/tfidf_model/feature_1.pkl'
+# tfidftransformer_path = '/Users/li/PycharmProjects/event_parser/src/model/tfidf_model/tfidftransformer_1.pkl'
+tfidf_feature_path = conf.tfidf_feature_path
+tfidf_transformer_path = conf.tfidftransformer_path
+tfidf_feature = tfidf.load_tfidf_feature(tfidf_feature_path)
+tfidf_transformer = tfidf.load_tfidf_transformer(tfidf_transformer_path)
+
+# 导入词典，停用词，数据处理接口，分词接口
+dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
+tk = tokenization.Tokenizer(dp, dict_init, stop_words)
+
+
 # 提取dataFrame中的内容
-ordered_news_lists = data_reader.trans_df_data(ordered_df)
+ordered_news_lists = data_reader.trans_df_data(ordered_df, tfidf_feature, tfidf_transformer, dp, tk)
 
 # 如果当天没有新闻更新，则直接退出程序，事件单元不需要更新。
 if len(ordered_news_lists) <= 0:
@@ -111,7 +125,7 @@ for unit in tqdm(new_event_units):
         logging.logger.info("事件 [%s] 是新事件" % unit.event_id)
         # 读取每个事件
         node_df_data = full_df_data.loc[set(unit.node_list)]
-        node_news_lists = data_reader.trans_df_data(node_df_data.reset_index())
+        node_news_lists = data_reader.trans_df_data(node_df_data.reset_index(), tfidf_feature, tfidf_transformer, dp, tk)
         news_list = []
         news_title_list = []
         for i in node_news_lists:

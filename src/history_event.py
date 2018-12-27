@@ -9,6 +9,7 @@
 将类簇转换成事件单元，并根据类簇中的节点id从文本中提取每个类簇对应的新闻，构成事件单元，然后提取每个事件单元涉及的股票。并且对每个事件单元提取关键词代表每个事件单元。所有的结果打包成pickle文件保存到本地。
 """
 import sys
+
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
@@ -16,7 +17,7 @@ import gc
 import pickle
 import pandas as pd
 from configure import conf
-from utils import event_util, log
+from utils import event_util, log, tfidf
 from data_reader import import_news, import_title, get_event_news
 
 # import logger
@@ -28,8 +29,8 @@ try:
     with open(clustering_path, 'rb') as fr:
         clustering = pickle.load(fr)
         logging.logger.info('load cluster units from: {}'.format(clustering_path))
-except EOFError:
-    logging.logger.error('cluster units pickle file load failed: {}'.format(clustering_path))
+except IOError, e:
+    logging.logger.error('cluster units pickle file load failed: {} and program stopped'.format(clustering_path))
     sys.exit()
 # clustering.print_result()
 
@@ -45,6 +46,9 @@ logging.logger.info('load corpus_news_title from: {}'.format(corpus_news_title))
 news_dict = import_news(corpus_news)
 # 构建新闻标题词典
 news_title_dict = import_title(corpus_news_title)
+# load tf-idf VSM
+tfidf_feature_path = conf.tfidf_feature_path
+tfidf_feature = tfidf.load_tfidf_feature(tfidf_feature_path)
 # 股票及股票代码
 stock_df = pd.read_csv(conf.stock_new_path, encoding='utf-8').set_index('SESNAME')
 # 事件有效性判断
@@ -79,7 +83,7 @@ for cluster_index, cluster in enumerate(clustering.cluster_list):
     # 添加涉及的股票和事件关键词
     event_unit.event_expression(event_title_lists, event_news_lists, stock_df)
     # 添加事件标题
-    event_unit.add_unit_title(news_dict, news_title_dict)
+    event_unit.add_unit_title(news_dict, news_title_dict, tfidf_feature)
     event_unit_lists.append(event_unit)
     del event_unit
     gc.collect()

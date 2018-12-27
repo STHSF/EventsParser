@@ -241,14 +241,16 @@ def load_data_test():
     file_out.close()
 
 
-def trans_df_data(df_result):
+def trans_df_data(df_result, tfidf_feature, tfidf_transformer, dp, tk):
     """
     提取dataFrame中的标题和正文数据，然后对数据进行分词等预处理之后，并且计算每篇文本的ifidf值。
+    :param tfidf_transformer:
+    :param dp: 数据处理接口
+    :param tk: 分词接口
+    :param tfidf_feature: tfidf 空间向量模型
     :param df_result:
     :return:
     """
-    dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
-    tk = tokenization.Tokenizer(dp, dict_init, stop_words)
     res_lists = []
     for i in range(len(df_result)):
         news_id = df_result.iloc[i]['id']
@@ -260,7 +262,7 @@ def trans_df_data(df_result):
             string = str(title).strip() + str(content).strip()
             string_list = tk.token(string)  # 分词
             string = " ".join(item for item in string_list)  # 组合成计算tfidf的输入格式
-            text_vector = tfidf.load_tfidf_vectorizer([string]).toarray().reshape(-1)
+            text_vector = tfidf.load_tfidf_vectorizer([string], vocab=tfidf_feature, tfidf_transformer=tfidf_transformer)
             if not dp.useless_filter(string_list, dicts.stock_dict):
                 # string_list = keywords_extractor.parallel_test(string_list)
                 res_lists.append((news_id, string, text_vector, unix_time, title))  # 根据上面的具体格式，组成tuple

@@ -40,9 +40,11 @@ def events_list(news_title_list):
     pass
 
 
-def events_effectiveness(cluster_list, news_dict):
+def events_effectiveness(cluster_list, news_dict, tfidf_feature, tfidf_transformer):
     """
     事件有效性判断
+    :param tfidf_transformer:
+    :param tfidf_feature: jj
     :param cluster_list:
     :param news_dict:
     :return:
@@ -58,7 +60,7 @@ def events_effectiveness(cluster_list, news_dict):
             # 获取结点对应的新闻
             news = news_dict.get(str(node))
             # 将新闻转换成文本向量空间
-            text_vector = tfidf.load_tfidf_vectorizer([news]).toarray().reshape(-1)
+            text_vector = tfidf.load_tfidf_vectorizer([news], tfidf_feature, tfidf_transformer)
             # 计算每篇文章与类簇中心的相似度
             similarly = singlePassCluster.cosine_distance(text_vector, centroid)
             print "[similarly] %s " % similarly
@@ -118,9 +120,11 @@ def event_expression(news_title_list, news_list, stock_df):
     # return stock_lists, event_keywords
 
 
-def units_title(cluster, news_dict, news_title_dict):
+def units_title(cluster, news_dict, news_title_dict, tfidf_feature, tfidf_transformer):
     """
     提取事件单元的标题，
+    :param tfidf_transformer:
+    :param tfidf_feature:
     :param cluster:
     :param news_dict:
     :param news_title_dict:
@@ -131,14 +135,14 @@ def units_title(cluster, news_dict, news_title_dict):
     distance_list = []
     # print 'first node: %s' % node_list[0]
     # 事件单元中第一节点的td-idf
-    node0_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node_list[0]]]).toarray().reshape(-1)
+    node0_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node_list[0]]], tfidf_feature, tfidf_transformer)
     max_dist = singlePassCluster.cosine_distance(cluster.centroid, node0_tf_idf)
     distance_list.append(max_dist)
     topic_node = node_list[0]
     for node_index, node in enumerate(node_list[1:]):
         # print 'event node: %s' % node
         # 计算每个节点的空间向量
-        node_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node]]).toarray().reshape(-1)
+        node_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node]], tfidf_feature, tfidf_transformer)
         # 计算每个节点到簇心的欧式距离
         temp_dist = singlePassCluster.cosine_distance(cluster.centroid, node_tf_idf)
         distance_list.append(temp_dist)
@@ -214,9 +218,11 @@ class EventUnit(singlePassCluster.ClusterUnit):
         self.event_tag = 1  # 添加了新的节点，将该事件标记为更新新事件
         # self.title_update()
 
-    def add_unit_title(self, news_dict, news_title_dict):
+    def add_unit_title(self, news_dict, news_title_dict, tfidf_feature, tfidf_transformer):
         """
         事件表示，提取事件单元的标题，
+        :param tfidf_transformer:
+        :param tfidf_feature:
         :param self:
         :param news_dict:
         :param news_title_dict:
@@ -226,14 +232,14 @@ class EventUnit(singlePassCluster.ClusterUnit):
         distance_list = []
         # print 'first node: %s' % node_list[0]
         # 事件单元中第一节点的td-idf
-        node0_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node_list[0]]]).toarray().reshape(-1)
+        node0_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node_list[0]]], tfidf_feature, tfidf_transformer)
         max_dist = singlePassCluster.cosine_distance(self.centroid, node0_tf_idf)
         distance_list.append(max_dist)
         topic_node = node_list[0]
         for node_index, node in enumerate(node_list[1:]):
             # print 'event node: %s' % node
             # 计算每个节点的空间向量
-            node_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node]]).toarray().reshape(-1)
+            node_tf_idf = tfidf.load_tfidf_vectorizer([news_dict[node]], tfidf_feature, tfidf_transformer)
             # 计算每个节点到簇心的欧式距离
             temp_dist = singlePassCluster.cosine_distance(self.centroid, node_tf_idf)
             distance_list.append(temp_dist)
@@ -307,7 +313,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
         # 事件单元中第一节点的td-idf
         first_node = node_news_dict[node_list[0]]
         node0_tf_idf = first_node[1]
-        # node0_tf_idf = tfidf.load_tfidf_vectorizer([first_node[1]]).toarray().reshape(-1)
+        # node0_tf_idf = tfidf.load_tfidf_vectorizer([first_node[1]])
         max_dist = singlePassCluster.cosine_distance(self.centroid, node0_tf_idf)
         distance_list.append(max_dist)
         topic_node = node_list[0]
@@ -315,7 +321,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
             # print 'event node: %s' % node
             # 计算每个节点的空间向量
             node_tf_idf = node_news_dict[node][1]
-            # node_tf_idf = tfidf.load_tfidf_vectorizer([node_news_dict[node]]).toarray().reshape(-1)
+            # node_tf_idf = tfidf.load_tfidf_vectorizer([node_news_dict[node]])
             # 计算每个节点到簇心的欧式距离
             temp_dist = singlePassCluster.cosine_distance(self.centroid, node_tf_idf)
             distance_list.append(temp_dist)

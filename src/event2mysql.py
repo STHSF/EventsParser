@@ -4,7 +4,7 @@
 """
 @version: ??
 @author: li
-@file: history_event2mysql.py
+@file: event2mysql.py
 @time: 2018-12-17 13:53
 将更新好的事件按固定格式保存到mysql中
 """
