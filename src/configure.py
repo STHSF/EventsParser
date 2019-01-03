@@ -14,8 +14,8 @@ import os
 
 class Configure(object):
 
-    # project_path = "/Users/li/PycharmProjects"
-    project_path = os.getcwd()
+    project_path = "/Users/li/PycharmProjects/event_parser/src"
+    # project_path = os.getcwd()
 
     # 词典目录
     dic_path = project_path + '/corpus'
@@ -31,15 +31,17 @@ class Configure(object):
     corpus_news_title = project_path + "/data/text_title_index.txt"
 
     # singlePass聚类结果保存目录文件
-    # clustering_save_path = project_path + '/model/clustering_new.pkl'
-    clustering_save_path = project_path + '/model/clustering_new_40.pkl'
+    clustering_save_path = project_path + '/model/clustering_new_10.pkl'
     # clustering_save_path = project_path + '/model/clustering_new_20.pkl'
+    # clustering_save_path = project_path + '/model/clustering_new_30.pkl'
+    # clustering_save_path = project_path + '/model/clustering_new_40.pkl'
 
     corpus_news = corpus_train_path
 
-    # event_unit_path = project_path + '/model/event_units_new.pkl'
+    event_unit_path = project_path + '/model/event_units_new_10.pkl'
+    # event_unit_path = project_path + '/model/event_units_new_20.pkl'
+    # event_unit_path = project_path + '/model/event_units_new_30.pkl'
     # event_unit_path = project_path + '/model/event_units_new_40.pkl'
-    event_unit_path = project_path + '/model/event_units_new_20.pkl'
 
     event_save_path = project_path + '/model/event_model/'
 

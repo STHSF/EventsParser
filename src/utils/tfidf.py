@@ -7,16 +7,20 @@
 @file: tfidf.py
 @time: 2018/11/28 4:03 PM
 """
-import sys
+import pickle
+import numpy as np
 
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_extraction.text import CountVectorizer
+
+import sys
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
-import pickle
-import numpy as np
-from configure import conf
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.feature_extraction.text import CountVectorizer
+sys.path.append('/Users/li/PycharmProjects/event_parser/src')
+from configure import Configure
+
+conf = Configure()
 
 
 def load_data(corpus_path):
@@ -89,18 +93,18 @@ def tfidf_vectorizer(corpus_path):
 
 def load_batch_tfidf_vector(corpus_train_dict, tfidf_feature, tfidf_transformer):
     """
-    将语料库中的数据转换成数据
+    将语料库中的数据批量转换成VSM
     :param corpus_train_dict:
     :param tfidf_feature:
     :param tfidf_transformer:
     :return:
     """
-    tfidf_train_tuple = []
+    tfidf_vsm_tuple = []
     for item in corpus_train_dict.items():
-        catagory, corpus = item[1], item[0]
-        tfidf_train_tuple.append((catagory, load_tfidf_vectorizer([corpus], tfidf_feature, tfidf_transformer)))
+        category, corpus = item[0], item[1]
+        tfidf_vsm_tuple.append((category, load_tfidf_vectorizer([corpus], tfidf_feature, tfidf_transformer)))
 
-    return tfidf_train_tuple
+    return tfidf_vsm_tuple
 
 
 def load_tfidf_feature(tfidf_feature_path):
@@ -109,7 +113,8 @@ def load_tfidf_feature(tfidf_feature_path):
     :param tfidf_feature_path:
     :return:
     """
-    return pickle.load(open(tfidf_feature_path, "rb"))
+    tfidf_feature = pickle.load(open(tfidf_feature_path, "rb"))
+    return tfidf_feature
 
 
 def load_tfidf_transformer(tfidf_transformer_path):
@@ -122,10 +127,10 @@ def load_tfidf_transformer(tfidf_transformer_path):
     return tfidf_transformer
 
 
-def load_tfidf_vectorizer(corpus_path, vocab, tfidf_transformer):
+def load_tfidf_vectorizer(corpus_path, tfidf_feature, tfidf_transformer):
     """
     :param tfidf_transformer:
-    :param vocab: tf-idf feature
+    :param tfidf_feature: tf-idf feature
     :param corpus_path:
     :return:
     """
@@ -143,7 +148,7 @@ def load_tfidf_vectorizer(corpus_path, vocab, tfidf_transformer):
     #     corpus_test = corpus_path
     corpus_test = corpus_path
     # 加载特征
-    loaded_vec = CountVectorizer(decode_error="replace", vocabulary=vocab)
+    loaded_vec = CountVectorizer(decode_error="replace", vocabulary=tfidf_feature)
     # 加载TfidfTransformer
     # 测试用transform，表示测试数据，为list
     test_tfidf = tfidf_transformer.transform(loaded_vec.transform(corpus_test))

@@ -128,3 +128,5 @@ venv.bak/
 /src/data/text_full_full.txt
 /src/data/
 /log/
+/src/data_copy/
+/src/log/

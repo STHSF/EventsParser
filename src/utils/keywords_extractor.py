@@ -12,10 +12,10 @@ import numpy as np
 
 import data_process
 import dicts
-import log
+import log_util
 import tokenization
 
-logging = log.Logger('keywordsExtractor_log')
+logging = log_util.Logger('keywordsExtractor_log')
 
 
 class TextRank(object):

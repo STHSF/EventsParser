@@ -4,32 +4,38 @@
 """
 @version: ??
 @author: li
-@file: dynamic_update.py
+@file: dynamic_update_event.py
 @time: 2018/12/5 2:23 PM
 增量式事件更新，基于历史事件库，将新增新闻实时与历史事件库进行相似度计算，最后合并
+# 每天十二点之前更新一次
+# 每天开盘前更新一次
 """
 import sys
+import gc
+import time
+import datetime
+import data_reader
+import pandas as pd
+from tqdm import tqdm
 sys.path.append('../')
 sys.path.append('..')
 sys.path.append('../../')
-import gc  # noqa: E402
-import time  # noqa: E402
-import datetime  # noqa: E402
-import data_reader  # noqa: E402
-import pandas as pd  # noqa: E402
-from tqdm import tqdm  # noqa: E402
-from utils import log  # noqa: E402
+
+from utils import log_util  # noqa: E402
 from configure import conf  # noqa: E402
-from utils import event_util, my_util, tfidf, data_process, dicts, tokenization  # noqa: E402
+from utils import event_util, file_util, tfidf, data_process, dicts, tokenization, time_util  # noqa: E402
 from cluster.singlePass import singlePassCluster  # noqa: E402
 
 
-logging = log.Logger('dynamic_update', level='debug')
+logging = log_util.Logger('dynamic_update', level='debug')
+
+logging.logger.info('事件库更新时间: {}'.format(time_util.timestamp_to_time(time.time())))
 # step 1、读取指定日期之后的新闻
 # 读取当前时间段时间
 now = datetime.date.today()
 today_timestamp = int(time.mktime(now.timetuple()))
-logging.logger.info('读取新闻的起始时间: {}'.format(today_timestamp))
+today = time_util.timestamp_to_time(today_timestamp)
+logging.logger.info('读取新闻的起始时间: {}'.format(today))
 ordered_df = data_reader.get_ordered_data(timestamp=today_timestamp)
 
 # load tf-idf VSM
@@ -58,7 +64,9 @@ if len(ordered_news_lists) <= 0:
 #     print tmp[0], tmp[1]
 
 # step 2、导入历史事件
-history_event_units = event_util.load_history_event()
+# 如果第一次执行dynamic_update_event文件，则event_save_path
+history_event_file = file_util.find_newest_file(conf.event_save_path)
+history_event_units = event_util.load_history_event(history_event_file)
 # print "[Info] 事件库中事件的个数 %s" % len(history_event_units)
 logging.logger.info("[事件库中事件的个数:] {}".format(len(history_event_units)))
 # for index, event_unit in enumerate(history_event_units):
@@ -153,7 +161,7 @@ event_save_path = conf.event_save_path
 event_util.event_save(new_event_units, event_save_name, event_save_path)
 
 # step 6、load最新的事件单元库
-file_new = my_util.find_newest_file(event_save_path)
+file_new = file_util.find_newest_file(event_save_path)
 logging.logger.info('[最新的文件: %s]' % file_new)
 # new_event_units = event_util.load_history_event(file_new)
 # for i in new_event_units:

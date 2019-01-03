@@ -13,7 +13,7 @@ jieba 字典初始化模块
 import jieba
 import codecs
 import pandas as pd
-import log
+import log_util
 
 import sys
 sys.path.append('../')
@@ -39,7 +39,7 @@ stock_code_dict = []  # 股票代码
 jg_dict = []  # 机构名
 stock_df = []
 
-logging = log.Logger('dict_log')
+logging = log_util.Logger('dict_log')
 
 
 def init():

@@ -10,13 +10,13 @@
 """
 import sys
 sys.path.append("../")
-import log
+import log_util
 from configure import Configure
 from pyhanlp import *
 from jieba import analyse
 from tokenization import Tokenizer
 
-logging = log.Logger('keywordsLog')
+logging = log_util.Logger('keywordsLog')
 
 # logging.logger.info("running %s" % ' '.join(sys.argv))
 

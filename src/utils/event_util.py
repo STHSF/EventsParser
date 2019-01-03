@@ -15,7 +15,7 @@ from collections import Counter
 
 import numpy as np
 
-import log
+import log_util
 import data_process
 import keywords_extractor
 import tfidf
@@ -31,7 +31,7 @@ from cluster.singlePass import singlePassCluster
 
 
 data_process = data_process.DataPressing()
-logging = log.Logger('event_util', level='info')
+logging = log_util.Logger('event_util', level='info')
 
 
 def events_list(news_title_list):
@@ -163,10 +163,10 @@ def load_history_event(event_unit_path=None):
     :param event_unit_path:
     :return:
     """
-    if event_unit_path is None:
+    if event_unit_path is None or event_unit_path is 'NULL':
         # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
         event_unit_path = conf.event_unit_path
-    logging.logger.info('读取的事件文件目录: %s' % event_unit_path)
+    logging.logger.info('读取的事件文件名: %s' % event_unit_path)
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
     # print "事件库中事件的个数 %s" % len(event_unit_lists)
     # for index, event_unit in enumerate(event_unit_lists):

@@ -8,7 +8,7 @@
 @time: 2018-12-21 17:15
 """
 import logging.handlers
-import my_util
+import file_util
 
 
 class LoggerConfig(object):
@@ -17,7 +17,7 @@ class LoggerConfig(object):
 
     def logger_info(self):
         log_file = '../log/%s_info.log' % self.log_file_name
-        my_util.check_path(log_file)
+        file_util.check_path(log_file)
         handler = logging.handlers.RotatingFileHandler(log_file, maxBytes=10240 * 1024, backupCount=5)  # 实例化handler
         fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s'
         formatter = logging.Formatter(fmt)                 # 实例化formatter
@@ -30,7 +30,7 @@ class LoggerConfig(object):
 
     def logger_error(self):
         log_file = '../log/%s_error.log' % self.log_file_name
-        my_util.check_path(log_file)
+        file_util.check_path(log_file)
         handler = logging.handlers.RotatingFileHandler(log_file, maxBytes=10240 * 1024, backupCount=5)  # 实例化handler
         fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(name)s - %(message)s'
         formatter = logging.Formatter(fmt)                 # 实例化formatter

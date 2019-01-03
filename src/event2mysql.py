@@ -13,15 +13,15 @@ import json
 import pandas as pd
 import data_reader
 from configure import conf
-from utils import my_util, event_util, log
+from utils import file_util, event_util, log_util
 from utils import data_source
 
-logging = log.Logger('event2mysql')
+logging = log_util.Logger('event2mysql')
 event_save_path = conf.event_save_path
 # event_save_path = "/Users/li/PycharmProjects/event_parser/src/model/event_model/"
 
 # 从文件目录中导入最新的更新文件
-file_new = my_util.find_newest_file(event_save_path)
+file_new = file_util.find_newest_file(event_save_path)
 new_event_units = event_util.load_history_event(file_new)
 
 # 从数据库中读取最新的新闻的id，title，url和timestamp
@@ -50,7 +50,7 @@ for item in new_event_units:
         stop_time = max(time_list)
         start_time = min(time_list)
         logging.logger.info("[event start-stop time]start_time {}, stop_time {}".format(start_time, stop_time))
-        result.append((item.event_id, item.topic_title, event_stock, start_time, stop_time, event_detail))
+        result.append((item.event_id, item.topic_title.encode('utf-8'), event_stock, start_time, stop_time, event_detail))
     else:
         continue
 
@@ -61,7 +61,7 @@ result_df = pd.DataFrame(result,
 # # 创建数据库引擎
 engine_mysql = data_source.GetDataEngine("XAVIER_DB")
 # # 将整理好的数据保存到mysql中
-result_df.to_sql('event_detail', engine_mysql, if_exists='replace')
+result_df.to_sql('event_detail', engine_mysql, if_exists='replace', index=False)
 logging.logger.info('event_detail update success')
 # # 整理出股票对应的事件{}
 event_symbol = result_df[['event_id', 'event_stock']]
@@ -80,5 +80,5 @@ tmp_result = pd.DataFrame(list(lst.items()), columns=['SYMBOL', 'event_id'])
 tmp_result['event_id'] = tmp_result['event_id'].apply(lambda x: ','.join(x))
 # print tmp_result
 # 将整理好的数据保存到mysql中
-tmp_result.to_sql('symbol_event_detail', engine_mysql, if_exists='replace')
+tmp_result.to_sql('symbol_event_detail', engine_mysql, if_exists='replace', index=False)
 logging.logger.info('symbol_event_detail update success')

@@ -9,7 +9,7 @@
 """
 
 import logging
-import my_util
+import file_util
 from logging import handlers
 
 
@@ -26,7 +26,7 @@ class Logger(object):
     def __init__(self, log_file_name, level='debug', when='D', backup_count=5,
                  fmt='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s'):
         log_file = '../log/%s.log' % log_file_name
-        my_util.check_path(log_file)
+        file_util.check_path(log_file)
         self.logger = logging.getLogger(log_file)
         format_str = logging.Formatter(fmt)  # 设置日志格式
         self.logger.setLevel(self.level_relations.get(level))  # 设置日志级别

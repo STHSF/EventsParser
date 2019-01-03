@@ -19,13 +19,13 @@ from configure import conf
 from utils.data_source import GetDataEngine
 from utils import tokenization, data_process, dicts
 from utils.tokenization import load_stop_words
-from utils import keywords_extractor, time_util, tfidf, log
+from utils import keywords_extractor, time_util, tfidf, log_util
 
 TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
 engine_mysql = GetDataEngine("XAVIER")
 engine_sqlserver = GetDataEngine("DNDS")
-logging = log.Logger('data_reader_log')
+logging = log_util.Logger('data_reader_log')
 global _stopwords
 
 
@@ -262,7 +262,7 @@ def trans_df_data(df_result, tfidf_feature, tfidf_transformer, dp, tk):
             string = str(title).strip() + str(content).strip()
             string_list = tk.token(string)  # 分词
             string = " ".join(item for item in string_list)  # 组合成计算tfidf的输入格式
-            text_vector = tfidf.load_tfidf_vectorizer([string], vocab=tfidf_feature, tfidf_transformer=tfidf_transformer)
+            text_vector = tfidf.load_tfidf_vectorizer([string], tfidf_feature=tfidf_feature, tfidf_transformer=tfidf_transformer)
             if not dp.useless_filter(string_list, dicts.stock_dict):
                 # string_list = keywords_extractor.parallel_test(string_list)
                 res_lists.append((news_id, string, text_vector, unix_time, title))  # 根据上面的具体格式，组成tuple

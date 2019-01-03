@@ -16,14 +16,14 @@ import jieba.posseg as pseg
 
 import data_process
 import dicts
-import log
+import log_util
 
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 from configure import Configure
 
-logging = log.Logger('tokenization_log')
+logging = log_util.Logger('tokenization_log')
 
 stopwords = globals()
 

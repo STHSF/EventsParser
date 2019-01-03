@@ -40,7 +40,7 @@ def timestamp_to_time(time_stamp, style=None):
 
 
 if __name__ == '__main__':
-    # now = int(time.time())
+    now = int(time.time())
     # print now
     print time_to_timestamp("2018-12-5 21:49:7", "%Y-%m-%d %H:%M:%S")
-    print timestamp_to_time(1544017747, "%Y-%m-%d %H:%M:%S")
+    print timestamp_to_time(now, "%Y-%m-%d %H:%M:%S")

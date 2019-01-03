@@ -16,7 +16,7 @@ sys.path.append("..")
 sys.path.append("../")
 sys.path.append("../../")
 import logging.handlers
-import my_util
+import file_util
 import numpy as np
 import multiprocessing
 from gensim.models.word2vec import Word2Vec
@@ -24,7 +24,7 @@ from gensim.models.doc2vec import Doc2Vec, LabeledSentence
 import dataReader
 
 LOG_FILE = '../log/vectors.log'
-my_util.check_path(LOG_FILE)
+file_util.check_path(LOG_FILE)
 handler = logging.handlers.RotatingFileHandler(LOG_FILE, maxBytes=1024 * 1024, backupCount=1)  # 实例化handler
 fmt = '%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s'
 # logging.basicConfig(format='%(asctime)s: %(levelname)s: %(message)s')
