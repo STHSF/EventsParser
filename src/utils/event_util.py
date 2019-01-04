@@ -157,15 +157,20 @@ def units_title(cluster, news_dict, news_title_dict, tfidf_feature, tfidf_transf
     return news_title_dict[topic_node]
 
 
-def load_history_event(event_unit_path=None):
+def load_history_event(event_unit_file=None):
     """
     导入历史事件单元库
-    :param event_unit_path:
+    :param event_unit_file:
     :return:
     """
-    if event_unit_path is None or event_unit_path is 'NULL':
+    if event_unit_file is None or event_unit_file is 'NULL':
+        # 如果没有历史事件文件，则使用第一次
         # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
+        # event_unit_file = conf.event_unit_path
         event_unit_path = conf.event_unit_path
+    else:
+        event_unit_path = conf.event_save_path + event_unit_file
+    print event_unit_path
     logging.logger.info('读取的事件文件名: %s' % event_unit_path)
     event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
     # print "事件库中事件的个数 %s" % len(event_unit_lists)

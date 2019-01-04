@@ -40,14 +40,14 @@ def find_newest_file(save_path):
     """
     _file = []
     lists = os.listdir(save_path)  # 列出目录的下所有文件和文件夹保存到lists
-    # lists.sort(key=lambda fn: os.path.getmtime(save_path + fn))  # 将文件按时间排序
     if len(lists) > 0:
         for i in range(len(lists)):
-            path = os.path.join(save_path, lists[i])
-            if os.path.isfile(path):
+            path = lists[i]
+            # 提取文件，剔除文件夹
+            if os.path.isfile(save_path + path):
                 _file.append(path)
         if len(_file) > 0:
-            _file.sort(key=lambda fn: os.path.getmtime(fn))  # 将文件按时间排序
+            _file.sort(key=lambda fn: os.path.getmtime(save_path + fn))  # 将文件按时间排序
             file_new = _file[-1]  # 获取最新的文件保存到file_new
             # filetime = datetime.datetime.fromtimestamp(os.path.getmtime(file_new))
         else:

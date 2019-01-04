@@ -22,7 +22,7 @@ event_save_path = conf.event_save_path
 
 # 从文件目录中导入最新的更新文件
 file_new = file_util.find_newest_file(event_save_path)
-new_event_units = event_util.load_history_event(file_new)
+new_event_units = event_util.load_history_event(event_save_path + file_new)
 
 # 从数据库中读取最新的新闻的id，title，url和timestamp
 total_data = data_reader.get_all_data()

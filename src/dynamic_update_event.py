@@ -17,6 +17,7 @@ import datetime
 import data_reader
 import pandas as pd
 from tqdm import tqdm
+
 sys.path.append('../')
 sys.path.append('..')
 sys.path.append('../../')
@@ -26,15 +27,25 @@ from configure import conf  # noqa: E402
 from utils import event_util, file_util, tfidf, data_process, dicts, tokenization, time_util  # noqa: E402
 from cluster.singlePass import singlePassCluster  # noqa: E402
 
-
 logging = log_util.Logger('dynamic_update', level='debug')
-
-logging.logger.info('事件库更新时间: {}'.format(time_util.timestamp_to_time(time.time())))
+logging.logger.info('事件库动态更新启动时间: {}'.format(time_util.timestamp_to_time(time.time())))
 # step 1、读取指定日期之后的新闻
-# 读取当前时间段时间
-now = datetime.date.today()
-today_timestamp = int(time.mktime(now.timetuple()))
-today = time_util.timestamp_to_time(today_timestamp)
+# 初次动态更新时，event_save_path下保存的是event
+latest_event_file = file_util.find_newest_file(conf.event_save_path)
+if latest_event_file is None or latest_event_file is 'NULL':
+    # 如果没有动态更新过事件， 则today_timestamp
+    # 读取当前时间段时间
+    now = datetime.date.today()
+    today_timestamp = int(time.mktime(now.timetuple()))
+    today = time_util.timestamp_to_time(today_timestamp)
+    # logging.logger.info('读取新闻的起始时间: {}'.format(today))
+    # ordered_df = data_reader.get_ordered_data(timestamp=today_timestamp)
+else:
+    # 使用事件的最后更新时间作为新闻的起止时间
+    latest_event_time = latest_event_file.split('.')[0]
+    today_timestamp = int(latest_event_time)
+    today = time_util.timestamp_to_time(today_timestamp)
+
 logging.logger.info('读取新闻的起始时间: {}'.format(today))
 ordered_df = data_reader.get_ordered_data(timestamp=today_timestamp)
 
@@ -50,11 +61,11 @@ tfidf_transformer = tfidf.load_tfidf_transformer(tfidf_transformer_path)
 dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
 tk = tokenization.Tokenizer(dp, dict_init, stop_words)
 
-
 # 提取dataFrame中的内容
 ordered_news_lists = data_reader.trans_df_data(ordered_df, tfidf_feature, tfidf_transformer, dp, tk)
 
 # 如果当天没有新闻更新，则直接退出程序，事件单元不需要更新。
+# 文章重复更新，
 if len(ordered_news_lists) <= 0:
     # print '今天没有新新闻，事件单元不更新'
     logging.logger.info('[事件库未更新]: 今天没有新新闻，事件单元不更新')
@@ -65,8 +76,9 @@ if len(ordered_news_lists) <= 0:
 
 # step 2、导入历史事件
 # 如果第一次执行dynamic_update_event文件，则event_save_path
-history_event_file = file_util.find_newest_file(conf.event_save_path)
-history_event_units = event_util.load_history_event(history_event_file)
+# history_event_file = file_util.find_newest_file(conf.event_save_path)
+# history_event_file = conf.event_save_path + latest_event_file
+history_event_units = event_util.load_history_event(latest_event_file)
 # print "[Info] 事件库中事件的个数 %s" % len(history_event_units)
 logging.logger.info("[事件库中事件的个数:] {}".format(len(history_event_units)))
 # for index, event_unit in enumerate(history_event_units):
@@ -133,7 +145,8 @@ for unit in tqdm(new_event_units):
         logging.logger.info("事件 [%s] 是新事件" % unit.event_id)
         # 读取每个事件
         node_df_data = full_df_data.loc[set(unit.node_list)]
-        node_news_lists = data_reader.trans_df_data(node_df_data.reset_index(), tfidf_feature, tfidf_transformer, dp, tk)
+        node_news_lists = data_reader.trans_df_data(node_df_data.reset_index(), tfidf_feature, tfidf_transformer, dp,
+                                                    tk)
         news_list = []
         news_title_list = []
         for i in node_news_lists:
@@ -152,7 +165,6 @@ for unit in tqdm(new_event_units):
         unit.event_tag = 0  # 所有内容更新完成之后将事件表示为0
     else:
         continue
-
 
 # step 5、将更新后的事件单元保存下来
 event_save_name = int(time.time())

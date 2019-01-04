@@ -9,6 +9,7 @@
 将类簇转换成事件单元，并根据类簇中的节点id从文本中提取每个类簇对应的新闻，构成事件单元，然后提取每个事件单元涉及的股票。并且对每个事件单元提取关键词代表每个事件单元。所有的结果打包成pickle文件保存到本地。
 """
 import gc
+import time
 import pickle
 import pandas as pd
 
@@ -106,7 +107,10 @@ logging.logger.info('[事件库中事件的个数]: {}'.format(len(event_unit_li
 
 # 保存事件库
 # event_unit_path = '/Users/li/PycharmProjects/event_parser/src/model/event_units_new.pkl'
-event_unit_path = conf.event_unit_path
+# event_unit_path = conf.event_unit_path
+event_save_name = conf.data_time
+event_unit_path = conf.event_save_path + event_save_name + '.pkl'
+
 with open(event_unit_path, 'wb') as fw:
     # pickle.dump(event_lib, fw)
     pickle.dump(event_unit_lists, fw)

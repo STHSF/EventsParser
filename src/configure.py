@@ -17,6 +17,9 @@ class Configure(object):
     project_path = "/Users/li/PycharmProjects/event_parser/src"
     # project_path = os.getcwd()
 
+    # singlepass_run 和history_event 使用同一个时间段前的新闻，动态更新使用该时间之后的新闻
+    data_time = '1545235200'
+
     # 词典目录
     dic_path = project_path + '/corpus'
     stock_new_path = dic_path + "/stock.csv"
