@@ -75,8 +75,9 @@ def read_full_data(sheet_name):
     读取固定的时间之前的新闻，设定固定时间原因是构建历史事件的时候如果每次读取的数据不一样，会导致训练的向量空间模型，聚类之间的数据混乱。
     :return:
     """
+    order_time = conf.data_time
     # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
-    sql = "SELECT distinct content, id, title, url, unix_time FROM xavier_db.%s where unix_time <='1545235200' ORDER BY unix_time" % sheet_name
+    sql = "SELECT distinct content, id, title, url, unix_time FROM xavier_db.{} where unix_time <={} ORDER BY unix_time".format(sheet_name, order_time)
     result = pd.read_sql(sql, engine_mysql)
     return result
 
@@ -315,7 +316,7 @@ def data_save():
         file_out.write(str(content[0]) + "\t" + str(content[3]) + "\t" + content[1] + "\n")
     file_out.close()
 
-    # # # 方式二、标题和正文保存为同一个新闻
+    # 方式二、标题和正文保存为同一个新闻
     # res_lists = []
     # for i in range(len(df_result)):
     #     title = df_result.iloc[i]['title']
