@@ -13,7 +13,7 @@ sys.path.append('../')
 sys.path.append('../../')
 import re
 import pandas as pd
-from configure import conf
+from src.configure import conf
 
 dic_path = conf.dic_path
 stock_new_path = dic_path + "/stock.csv"

@@ -82,12 +82,16 @@ def read_full_data(sheet_name):
     return result
 
 
-def read_all_data(sheet_name):
+def read_all_data(sheet_name, sql=None):
     """
+
+    :param sheet_name:
+    :param sql:
     :return:
     """
-    # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
-    sql = "SELECT distinct content, id, title, url, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
+    if sql is None:
+        # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
+        sql = "SELECT distinct content, id, title, url, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
     result = pd.read_sql(sql, engine_mysql)
     return result
 
@@ -118,7 +122,7 @@ for s in sentences:
 
 def get_data():
     """
-    获取三张表中的所有新闻
+    获取三张表中的所有新闻(固定时间之前的数据)
     :return:
     """
     sql_list = ["ths_news", "ycj_news", "xueqiu_news"]
@@ -132,12 +136,13 @@ def get_data():
     return result
 
 
-def get_all_data():
+def get_all_data(sql_list=None):
     """
     获取三张表中的所有新闻
     :return:
     """
-    sql_list = ["ths_news", "ycj_news", "xueqiu_news"]
+    if sql_list is None:
+        sql_list = ["ths_news", "ycj_news", "xueqiu_news"]
     df_set = []
     # 将所有新闻合并
     for index in sql_list:

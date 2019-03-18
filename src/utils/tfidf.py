@@ -18,7 +18,7 @@ sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 sys.path.append('/Users/li/PycharmProjects/event_parser/src')
-from configure import Configure
+from src.configure import Configure
 
 conf = Configure()
 

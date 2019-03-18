@@ -10,14 +10,12 @@
 
 
 import sys
-import pickle
 import numpy as np
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 from configure import conf
 from utils import tfidf, log_util
-from cluster.singlePass import singlePassCluster
 
 logging = log_util.Logger('singlepass_test')
 # corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"

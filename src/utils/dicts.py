@@ -20,7 +20,7 @@ sys.path.append('../')
 sys.path.append('../../')
 sys.path.append('../../../')
 try:
-    from configure import conf
+    from src.configure import conf
 except Exception:
     raise
 reload(sys)

@@ -25,7 +25,7 @@ sys.path.append('../../')
 from utils import log_util  # noqa: E402
 from configure import conf  # noqa: E402
 from utils import event_util, file_util, tfidf, data_process, dicts, tokenization, time_util  # noqa: E402
-from cluster.singlePass import singlePassCluster  # noqa: E402
+from src.algorithm.cluster.singlePass import singlePassCluster
 
 logging = log_util.Logger('dynamic_update', level='debug')
 logging.logger.info('事件库动态更新启动时间: {}'.format(time_util.timestamp_to_time(time.time())))

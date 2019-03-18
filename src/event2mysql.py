@@ -13,8 +13,8 @@ import json
 import pandas as pd
 import data_reader
 from configure import conf
-from utils import file_util, event_util, log_util
-from utils import data_source
+from src.utils import file_util, event_util, log_util
+from src.utils import data_source
 
 logging = log_util.Logger('event2mysql')
 event_save_path = conf.event_save_path

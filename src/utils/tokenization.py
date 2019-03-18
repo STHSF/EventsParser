@@ -21,7 +21,7 @@ import log_util
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
-from configure import Configure
+from src.configure import Configure
 
 logging = log_util.Logger('tokenization_log')
 
@@ -32,6 +32,7 @@ def load_stop_words():
     # 停用词库准备, 构建停用词表
     conf = Configure()
     stop_words_path = conf.stop_words_path
+    words_count = dict()
     try:
         stop_word = codecs.open(stop_words_path, 'r', encoding='utf8').readlines()
         stop_words = [w.strip() for w in stop_word]
@@ -43,12 +44,19 @@ def load_stop_words():
 
 class Tokenizer(object):
     def __init__(self, data_process, dict_init, stop_words):
+        dicts.init()
         self.data_precessing = data_process
         self.dicts = dict_init  # 初始化人工词典
         # 按照词性去停用词
         # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
         self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
         self.stopwords = stop_words
+        self.words_count = {}
+
+    def remove_stopwords(self):
+        # 使用映射来判断当前元素是否在字典中，速度会比list匹配快
+        # [pandas apply 函数 多进程实现](https://blog.csdn.net/Jerr__y/article/details/71425298?utm_source=blogxgwz1#commentBox)
+        pass
 
     def token(self, text):
         """
@@ -56,8 +64,13 @@ class Tokenizer(object):
         :param text:
         :return:
         """
+        if text is None:
+            return None
         result = []
         words = pseg.cut(self.data_precessing.no_remove(text))
+
+        # for word, flag in words:
+        #     result.append(word)
 
         for word, flag in words:
             if flag not in self.stop_flag and word not in self.stopwords and len(word) >= 2:

@@ -23,8 +23,8 @@ import tfidf
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
-from configure import conf
-from cluster.singlePass import singlePassCluster
+from src.configure import conf
+from src.algorithm.cluster.singlePass import singlePassCluster
 
 # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_index.txt"
 # corpus_train = conf.corpus_train_path
@@ -202,7 +202,8 @@ class EventUnit(singlePassCluster.ClusterUnit):
     """
 
     def __init__(self):
-        singlePassCluster.ClusterUnit.__init__(self)
+        # singlePassCluster.ClusterUnit.__init__(self)
+        super(singlePassCluster.ClusterUnit, self).__init__(self)
         self.event_id = ''
         self.topic_title = " "
         self.start_time = ''  # 起始时间

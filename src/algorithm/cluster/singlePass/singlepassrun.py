@@ -12,15 +12,15 @@ sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 import pickle
-from configure import conf
-from utils import tfidf
-from cluster.singlePass import singlePassCluster
+from src.configure import conf
+from src.utils import tfidf
+from src.algorithm.cluster.singlePass import singlePassCluster
 
 # corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"
 corpus_train_path = conf.corpus_train_path
 # tfidf_train, word_dict = tfidf_vector(corpus_train)
 # tfidf_train, word_dict = tfidf.tfidf_vector(corpus_train)
-tfidf_train_dict, tfidf_train_tuple, word_dict = tfidf.tfidf_vector(corpus_train_path)
+tfidf_train_dict, tfidf_train_tuple, word_dict = tfidf.tfidf_vectorizer(corpus_train_path)
 # print np.shape(tfidf_train.toarray())
 # print tfidf_train.toarray()[1]
 

@@ -11,7 +11,7 @@
 import sys
 sys.path.append("../")
 import log_util
-from configure import Configure
+from src.configure import Configure
 from pyhanlp import *
 from jieba import analyse
 from tokenization import Tokenizer

@@ -11,9 +11,9 @@ import sys
 sys.path.append("../")
 
 from pyhanlp import *
-from dataReader import get_full_data
+from src.data_reader import read_full_data
 
-news = get_full_data()
+news = read_full_data()
 # print news['title']
 # print news['content']
 
