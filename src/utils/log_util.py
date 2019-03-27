@@ -9,7 +9,7 @@
 """
 
 import logging
-import file_util
+from src.utils import file_util
 from logging import handlers
 
 

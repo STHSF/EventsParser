@@ -5,12 +5,16 @@
     ├── dynamic_update.py # 事件实时更新模块
     ├── history_event.py  # 构建历史事件模块
     ├── load_history_event.py  # load历史事件代码
-    ├── cluster  # 聚类模块
-    │   ├── Kmeans  # kmeans聚类
-    │   ├── LDA  # LDA主题
-    │   └── singlePass  # singlepass聚类
-    │       ├── singlePassCluster.py
-    │       └── singlepassrun.py
+    ├── algorithm
+    │   └── cluster # 聚类模块
+    │       ├── Kmeans # kmeans聚类
+    │       │   └── k_means_cluster.py
+    │       ├── LDA  # kmeans聚类
+    │       │   └── lda_cluster.py
+    │       └── singlePass   # singlepass聚类
+    │           ├── singlePassCluster.py
+    │           └── singlepassrun.py
+    │
     ├── corpus
     ├── data  # 预处理的数据
     ├── log  # 分词,关键词提取等日志文件
@@ -33,7 +37,31 @@
         ├── time_util.py  # 时间工具类
         ├── tokenization.py  # 分词模块
         └── vector.py  # 空间向量模块
-        
-## step 1 VSM训练
-## step 2 singlePass聚类
-## step 3 历史事件
+# 操作手册
+## step、1 数据准备
+- 涉及文件：data_reader.py
+- 从数据库中读取指定日期前的所有新闻，然后整理成两部分数据。
+- 第一部分数据新闻的标题，正文组合在一起，然后分词去停等预处理，保存为新闻ID，发布时间， 分词后的正文；[news_id, timestamp, contents]
+- 第二部分提取新闻的标题，保存新闻的新闻ID， 发布时间， 新闻标题；[news_id, timestamp, title]
+
+## step、2 VSM训练
+- 涉及文件：/utils/tfidf.py
+- 构建TFIDF空间向量模型，训练预料为step、1中第一部分保存的内容。
+- 空间向量模型保存。
+
+## step、3 singlePass聚类
+- 涉及文件：singlepass_run.py
+- 对step、1中第一部分生成的数据进行singlePass聚类
+
+## step、4 历史事件准备
+- 涉及文件：history_event.py
+- 根据step3聚类的结果，构建事件库， 包括添加事件标题，筛选事件涉及的股票，提取事件关键词等，对事件的有效性进行判断。
+
+## step、5 事件更新
+- 涉及文件：dynamic_update.py
+- 当数据库中出现新的新闻之后，将新的新闻和历史事件进行合并，若合并不成功生成新的事件。
+
+
+## step、6 数据写入数据库
+- 涉及文件：event2mysql.py
+- 事件生成之后，根据项目需求整理成规定的格式，存入数据库，目前保存的是[事件ID，事件标题， 事件包含的股票， 事件包含的新闻], [股票, 股票涉及的事件]两张表

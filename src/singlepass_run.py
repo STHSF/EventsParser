@@ -14,8 +14,8 @@ import pickle
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
-from configure import conf
-from utils import tfidf, log_util
+from src.configure import conf
+from src.utils import tfidf, log_util
 from src.algorithm.cluster.singlePass import singlePassCluster
 
 logging = log_util.Logger('singlepass_run')

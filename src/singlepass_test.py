@@ -14,8 +14,8 @@ import numpy as np
 sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
-from configure import conf
-from utils import tfidf, log_util
+from src.configure import conf
+from src.utils import tfidf, log_util
 
 logging = log_util.Logger('singlepass_test')
 # corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"
@@ -49,10 +49,10 @@ tfidf_train_dict, tfidf_train_tuple2, word_dict = tfidf.tfidf_vectorizer(corpus_
 
 # for i in tfidf_train_tuple[0][1]:
 #     print i
-print np.nonzero(tfidf_train_tuple[0][1])
-print np.nonzero(tfidf_train_tuple2[0][1])
+print(np.nonzero(tfidf_train_tuple[0][1]))
+print(np.nonzero(tfidf_train_tuple2[0][1]))
 
-print tfidf_train_tuple[0][1] == np.nonzero(tfidf_train_tuple2[0][1])
+print(tfidf_train_tuple[0][1] == np.nonzero(tfidf_train_tuple2[0][1]))
 
 # for i in dict(tfidf_train_tuple).items():
 #     print i[0]

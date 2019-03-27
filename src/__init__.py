@@ -17,12 +17,12 @@ sys.path.append('../../')
 # kk = ['a', 'b']
 # hj = []
 # for j in kk:
-#     aa = (df.loc[j].values.tolist())
-#     if len(aa) > 1:
-#         for k in range(len(aa)):
-#             hj.extend(aa[k])
+#     tmp_res = (df.loc[j].values.tolist())
+#     if len(tmp_res) > 1:
+#         for k in range(len(tmp_res)):
+#             hj.extend(tmp_res[k])
 #     else:
-#         hj.extend(aa)
+#         hj.extend(tmp_res)
 # print hj
 
 
@@ -77,4 +77,3 @@ sys.path.append('../../')
 # history_event_file = file_util.find_newest_file(conf.event_save_path)
 #
 # print history_event_file
-

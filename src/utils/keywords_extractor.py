@@ -10,10 +10,7 @@
 """
 import numpy as np
 
-import data_process
-import dicts
-import log_util
-import tokenization
+from src.utils import data_process, dicts, log_util, tokenization
 
 logging = log_util.Logger('keywordsExtractor_log')
 
@@ -44,7 +41,7 @@ class TextRank(object):
         """
         # 使用多进程的时候需要修改一下
         dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
-        tk = tokenization.Tokenizer(dp, dict_init, stop_words)
+        tk = tokenization.Tokenizer(dp, stop_words)
         self.word_list = tk.token(sentence)
         # dicts.init()
         # jieba.load_userdict('user_dict.txt')
@@ -170,7 +167,7 @@ def d_test():
     #     u"严格地进行水资源论证和取水许可的批准。"
 
     dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
-    tk = tokenization.Tokenizer(dp, dict_init, stop_words)
+    tk = tokenization.Tokenizer(dp, stop_words)
     s_list = tk.token(s)
     # 根据句子的长度，动态划分关键词的个数
     # top_k = int(len(s_list) * 0.1)
@@ -180,10 +177,10 @@ def d_test():
     res = text_rank.run(s_list)
     logging.logger.info("提取的%s个关键词: " % len(res))
     if text_rank.withWeight:
-        print ",".join(item[0] for item in res)
-        print ",".join(str(item[1]) for item in res)
+        print(",".join(item[0] for item in res))
+        print(",".join(str(item[1]) for item in res))
     else:
-        print ",".join(str(item) for item in res)
+        print(",".join(str(item) for item in res))
 
 
 def parallel_test(text):
@@ -222,7 +219,7 @@ def multi_extract_test():
     dict_init = dicts.init()
     stop_words = tokenization.load_stop_words()
     # 分词
-    tk = tokenization.Tokenizer(dp, dict_init, stop_words)
+    tk = tokenization.Tokenizer(dp, stop_words)
     s_list = tk.token(s)
     t0 = time.time()
     for i in range(10000):

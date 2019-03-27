@@ -18,9 +18,9 @@ sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 
-from configure import conf
-from utils import event_util, log_util, tfidf
-from data_reader import import_news, import_title, get_event_news
+from src.configure import conf
+from src.utils import event_util, log_util, tfidf
+from src.data_reader import import_news, import_title, get_event_news
 
 # import logger
 logging = log_util.Logger('history_event')
@@ -31,7 +31,7 @@ try:
     with open(clustering_path, 'rb') as fr:
         clustering = pickle.load(fr)
         logging.logger.info('load cluster units from: {}'.format(clustering_path))
-except IOError, e:
+except IOError as err:
     logging.logger.error('cluster units pickle file load failed: {} and program stopped'.format(clustering_path))
     sys.exit()
 # clustering.print_result()

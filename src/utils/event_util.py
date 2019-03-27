@@ -15,10 +15,7 @@ from collections import Counter
 
 import numpy as np
 
-import log_util
-import data_process
-import keywords_extractor
-import tfidf
+from src.utils import log_util, data_process, keywords_extractor, tfidf
 
 sys.path.append('..')
 sys.path.append('../')
@@ -36,7 +33,7 @@ logging = log_util.Logger('event_util', level='info')
 
 def events_list(news_title_list):
     for news in news_title_list:
-        print news
+        print(news)
     pass
 
 
@@ -52,8 +49,8 @@ def events_effectiveness(cluster_list, news_dict, tfidf_feature, tfidf_transform
     effectiveness_events = []
     non_effectiveness_events = []
     for cluster_index, cluster in enumerate(cluster_list):  # 遍历每一个事件类簇
-        print "[cluster]: %s" % cluster_index  # 簇的序号
-        print "[node_list]: %s" % cluster.node_list  # 该簇的节点列表
+        print("[cluster]: %s" % cluster_index)  # 簇的序号
+        print("[node_list]: %s" % cluster.node_list)  # 该簇的节点列表
         centroid = cluster.centroid
         text_vectors_similarly = []
         for node in cluster.node_list:  # 提取每个事件类簇中的结点，并且计算每个节点的文本向量空间
@@ -63,11 +60,11 @@ def events_effectiveness(cluster_list, news_dict, tfidf_feature, tfidf_transform
             text_vector = tfidf.load_tfidf_vectorizer([news], tfidf_feature, tfidf_transformer)
             # 计算每篇文章与类簇中心的相似度
             similarly = singlePassCluster.cosine_distance(text_vector, centroid)
-            print "[similarly] %s " % similarly
+            print("[similarly] %s " % similarly)
             text_vectors_similarly.append(similarly)
         # 计算每个类簇中文章方差
         variance = np.var(text_vectors_similarly)
-        print "[variance]: %s" % variance
+        print("[variance]: %s" % variance)
 
         # 如果方差大于某个阈值，则为无效事件
         # 将有效事件和无效事件分开
@@ -77,8 +74,8 @@ def events_effectiveness(cluster_list, news_dict, tfidf_feature, tfidf_transform
         else:
             effectiveness_events.append(cluster)
 
-    print "[length of effectiveness_events]: %s" % len(effectiveness_events)
-    print "[length of non_effectiveness_events]: %s" % len(effectiveness_events)
+    print("[length of effectiveness_events]: %s" % len(effectiveness_events))
+    print("[length of non_effectiveness_events]: %s" % len(effectiveness_events))
     return effectiveness_events, non_effectiveness_events
 
 
@@ -170,9 +167,10 @@ def load_history_event(event_unit_file=None):
         event_unit_path = conf.event_unit_path
     else:
         event_unit_path = conf.event_save_path + event_unit_file
-    print event_unit_path
+    print(event_unit_path)
     logging.logger.info('读取的事件文件名: %s' % event_unit_path)
-    event_unit_lists = pickle.load(open(event_unit_path, 'rb'))
+    # [解决python3读取Python2存储的pickle文件](https://blog.csdn.net/accumulate_zhang/article/details/78597823)
+    event_unit_lists = pickle.load(open(event_unit_path, 'rb'), encoding='iso-8859-1')
     # print "事件库中事件的个数 %s" % len(event_unit_lists)
     # for index, event_unit in enumerate(event_unit_lists):
     #     print "cluster: %s" % index  # 簇的序号
@@ -202,8 +200,7 @@ class EventUnit(singlePassCluster.ClusterUnit):
     """
 
     def __init__(self):
-        # singlePassCluster.ClusterUnit.__init__(self)
-        super(singlePassCluster.ClusterUnit, self).__init__(self)
+        super(EventUnit, self).__init__()
         self.event_id = ''
         self.topic_title = " "
         self.start_time = ''  # 起始时间
@@ -297,13 +294,13 @@ class EventUnit(singlePassCluster.ClusterUnit):
 
         # 事件表示,事件要素抽取
         # 事件包含的新闻正文
-        print '[事件包含的新闻正文]:'
+        print('[事件包含的新闻正文]:')
         for news in news_list:
-            print news
+            print(news)
         # 事件包含的新闻标题
-        print '[事件包含的新闻标题]:'
+        print('[事件包含的新闻标题]:')
         for news_title in news_title_list:
-            print news_title
+            print(news_title)
         self.stocks = stock_set
         self.keywords = event_keywords
 
@@ -356,7 +353,8 @@ class EventUnit(singlePassCluster.ClusterUnit):
 
 class EventLib(EventUnit):
     def __init__(self):
-        EventUnit.__init__(self)
+        super(EventLib).__init__()
+        # EventUnit.__init__(self)
         self.event_unit_list = []
 
     def set_effectiveness(self, flag):

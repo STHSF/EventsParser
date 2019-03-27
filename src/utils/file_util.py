@@ -60,5 +60,5 @@ def find_newest_file(save_path):
 
 
 if __name__ == '__main__':
-    print find_newest_file("/Users/li/PycharmProjects/event_parser/src/model/event_model/")
+    print(find_newest_file("/Users/li/PycharmProjects/event_parser/src/model/event_model/"))
     # print list_all_files("/Users/li/PycharmProjects/event_parser/src/log/")

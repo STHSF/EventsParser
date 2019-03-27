@@ -131,18 +131,18 @@ class OnePassCluster:
     def print_result(self, label_dict=None):
         # 打印出聚类结果
         # label_dict:节点对应的标签字典
-        print "*******  one-pass cluster result  ***********"
+        print("*******  one-pass cluster result  ***********")
         for index, cluster in enumerate(self.cluster_list):
-            print "cluster:%s" % index  # 簇的序号
-            print "簇心: %s" % cluster.centroid  # 簇心
-            print cluster.node_list  # 该簇的节点列表
+            print("cluster:%s" % index)  # 簇的序号
+            print("簇心: %s" % cluster.centroid)  # 簇心
+            print(cluster.node_list)  # 该簇的节点列表
             if label_dict is not None:
-                print " ".join([label_dict[n] for n in cluster.node_list])  # 若有提供标签字典，则输出该簇的标签
-            print "node num: %s" % cluster.node_num
-            print "-------------"
-        print "the number of nodes %s" % len(self.vectors)
-        print "the number of cluster %s" % self.cluster_num
-        print "spend time %.9fs" % (self.spend_time / 1000)
+                print(" ".join([label_dict[n] for n in cluster.node_list]))  # 若有提供标签字典，则输出该簇的标签
+            print("node num: %s" % cluster.node_num)
+            print("-------------")
+        print("the number of nodes %s" % len(self.vectors))
+        print("the number of cluster %s" % self.cluster_num)
+        print("spend time %.9fs" % (self.spend_time / 1000))
 
 
 if __name__ == '__main__':

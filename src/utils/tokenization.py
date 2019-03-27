@@ -14,9 +14,7 @@ import sys
 
 import jieba.posseg as pseg
 
-import data_process
-import dicts
-import log_util
+from src.utils import data_process, dicts, log_util
 
 sys.path.append('..')
 sys.path.append('../')
@@ -43,19 +41,19 @@ def load_stop_words():
 
 
 class Tokenizer(object):
-    def __init__(self, data_process, dict_init, stop_words):
-        dicts.init()
+    def __init__(self, data_process, stop_words):
+        dicts.init()  # 初始化人工词典
         self.data_precessing = data_process
-        self.dicts = dict_init  # 初始化人工词典
+        # self.dicts = dict_init
         # 按照词性去停用词
         # 去停用词的词性列表，包括[标点符号、连词、助词、副词、介词、时语素、‘的’, 数词, 方位词, 代词, 形容词, 动词],暂时没有使用，原因是添加的新词没有添加词性，所以新词词性有问题。
-        self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
+        self.stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'apply_func', 'r']
         self.stopwords = stop_words
         self.words_count = {}
 
     def remove_stopwords(self):
         # 使用映射来判断当前元素是否在字典中，速度会比list匹配快
-        # [pandas apply 函数 多进程实现](https://blog.csdn.net/Jerr__y/article/details/71425298?utm_source=blogxgwz1#commentBox)
+        # [pandas apply 函数 多进程实现](https://blog.csdn.net/Jerry/article/details/71425298?utm_source=blogxgwz1#commentBox)
         pass
 
     def token(self, text):
@@ -82,10 +80,10 @@ def d_test():
     data_processing = data_process.DataPressing()
     dict_init = dicts.init()
     stop_words = load_stop_words()
-    tk = Tokenizer(data_processing, dict_init, stop_words)
+    tk = Tokenizer(data_processing, stop_words)
     # print(["大智慧".decode("utf8")])
-    print(["【今日题材】".decode("utf8")])
-    print(["关注同".decode("utf-8")])
+    # print(["【今日题材】".decode("utf8")])
+    # print(["关注同".decode("utf-8")])
 
     # 剔除杂质词
     print(data_processing.no_remove("【今日题材】[AI决策]大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！科创板也上市了，还是注册制的, 关注同花顺财经（ths58）， 获取更多机会。"))
@@ -100,8 +98,8 @@ def d_test():
         print(i)
 
 
-def paralize_test(text, data_process, dict_init, stop_words):
-    t = Tokenizer(data_process, dict_init, stop_words)
+def paralize_test(text, data_process, stop_words):
+    t = Tokenizer(data_process, stop_words)
     restult = t.token(text)
     return restult
 
@@ -126,7 +124,7 @@ def multi_token_test():
     t0 = time.time()
     res1_l = []
     for i in range(10000):
-        res1 = paralize_test(s, dataprocess, dict_init, stop_words)
+        res1 = paralize_test(s, dataprocess, stop_words)
         res1_l.append(res1)
     print("串行处理花费时间{t}s".format(t=time.time() - t0))
 
@@ -135,7 +133,7 @@ def multi_token_test():
     res2_l = []
     pool = Pool(processes=int(mp.cpu_count() * 0.8))
     for i in range(10000):
-        res = pool.apply_async(paralize_test, ((s, dataprocess, dict_init, stop_words),))
+        res = pool.apply_async(paralize_test, ((s, dataprocess, stop_words),))
         res2_l.append(res)
     # 获取数据
     # for k in res2_l:

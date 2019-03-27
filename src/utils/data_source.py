@@ -28,7 +28,12 @@ __DNS = {
     'XAVIER_DB': {
         URL: 'mysql+mysqlconnector://root:t2R7P7@10.15.5.86:3306/xavier_db',
         DTYPE: SQLALCHEMY
+    },
+    'XAVIER_SQLITE': {
+        URL: 'sqlite://///Users/li/workshop/dataset/database/xueqiu/discuss.db',
+        DTYPE: SQLALCHEMY
     }
+
 }
 
 

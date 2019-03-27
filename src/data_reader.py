@@ -12,16 +12,16 @@ sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 import time
-import gensim
+# import gensim
 import pandas as pd
 from tqdm import tqdm
-from configure import conf
-from utils.data_source import GetDataEngine
-from utils import tokenization, data_process, dicts
-from utils.tokenization import load_stop_words
-from utils import keywords_extractor, time_util, tfidf, log_util
+from src.configure import conf
+from src.utils.data_source import GetDataEngine
+from src.utils import tokenization, data_process, dicts
+from src.utils.tokenization import load_stop_words
+from src.utils import keywords_extractor, time_util, tfidf, log_util
 
-TaggededDocument = gensim.models.doc2vec.TaggedDocument
+# TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
 engine_mysql = GetDataEngine("XAVIER")
 engine_sqlserver = GetDataEngine("DNDS")
@@ -29,29 +29,59 @@ logging = log_util.Logger('data_reader_log')
 global _stopwords
 
 
+class DataReader(object):
+
+    def get_news_data(self, data_path=None):
+        if data_path is None:
+            data_path = '/Users/li/PycharmProjects/event_parser/src/text.txt'
+        with open(data_path, 'r') as news:
+            data = news.readlines()
+        train_data = []
+        for i, text in enumerate(data):
+            # text_list = text.decode("utf8").split(",")
+            text_list = text.split(",")
+            train_data.append(text_list)
+        return train_data
+    pass
+
+
 def list_all_flies(root_path):
     # 遍历文件夹下的所有文件，包含子目录里面的文件
     pass
 
 
-def get_news_data():
-    data_path = '/Users/li/PycharmProjects/event_parser/src/text.txt'
+def get_news_data(data_path=None):
+    """
+    读取相关的文件
+    :param data_path:
+    :return:
+    """
+
+    if data_path is None:
+        data_path = '/Users/li/PycharmProjects/event_parser/src/data/text.txt'
     with open(data_path, 'r') as news:
-        data = news.readlines()
+         data_list = news.readlines()
     train_data = []
-    for i, text in enumerate(data):
-        text_list = text.decode("utf8").split(",")
+    for i, text in enumerate(data_list):
+        # text_list = text.decode("utf8").split(",")
+        text_list = text.split(",")
         train_data.append(text_list)
     return train_data
 
 
 def get_data_sets():
-    with open("/Users/li/PycharmProjects/event_parser/src/corpus/体育", 'r') as cf:
+    """
+    获取指定的数据
+    :return:
+    """
+    data_path = "/Users/li/PycharmProjects/event_parser/src/corpus/体育"
+    with open(data_path, 'r') as cf:
         docs = cf.readlines()
     x_train = []
     # y = np.concatenate(np.ones(len(docs)))
     for i, text in enumerate(docs):
-        word_list = text.decode("utf8").split(' ')
+        # word_list = text.decode("utf8").split(' ')
+        word_list = text.split(' ')
         # l = len(word_list)
         # word_list[l - 1] = word_list[l - 1].strip()
         # document = TaggededDocument(word_list, tags=[i])

@@ -45,8 +45,8 @@ def tfidf_vectorizer(corpus_path):
             words = line[2]
             category_train.append(category)
             corpus_train.append(words)
-    print "build train-corpus done!!"
-    print "corpus_train.shape %s" % np.shape(corpus_train)
+    print("build train-corpus done!!")
+    print("corpus_train.shape %s" % np.shape(corpus_train))
     # replace 必须加，保存训练集的特征
     count_vectorizer = CountVectorizer(decode_error="replace")
     # count_vectorizer = CountVectorizer(max_df=0.4, min_df=0.01, decode_error="replace")
@@ -55,7 +55,7 @@ def tfidf_vectorizer(corpus_path):
     word_dict = {}
     for index, word in enumerate(count_vectorizer.get_feature_names()):
         word_dict[index] = word
-    print "The VSM shape of train is" + repr(counts_train.shape)
+    print("The VSM shape of train is" + repr(counts_train.shape))
 
     tfidftransformer = TfidfTransformer()
     # 注意在训练的时候必须用vectorizer.fit_transform、tfidftransformer.fit_transform
@@ -167,7 +167,7 @@ def tfidf_vector_test(corpus_path):
             category = line[0]
             target_train.append(category)
             corpus_train.append(words)
-    print "build train-corpus done!!"
+    print("build train-corpus done!!")
     count_v1 = CountVectorizer(max_df=0.4, min_df=0.01)
     # count_v1 = CountVectorizer()
     counts_train = count_v1.fit_transform(corpus_train)
@@ -176,7 +176,7 @@ def tfidf_vector_test(corpus_path):
     for index, word in enumerate(count_v1.get_feature_names()):
         word_dict[index] = word
 
-    print "the shape of train is " + repr(counts_train.shape)
+    print("the shape of train is " + repr(counts_train.shape))
     tfidftransformer = TfidfTransformer()
     tfidf_train = tfidftransformer.fit(counts_train).transform(counts_train)
     return tfidf_train, word_dict
@@ -186,9 +186,9 @@ if __name__ == '__main__':
     # corpus_train = "/Users/li/PycharmProjects/event_parser/src/text_full_full.txt"
     corpus_train = conf.corpus_train_path
     tfidf_train_dic, tfidf_train_tuple, word_dict = tfidf_vectorizer(corpus_train)
-    print np.nonzero(tfidf_train_dic["111755669"])
-    print np.shape(tfidf_train_dic['111755669'])
-    print type(tfidf_train_dic['111755669'])
+    print(np.nonzero(tfidf_train_dic["111755669"]))
+    print(np.shape(tfidf_train_dic['111755669']))
+    print(type(tfidf_train_dic['111755669']))
     # print np.shape(tfidf_train.toarray()[0])
     # print np.nonzero(tfidf_train.toarray()[0])
     # for i in tfidf_train.toarray()[0]:

@@ -35,8 +35,8 @@ class DataPressing(object):
         :param text:
         :return:
         """
-        result = re.sub(self.pattern_word, "", text.decode('utf8'))
-        # result = re.sub(self.pattern_word, "", text)
+        # result = re.sub(self.pattern_word, "", text.decode('utf8'))
+        result = re.sub(self.pattern_word, "", text)
         return result
 
     def useless_contain(self, content):
@@ -44,7 +44,9 @@ class DataPressing(object):
         判断content中是否包含某些字符
         :return:
         """
-        match_obj = re.search(self.pattern_text, content.decode('utf8'))
+        # py2使用
+        # match_obj = re.search(self.pattern_text, content.decode('utf8'))
+        match_obj = re.search(self.pattern_text, content)
         if match_obj:
             return True
         else:
@@ -77,7 +79,8 @@ class DataPressing(object):
         stock_num = []
         for item in set(content_list):
             stock = []
-            item = item.decode('utf-8')
+            # py2 使用
+            # item = item.decode('utf-8')
             if item in stock_df.index.tolist():
                 res = stock_df.loc[item].values.tolist()
                 if len(res) > 1:

@@ -4,9 +4,11 @@
 """
 @version: ??
 @author: li
-@file: xueqiu_discuss.py
+@file: xueqiu_discuss_parser_bak.py
 @time: 2019-03-05 10:31
-对大V评论进行分析，提取大V评论中的股票实体，并且整合成股票ID:{评论大VID, 评论时间, 评论ID, 评论内容}
+对大V评论进行分析，提取大V评论中的股票实体，并且整合成股票ID:{评论ID, 评论大VID, 评论时间, 评论内容}
+计算时间粒度，一天
+
 """
 from joblib import Parallel, delayed
 import multiprocessing
@@ -55,12 +57,12 @@ _, stocks_df = load_stock_data()
 data_process = DataPressing()
 dict_init = dicts.init()
 stop_words = load_stop_words()
-tokenizer = Tokenizer(data_process, dict_init, stop_words)
+tokenizer = Tokenizer(data_process, stop_words)
 
 # 读取需要处理的数据，从数据库中以DataFrame的格式读取。
 discuss_df = read_all_data(sheet_name, sql)
-discuss_df = discuss_df.head()
-print('discuss_df %s' % discuss_df['mood'])
+# discuss_df = discuss_df.head()
+# print('discuss_df %s' % discuss_df['mood'])
 
 # 整理股票代码
 stocks_df = stocks_df.set_index('SESNAME')
@@ -123,7 +125,7 @@ def kk_test():
     """
     text = "大智慧的股票真烂，中美贸易战打得好，中美贸易摩擦擦出爱情火花！中信证券也上市了，还是注册制的, 中信建投也不错。"
     cut_res = cut_process(text)
-    print('aa %s' % cut_res)
+    print('tmp_res %s' % cut_res)
 
     test_df = pd.DataFrame({'text': [text, text, text, text, text]})
     # 非多进程下直接提取股票实体

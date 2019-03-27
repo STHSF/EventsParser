@@ -13,7 +13,7 @@ jieba 字典初始化模块
 import jieba
 import codecs
 import pandas as pd
-import log_util
+from src.utils import log_util
 
 import sys
 sys.path.append('../')
@@ -23,8 +23,6 @@ try:
     from src.configure import conf
 except Exception:
     raise
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 deg_dict = {}  # 程度副词
 senti_dict = {}  # 情感词
@@ -40,6 +38,31 @@ jg_dict = []  # 机构名
 stock_df = []
 
 logging = log_util.Logger('dict_log')
+
+
+class DictInit(object):
+    pass
+
+
+def load_stock_data():
+    dic_path = conf.dic_path
+    st_path = dic_path + "/stock_words.txt"
+    st_new_path = dic_path + "/stock.csv"
+    for st in open(st_path):
+        # st = st.decode("utf8")
+        code1, st_code = st.split("\t")
+        code, stock = st_code.split(",")
+        stock_code_dict.append(code.strip("\n"))
+        stock_dict.append(stock.strip("\n"))
+
+    stocks_df = pd.read_csv(st_new_path, encoding='utf-8')
+    # stock_df.append(stocks_df.set_index('SESNAME'))
+    for index, row in stocks_df.iterrows():
+        stock_dict.append(row.SESNAME)
+        stock_dict.append(row.SYMBOL)
+    # 整理股票代码
+    stocks_df = stocks_df.set_index('SESNAME')
+    return stock_dict, stocks_df
 
 
 def init():
@@ -77,7 +100,8 @@ def init():
             word_add.add(temp[0])
 
     for s in open(s_path):
-        temp = s.decode("utf-8").split(" ")
+        # temp = s.decode("utf-8").split(" ")
+        temp = s.split(" ")
         senti_dict[temp[0]] = float(temp[1])
         word_add.add(temp[0])
 
@@ -87,7 +111,7 @@ def init():
         word_add.add(temp[0])
 
     for f in open(f_path):
-        f = f.decode("utf-8-sig")
+        # f = f.decode("utf-8-sig")
         fou_dict.append(f.strip("\n"))
         word_add.add(f.strip("\n"))
 
@@ -104,7 +128,7 @@ def init():
         word_add.add(a.strip("\n"))
 
     for st in open(st_path):
-        st = st.decode("utf8")
+        # st = st.decode("utf8")
         code1, st_code = st.split("\t")
         code, stock = st_code.split(",")
         stock_code_dict.append(code.strip("\n"))
@@ -117,18 +141,18 @@ def init():
         stock_dict.append(row.SESNAME)
 
     for z1 in open(zhi_ne_path):
-        z1 = z1.decode("utf8")
+        # z1 = z1.decode("utf8")
         new_dict.append(z1.strip("\n"))
         word_add.add(z1.strip("\n"))
 
     for z2 in open(zhi_po_path):
-        z2 = z2.decode("utf8")
+        # z2 = z2.decode("utf8")
         z2_data = z2.strip("\n")
         new_dict.append(z2_data)
         word_add.add(z2_data)
 
     for jg in open(jg_path):
-        jg = jg.decode("utf8")
+        # jg = jg.decode("utf8")
         jg_data = jg.split("\t")[0].strip("\n")
         new_dict.append(jg_data)
         word_add.add(jg_data)
@@ -140,10 +164,10 @@ def init():
         code, stock = st_code.split(",")
         stock_dict.append(code + ' ' + '5' + ' ' + 'n')
         stock_dict.append(stock.strip('\n').decode('utf-8') + ' ' + '5' + ' ' + 'n')
-    f = codecs.open(n_path, 'w', 'utf-8')
+    apply_func = codecs.open(n_path, 'w', 'utf-8')
     for i in stock_dict:
-        f.write(i + '\n')  # \n为换行符
-    f.close()
+        apply_func.write(i + '\n')  # \n为换行符
+    apply_func.close()
     '''
     # 添加用户自定义字典
     jieba.load_userdict(ns_path)

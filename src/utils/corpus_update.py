@@ -13,10 +13,10 @@ sys.path.append('../../')
 sys.path.append('../../../')
 import dicts
 import jieba
-import codecs
-import pandas as pd
-from src import data_reader
-from src.configure import conf
+import codecs  # noqa: E402
+import pandas as pd  # noqa: E402
+from src import data_reader  # noqa: E402
+from src.configure import conf  # noqa: E402
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
