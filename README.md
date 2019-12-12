@@ -1,4 +1,6 @@
-## 代码树     
+# 金融财经类新闻文本主题事件提取
+
+## 代码结构     
     .
     ├── configure.py  # 配置文件模块
     ├── data_reader.py  # 数据读取和预处理模块
@@ -7,13 +9,13 @@
     ├── load_history_event.py  # load历史事件代码
     ├── algorithm
     │   └── cluster # 聚类模块
-    │       ├── Kmeans # kmeans聚类
-    │       │   └── k_means_cluster.py
-    │       ├── LDA  # kmeans聚类
-    │       │   └── lda_cluster.py
-    │       └── singlePass   # singlepass聚类
-    │           ├── singlePassCluster.py
-    │           └── singlepassrun.py
+    │       ├── Kmeans # kmeans聚类
+    │       │   └── k_means_cluster.py
+    │       ├── LDA  # kmeans聚类
+    │       │   └── lda_cluster.py
+    │       └── singlePass   # singlepass聚类
+    │           ├── singlePassCluster.py
+    │           └── singlepassrun.py
     │
     ├── corpus
     ├── data  # 预处理的数据
@@ -37,7 +39,8 @@
         ├── time_util.py  # 时间工具类
         ├── tokenization.py  # 分词模块
         └── vector.py  # 空间向量模块
-# 操作手册
+        
+# 主要流程
 ## step、1 数据准备
 - 涉及文件：data_reader.py
 - 从数据库中读取指定日期前的所有新闻，然后整理成两部分数据。
