@@ -15,7 +15,8 @@ sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 from src.configure import conf
-from src.utils import tfidf, log_util
+from src.utils.log import log_util
+from src.utils.VSM import tfidf
 
 logging = log_util.Logger('singlepass_test')
 # corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"

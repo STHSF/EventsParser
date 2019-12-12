@@ -11,10 +11,11 @@
 
 import json
 import pandas as pd
-import data_reader
-from configure import conf
-from src.utils import file_util, event_util, log_util
-from src.utils import data_source
+from src import data_reader
+from src.configure import conf
+from src.utils import file_util, event_util
+from src.utils.log import log_util
+from src.utils.engine import data_source
 
 logging = log_util.Logger('event2mysql')
 event_save_path = conf.event_save_path
@@ -58,12 +59,18 @@ for item in new_event_units:
 result_df = pd.DataFrame(result,
                          columns=['event_id', 'event_title', 'event_stock', 'start_time', 'stop_time', 'event_detail'])
 
+"""
+# 将整理好「事件以及事件涉及股票列表」数据保存到{event_detail}
+"""
 # # 创建数据库引擎
 engine_mysql = data_source.GetDataEngine("XAVIER_DB")
-# # 将整理好的数据保存到mysql中
+# # 将「事件以及事件涉及股票列表」的数据保存到mysql中
 result_df.to_sql('event_detail', engine_mysql, if_exists='replace', index=False)
 logging.logger.info('event_detail update success')
-# # 整理出股票对应的事件{}
+
+"""
+# 整理出「股票以及股票涉及的事件列表」数据保存到{symbol_event_detail}
+"""
 event_symbol = result_df[['event_id', 'event_stock']]
 # print event_symbol
 lst = {}
@@ -79,6 +86,6 @@ for i in range(len(event_symbol)):
 tmp_result = pd.DataFrame(list(lst.items()), columns=['SYMBOL', 'event_id'])
 tmp_result['event_id'] = tmp_result['event_id'].apply(lambda x: ','.join(x))
 # print tmp_result
-# 将整理好的数据保存到mysql中
+# 将「股票以及股票涉及的事件列表」数据保存到mysql中
 tmp_result.to_sql('symbol_event_detail', engine_mysql, if_exists='replace', index=False)
 logging.logger.info('symbol_event_detail update success')

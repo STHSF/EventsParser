@@ -26,7 +26,7 @@ class news(object):
 
     def news_detail(self):
         if self.title and self.content:
-            print self.title + self.content
+            print(self.title + self.content)
 
     def news_lists(self):
         pass

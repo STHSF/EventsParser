@@ -15,7 +15,9 @@ from collections import Counter
 
 import numpy as np
 
-from src.utils import log_util, data_process, keywords_extractor, tfidf
+from src.utils import data_process, keywords_extractor
+from src.utils.log import log_util
+from src.utils.VSM import tfidf
 
 sys.path.append('..')
 sys.path.append('../')

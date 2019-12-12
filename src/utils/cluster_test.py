@@ -9,20 +9,21 @@
 聚类模块
 """
 from sklearn.cluster import KMeans
+from gensim.models.doc2vec import Doc2Vec, LabeledSentence
 
 
 def cluster(x_train):
     infered_vectors_list = []
-    print "load doc2vec model..."
+    print("load doc2vec model...")
     model_dm = Doc2Vec.load("model/model_dm")
-    print "load train vectors..."
+    print("load train vectors...")
     i = 0
     for text, label in x_train:
         vector = model_dm.infer_vector(text)
         infered_vectors_list.append(vector)
         i += 1
 
-    print "train kmean model..."
+    print("train kmean model...")
     kmean_model = KMeans(n_clusters=15)
     kmean_model.fit(infered_vectors_list)
     labels = kmean_model.predict(infered_vectors_list[0:100])

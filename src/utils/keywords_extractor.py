@@ -10,7 +10,8 @@
 """
 import numpy as np
 
-from src.utils import data_process, dicts, log_util, tokenization
+from src.utils import data_process, dicts, tokenization
+from src.utils.log import log_util
 
 logging = log_util.Logger('keywordsExtractor_log')
 

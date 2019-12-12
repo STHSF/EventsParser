@@ -14,7 +14,8 @@ import sys
 
 import jieba.posseg as pseg
 
-from src.utils import data_process, dicts, log_util
+from src.utils import data_process, dicts
+from src.utils.log import log_util
 
 sys.path.append('..')
 sys.path.append('../')
@@ -42,7 +43,7 @@ def load_stop_words():
 
 class Tokenizer(object):
     def __init__(self, data_process, stop_words):
-        dicts.init()  # 初始化人工词典
+        # dicts.init()  # 初始化人工词典
         self.data_precessing = data_process
         # self.dicts = dict_init
         # 按照词性去停用词
@@ -118,7 +119,7 @@ def multi_token_test():
         '特别是在中国。软件从业人员分为初级程序员、高级程序员、系统分析员和项目经理四大类。'
 
     dataprocess = data_process.DataPressing()
-    dict_init = dicts.init()
+    dicts.init()
     stop_words = load_stop_words()
     # 串行处理
     t0 = time.time()

@@ -9,7 +9,6 @@
 将类簇转换成事件单元，并根据类簇中的节点id从文本中提取每个类簇对应的新闻，构成事件单元，然后提取每个事件单元涉及的股票。并且对每个事件单元提取关键词代表每个事件单元。所有的结果打包成pickle文件保存到本地。
 """
 import gc
-import time
 import pickle
 import pandas as pd
 
@@ -19,7 +18,9 @@ sys.path.append('../')
 sys.path.append('../../')
 
 from src.configure import conf
-from src.utils import event_util, log_util, tfidf
+from src.utils import event_util
+from src.utils.log import log_util
+from src.utils.VSM import tfidf
 from src.data_reader import import_news, import_title, get_event_news
 
 # import logger

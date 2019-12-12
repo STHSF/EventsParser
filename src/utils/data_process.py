@@ -6,7 +6,7 @@
 @author: li
 @file: data_process.py
 @time: 2018/10/31 1:32 PM
-文本解析类
+金融文本解析类
 """
 import sys
 sys.path.append('../')

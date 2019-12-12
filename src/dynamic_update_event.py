@@ -14,7 +14,7 @@ import sys
 import gc
 import time
 import datetime
-import data_reader
+from src import data_reader
 import pandas as pd
 from tqdm import tqdm
 
@@ -22,9 +22,10 @@ sys.path.append('../')
 sys.path.append('..')
 sys.path.append('../../')
 
-from utils import log_util  # noqa: E402
-from configure import conf  # noqa: E402
-from utils import event_util, file_util, tfidf, data_process, dicts, tokenization, time_util  # noqa: E402
+from src.utils.log import log_util
+from src.configure import conf  # noqa: E402
+from src.utils import event_util, file_util, data_process, dicts, tokenization, time_util  # noqa: E402
+from src.utils.VSM import tfidf
 from src.algorithm.cluster.singlePass import singlePassCluster
 
 logging = log_util.Logger('dynamic_update', level='debug')
@@ -59,7 +60,7 @@ tfidf_transformer = tfidf.load_tfidf_transformer(tfidf_transformer_path)
 
 # 导入词典，停用词，数据处理接口，分词接口
 dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), tokenization.load_stop_words()
-tk = tokenization.Tokenizer(dp, dict_init, stop_words)
+tk = tokenization.Tokenizer(dp, stop_words)
 
 # 提取dataFrame中的内容
 ordered_news_lists = data_reader.trans_df_data(ordered_df, tfidf_feature, tfidf_transformer, dp, tk)

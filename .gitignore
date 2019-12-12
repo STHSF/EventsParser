@@ -108,7 +108,7 @@ venv.bak/
 .idea/
 /src/corpus
 .log
-/src/paser/discuss_parser/hs_err_pid40588.log
+/src/parser/xueqiu/discuss_parser/hs_err_pid40588.log
 /src/algorithm/cluster/singlePass/c2.txt
 /src/data/text.txt
 /src/model/
@@ -130,4 +130,4 @@ venv.bak/
 /log/
 /src/data_copy/
 /src/log/
-/src/paser/log/
+/src/parser/log/

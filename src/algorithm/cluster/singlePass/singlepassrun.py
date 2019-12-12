@@ -13,7 +13,7 @@ sys.path.append('../')
 sys.path.append('../../')
 import pickle
 from src.configure import conf
-from src.utils import tfidf
+from src.utils.VSM import tfidf
 from src.algorithm.cluster.singlePass import singlePassCluster
 
 # corpus_train_path = "/Users/li/PycharmProjects/event_parser/src/data/text_full_index.txt"

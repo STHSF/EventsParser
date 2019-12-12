@@ -12,18 +12,19 @@ sys.path.append('..')
 sys.path.append('../')
 sys.path.append('../../')
 import time
-# import gensim
 import pandas as pd
 from tqdm import tqdm
 from src.configure import conf
-from src.utils.data_source import GetDataEngine
+from src.utils.engine.data_source import GetDataEngine
 from src.utils import tokenization, data_process, dicts
 from src.utils.tokenization import load_stop_words
-from src.utils import keywords_extractor, time_util, tfidf, log_util
+from src.utils.log import log_util
+from src.utils.VSM import tfidf
 
 # TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
 engine_mysql = GetDataEngine("XAVIER")
+engine_mysql_test = GetDataEngine("VISIONTEST")
 engine_sqlserver = GetDataEngine("DNDS")
 logging = log_util.Logger('data_reader_log')
 global _stopwords
@@ -112,17 +113,20 @@ def read_full_data(sheet_name):
     return result
 
 
-def read_all_data(sheet_name, sql=None):
+def read_all_data(sheet_name, engine, sql=None):
     """
-
-    :param sheet_name:
-    :param sql:
+    :param engine:  SqlAlchemy 引擎
+    :param sheet_name: 数据库表名
+    :param sql: 查询语句
     :return:
     """
+    if engine is None:
+        print("sql engine is not set")
+        exit()
     if sql is None:
         # sql = "SELECT title, content FROM xavier_db.%s LIMIT 10" % sheet_name
         sql = "SELECT distinct content, id, title, url, unix_time FROM xavier_db.%s  ORDER BY unix_time" % sheet_name
-    result = pd.read_sql(sql, engine_mysql)
+    result = pd.read_sql(sql, engine)
     return result
 
 
@@ -253,7 +257,7 @@ def get_event_news(text_dict, node_list):
 def load_data_test():
     dp, dict_init, stop_words = data_process.DataPressing(), dicts.init(), load_stop_words()
     # 分词
-    tk = tokenization.Tokenizer(dp, dict_init, stop_words)
+    tk = tokenization.Tokenizer(dp, stop_words)
     # 获取三张表中的所有新闻
     df_result = get_data()  # 接口已经改变，调用时需要注意
     res_lists = []

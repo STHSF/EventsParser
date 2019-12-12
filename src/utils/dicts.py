@@ -11,9 +11,8 @@ jieba 字典初始化模块
 如果有新登陆词，可以在corpus中的新增中添加
 """
 import jieba
-import codecs
 import pandas as pd
-from src.utils import log_util
+from src.utils.log import log_util
 
 import sys
 sys.path.append('../')

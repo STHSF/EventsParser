@@ -1,0 +1,24 @@
+2019-04-29 16:09:35,871 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:62] - INFO: program start at 2019-04-28 00:00:00
+2019-04-29 16:09:37,541 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:82] - INFO: load discuss data from mysql successful
+2019-04-29 16:09:38,095 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:120] - INFO: length of result: 55
+2019-04-29 16:09:38,095 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:126] - INFO: program finished
+2019-04-29 16:09:52,444 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:61] - INFO: program start at 2019-04-28 09:00:00
+2019-04-29 16:09:53,530 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:81] - INFO: load discuss data from mysql successful
+2019-04-29 16:09:53,981 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:119] - INFO: length of result: 55
+2019-04-29 16:09:53,981 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:125] - INFO: program finished
+2019-04-29 16:18:39,087 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:61] - INFO: program start at 2019-04-28 09:00:00
+2019-04-29 16:18:39,087 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:62] - INFO: program stop at 2019-04-29 09:00:00
+2019-04-29 16:18:40,227 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:82] - INFO: load discuss data from mysql successful
+2019-04-29 16:18:40,686 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:120] - INFO: length of result: 55
+2019-04-29 16:18:40,686 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:126] - INFO: program finished
+2019-04-29 16:19:34,182 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:61] - INFO: program start at 2019-04-28 00:00:00
+2019-04-29 16:19:34,182 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:62] - INFO: program stop at 2019-04-29 00:00:00
+2019-04-29 16:19:35,319 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:82] - INFO: load discuss data from mysql successful
+2019-04-29 16:19:35,775 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:120] - INFO: length of result: 55
+2019-04-29 16:19:35,775 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:126] - INFO: program finished
+2019-04-29 16:20:56,877 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:61] - INFO: program start at 2019-04-28 00:00:00
+2019-04-29 16:20:56,877 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:62] - INFO: program stop at 2019-04-29 00:00:00
+2019-04-29 16:20:57,998 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:82] - INFO: load discuss data from mysql successful
+2019-04-29 16:20:58,450 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:121] - INFO: length of result: 55
+2019-04-29 16:20:58,450 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:126] - INFO: 数据保存到第 2019-04-28 天
+2019-04-29 16:20:58,450 - /Users/li/PycharmProjects/event_parser/src/parser/xueqiu/discuss_parser/xueqiu_discuss_daily.py[line:128] - INFO: program finished

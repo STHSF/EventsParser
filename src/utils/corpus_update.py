@@ -11,15 +11,11 @@ import sys
 sys.path.append('../')
 sys.path.append('../../')
 sys.path.append('../../../')
-import dicts
-import jieba
+from src.utils import dicts
 import codecs  # noqa: E402
 import pandas as pd  # noqa: E402
 from src import data_reader  # noqa: E402
 from src.configure import conf  # noqa: E402
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
 
 
 def stock_code_data_process():
@@ -50,7 +46,7 @@ if __name__ == '__main__':
     dic_path = conf.dic_path
     stock_new_path = dic_path + "/stock.csv"
     data_df = pd.read_csv(stock_new_path, encoding="utf-8").set_index('SESNAME')
-    print data_df.loc[u'万科A'].values
+    print(data_df.loc[u'万科A'].values)
     # dicts.init()
     # print dicts.stock_dict
     # for index, row in data_df.iterrows():
